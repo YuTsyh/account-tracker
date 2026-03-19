@@ -51,6 +51,7 @@ export default {
     members: "成員名稱 (每行一位)",
     membersPlaceholder: "例如：\n小明\n小美\n阿哲",
     createBtn: "建立帳本",
+    createNewBook: "建立新帳本",
     deleteConfirm: "確定要刪除帳本「{name}」嗎？此帳本下所有紀錄也會一起刪除。",
   },
   recordSheet: {
@@ -82,9 +83,10 @@ export default {
   setup: {
     title: "歡迎使用 Account Tracker",
     subtitle: "請輸入您的稱呼來開始記帳",
-    nameLabel: "您的稱呼",
+    namePrompt: "您的稱呼",
+    nameDescription: "這個名稱將顯示在個人頁面上",
     namePlaceholder: "例如：小明、Allen",
-    startBtn: "開始使用",
+    startButton: "開始使用",
   },
   categories: {
     settingsTitle: "收支分類設定",

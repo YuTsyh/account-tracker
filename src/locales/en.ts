@@ -51,6 +51,7 @@ export default {
     members: "Members (One per line)",
     membersPlaceholder: "e.g.,\nAllen\nBob\nAlice",
     createBtn: "Create Book",
+    createNewBook: "Create New Book",
     deleteConfirm: "Are you sure you want to delete the book '{name}'? All records will be deleted.",
   },
   recordSheet: {
@@ -82,9 +83,10 @@ export default {
   setup: {
     title: "Welcome to Account Tracker",
     subtitle: "Enter your name to start tracking",
-    nameLabel: "Your Name",
+    namePrompt: "Your Name",
+    nameDescription: "This name will appear on your profile",
     namePlaceholder: "e.g., Allen",
-    startBtn: "Get Started",
+    startButton: "Get Started",
   },
   categories: {
     settingsTitle: "Category Settings",

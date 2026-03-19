@@ -51,6 +51,7 @@ export default {
     members: "メンバー名（1行に1人）",
     membersPlaceholder: "例：\n太郎\n花子\n次郎",
     createBtn: "帳簿を作成",
+    createNewBook: "新しい帳簿を作成",
     deleteConfirm: "「{name}」を削除してもよろしいですか？この帳簿のすべての記録も削除されます。",
   },
   recordSheet: {
@@ -82,7 +83,8 @@ export default {
   setup: {
     title: "Account Tracker",
     subtitle: "お名前を入力して始めてください",
-    nameLabel: "お名前",
+    namePrompt: "お名前",
+    nameDescription: "この名前はプロフィールに表示されます",
     namePlaceholder: "例：太郎",
     startButton: "始める",
   },

@@ -40,7 +40,7 @@
           :placeholder="$t('setup.namePlaceholder')"
           maxlength="20"
           autofocus
-          class="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-colors focus:border-blue-500"
+          class="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-3.5 text-base text-gray-800 outline-none transition-colors focus:border-blue-500"
         />
 
         <button
