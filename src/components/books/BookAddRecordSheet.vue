@@ -1,0 +1,320 @@
+<template>
+  <Teleport to="body">
+    <div
+      v-if="modelValue"
+      class="fixed inset-0 z-50 flex items-end justify-center"
+      @click.self="close"
+    >
+      <div class="sheet-backdrop" @click="close"></div>
+      <div
+        class="animate-slide-up relative flex max-h-[90vh] w-full max-w-md flex-col rounded-t-[2rem] bg-white shadow-2xl transition-colors dark:bg-gray-900"
+      >
+        <!-- Header -->
+        <div
+          class="z-10 flex shrink-0 items-center justify-between border-b border-gray-100 px-6 py-4 transition-colors dark:border-gray-800"
+        >
+          <div>
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">
+              {{ $t("recordSheet.title") }}
+            </h2>
+            <p class="hint-text mt-0.5">{{ $t("recordSheet.subtitle", { name: bookName }) }}</p>
+          </div>
+          <CloseButton @click="close" />
+        </div>
+
+        <!-- Body Form -->
+        <form
+          @submit.prevent="handleSubmit"
+          class="custom-scrollbar flex-1 space-y-5 overflow-y-auto px-6 py-6"
+        >
+          <!-- Type toggle -->
+          <div class="type-toggle-track">
+            <button
+              type="button"
+              @click="form.type = 'expense'"
+              :class="[
+                'type-toggle-btn',
+                form.type === 'expense'
+                  ? 'type-toggle-btn--active-expense'
+                  : 'type-toggle-btn--inactive',
+              ]"
+            >
+              {{ $t("common.expense") }}
+            </button>
+            <button
+              type="button"
+              @click="form.type = 'income'"
+              :class="[
+                'type-toggle-btn',
+                form.type === 'income'
+                  ? 'type-toggle-btn--active-income'
+                  : 'type-toggle-btn--inactive',
+              ]"
+            >
+              {{ $t("common.income") }}
+            </button>
+          </div>
+
+          <!-- Amount -->
+          <div class="relative">
+            <span
+              class="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-gray-400 dark:text-gray-500"
+              >NT$</span
+            >
+            <input
+              v-model.number="form.amount"
+              type="number"
+              min="1"
+              required
+              :placeholder="$t('common.amount')"
+              class="input-field pl-14 text-base font-semibold"
+            />
+          </div>
+
+          <!-- Category Grid -->
+          <div>
+            <label class="label-text !text-xs">{{ $t("common.category") }}</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button
+                v-for="cat in activeCats"
+                :key="cat.id"
+                @click="form.category = cat.name"
+                type="button"
+                :class="[
+                  'cat-btn',
+                  form.category === cat.name
+                    ? 'bg-blue-50 text-blue-700 shadow-sm ring-2 ring-blue-500 dark:bg-blue-900/40 dark:text-blue-400 dark:ring-blue-400'
+                    : 'border border-transparent bg-gray-50 text-gray-500 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700',
+                ]"
+              >
+                <CategoryIcon :name="cat.icon" class="mb-1 text-[28px]" />
+                <span
+                  class="w-full truncate px-1 text-center text-xs font-medium"
+                  >{{ $t(`categories.${cat.id}`) || cat.name }}</span
+                >
+              </button>
+            </div>
+          </div>
+
+          <!-- Date -->
+          <div>
+            <label class="label-text !text-xs">{{ $t("common.date") }}</label>
+            <input
+              v-model="form.date"
+              type="date"
+              required
+              class="input-field"
+            />
+          </div>
+
+          <!-- Paid By -->
+          <div v-if="form.type === 'expense'" class="pt-2">
+            <label class="label-text !text-xs">{{ $t("recordSheet.paidBy") }}</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="m in members"
+                :key="'paid-' + m.id"
+                type="button"
+                @click="form.paidById = m.id"
+                :class="[
+                  'rounded-lg border px-4 py-2 text-sm font-medium transition-all',
+                  form.paidById === m.id
+                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700',
+                ]"
+              >
+                {{ m.name }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Split Among -->
+          <div
+            v-if="form.type === 'expense'"
+            class="rounded-xl border border-gray-100 bg-gray-50 p-3 transition-colors dark:border-gray-700 dark:bg-gray-800/80"
+          >
+            <div class="mb-2 flex items-center justify-between">
+              <label
+                class="text-xs font-semibold text-gray-500 dark:text-gray-400"
+                >{{ $t("recordSheet.splitAmong") }}</label
+              >
+              <button
+                type="button"
+                @click="toggleAll"
+                class="text-xs text-blue-600 hover:underline dark:text-blue-400"
+              >
+                {{
+                  form.splitAmongIds.length === members.length
+                    ? $t("recordSheet.unselectAll")
+                    : $t("recordSheet.selectAll")
+                }}
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="m in members"
+                :key="m.id"
+                type="button"
+                @click="toggleMember(m.id)"
+                :class="[
+                  'rounded-lg border px-3 py-1.5 text-xs font-medium transition-all',
+                  form.splitAmongIds.includes(m.id)
+                    ? 'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
+                ]"
+              >
+                {{ m.name }}
+              </button>
+            </div>
+            <p
+              v-if="form.splitAmongIds.length > 0 && form.amount"
+              class="mt-2 text-right text-xs font-medium text-blue-600 dark:text-blue-400"
+            >
+              {{
+                $t("recordSheet.splitPerPerson", {
+                  amount: Math.floor(
+                    Number(form.amount) / form.splitAmongIds.length,
+                  ).toLocaleString(),
+                })
+              }}
+            </p>
+          </div>
+
+          <!-- Note -->
+          <div>
+            <input
+              v-model="form.note"
+              type="text"
+              :placeholder="$t('common.note')"
+              class="input-field text-sm"
+            />
+          </div>
+
+          <BaseButton
+            type="submit"
+            :disabled="
+              form.type === 'expense' && form.splitAmongIds.length === 0
+            "
+            class="mt-2 w-full"
+          >
+            {{ $t("common.save") }}
+          </BaseButton>
+        </form>
+      </div>
+    </div>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch } from "vue";
+import { useTrackerStore } from "../../stores/tracker";
+import type { Member } from "../../stores/tracker";
+import BaseButton from "../BaseButton.vue";
+import CloseButton from "../CloseButton.vue";
+import CategoryIcon from "../CategoryIcon.vue";
+
+const props = defineProps<{
+  modelValue: boolean;
+  bookName: string;
+  members: Member[];
+}>();
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+}>();
+
+const store = useTrackerStore();
+const today = new Date().toISOString().split("T")[0];
+
+const defaultForm = () => ({
+  type: "expense" as "expense" | "income",
+  amount: "" as number | "",
+  category: "",
+  paidById: props.members[0]?.id ?? "",
+  splitAmongIds: props.members.map((m) => m.id),
+  date: today,
+  note: "",
+});
+
+const form = ref(defaultForm());
+
+const expenseCats = computed(() =>
+  store.allCategories.filter((c) => c.type === "expense"),
+);
+const incomeCats = computed(() =>
+  store.allCategories.filter((c) => c.type === "income"),
+);
+const activeCats = computed(() =>
+  form.value.type === "expense" ? expenseCats.value : incomeCats.value,
+);
+
+// Reset & sync category when type changes or sheet opens
+watch(
+  () => props.modelValue,
+  (open) => {
+    if (open) {
+      const reset = defaultForm();
+      reset.category = expenseCats.value[0]?.name ?? "";
+      form.value = reset;
+    }
+  },
+);
+
+watch(
+  () => form.value.type,
+  (newType) => {
+    const cats = newType === "expense" ? expenseCats.value : incomeCats.value;
+    if (!cats.find((c) => c.name === form.value.category)) {
+      form.value.category = cats[0]?.name ?? "";
+    }
+  },
+);
+
+const toggleMember = (id: string) => {
+  const idx = form.value.splitAmongIds.indexOf(id);
+  if (idx >= 0) {
+    form.value.splitAmongIds.splice(idx, 1);
+  } else {
+    form.value.splitAmongIds.push(id);
+  }
+};
+
+const toggleAll = () => {
+  const all = props.members.map((m) => m.id);
+  form.value.splitAmongIds =
+    form.value.splitAmongIds.length === all.length ? [] : [...all];
+};
+
+const close = () => emit("update:modelValue", false);
+
+const handleSubmit = () => {
+  if (!form.value.amount || Number(form.value.amount) <= 0) return;
+  const isExpense = form.value.type === "expense";
+  if (isExpense && form.value.splitAmongIds.length === 0) return;
+
+  store.addRecord({
+    type: form.value.type,
+    amount: Number(form.value.amount),
+    category: form.value.category,
+    date: form.value.date,
+    note: form.value.note,
+    paidById: isExpense ? form.value.paidById : "",
+    splitAmongIds: isExpense ? form.value.splitAmongIds : [],
+  });
+  close();
+};
+</script>
+
+<style scoped>
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+</style>

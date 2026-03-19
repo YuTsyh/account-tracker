@@ -1,0 +1,495 @@
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+
+// ============================
+// Data Models
+// ============================
+
+export interface Member {
+  id: string;
+  name: string;
+}
+
+export interface Book {
+  id: string;
+  name: string;
+  members: Member[];
+  createdAt: string;
+}
+
+export interface RecordItem {
+  id: string;
+  bookId: string;
+  type: "expense" | "income";
+  amount: number;
+  category: string;
+  date: string;
+  note: string;
+  paidById: string;
+  splitAmongIds: string[];
+}
+
+/** Personal record - not tied to a shared book */
+export interface PersonalRecord {
+  id: string;
+  type: "expense" | "income";
+  amount: number;
+  category: string;
+  date: string;
+  note: string;
+  sourceBookId?: string; // set when imported from a shared book
+}
+
+// User & Settings
+export interface UserProfile {
+  name: string;
+  theme: "light" | "dark" | "system";
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  type: "expense" | "income";
+  icon: string;
+  color: string;
+  isDefault: boolean;
+}
+
+export interface Settlement {
+  from: Member;
+  to: Member;
+  amount: number;
+}
+
+// ============================
+// Helpers
+// ============================
+
+function loadFromStorage<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    console.warn(`[storage] Failed to read key "${key}", using fallback.`);
+    return fallback;
+  }
+}
+
+function saveToStorage(key: string, data: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (e) {
+    console.error(`[storage] Failed to save key "${key}":`, e);
+  }
+}
+
+// ============================
+// Store
+// ============================
+
+export const defaultCategories: Category[] = [
+  {
+    id: "e1",
+    name: "飲食",
+    type: "expense",
+    icon: "restaurant",
+    color: "blue",
+    isDefault: true,
+  },
+  {
+    id: "e2",
+    name: "交通",
+    type: "expense",
+    icon: "directions_car",
+    color: "green",
+    isDefault: true,
+  },
+  {
+    id: "e3",
+    name: "購物",
+    type: "expense",
+    icon: "shopping_bag",
+    color: "purple",
+    isDefault: true,
+  },
+  {
+    id: "e4",
+    name: "娛樂",
+    type: "expense",
+    icon: "sports_esports",
+    color: "red",
+    isDefault: true,
+  },
+  {
+    id: "e5",
+    name: "住宿",
+    type: "expense",
+    icon: "hotel",
+    color: "indigo",
+    isDefault: true,
+  },
+  {
+    id: "e6",
+    name: "景點",
+    type: "expense",
+    icon: "attractions",
+    color: "pink",
+    isDefault: true,
+  },
+  {
+    id: "e7",
+    name: "繳費",
+    type: "expense",
+    icon: "receipt_long",
+    color: "gray",
+    isDefault: true,
+  },
+  {
+    id: "e8",
+    name: "其他",
+    type: "expense",
+    icon: "more_horiz",
+    color: "gray",
+    isDefault: true,
+  },
+  {
+    id: "i1",
+    name: "薪水",
+    type: "income",
+    icon: "payments",
+    color: "green",
+    isDefault: true,
+  },
+  {
+    id: "i2",
+    name: "零用錢",
+    type: "income",
+    icon: "savings",
+    color: "red",
+    isDefault: true,
+  },
+  {
+    id: "i3",
+    name: "獎金",
+    type: "income",
+    icon: "emoji_events",
+    color: "yellow",
+    isDefault: true,
+  },
+  {
+    id: "i4",
+    name: "其他",
+    type: "income",
+    icon: "more_horiz",
+    color: "gray",
+    isDefault: true,
+  },
+];
+
+export const useTrackerStore = defineStore("tracker", () => {
+  const books = ref<Book[]>(loadFromStorage("tracker_books", []));
+  const records = ref<RecordItem[]>(loadFromStorage("tracker_records_v2", []));
+  const currentBookId = ref<string | null>(
+    loadFromStorage("tracker_current_book", null),
+  );
+  const personalRecords = ref<PersonalRecord[]>(
+    loadFromStorage("tracker_personal_records", []),
+  );
+
+  // Settings & Theme
+  const userProfile = ref<UserProfile>(
+    loadFromStorage("tracker_user_profile", { name: "", theme: "system" }),
+  );
+  const customCategories = ref<Category[]>(
+    loadFromStorage("tracker_custom_categories", []),
+  );
+
+  // ---- Persistence ----
+  const save = () => {
+    saveToStorage("tracker_books", books.value);
+    saveToStorage("tracker_records_v2", records.value);
+    saveToStorage("tracker_current_book", currentBookId.value);
+    saveToStorage("tracker_personal_records", personalRecords.value);
+    saveToStorage("tracker_user_profile", userProfile.value);
+    saveToStorage("tracker_custom_categories", customCategories.value);
+  };
+
+  // ---- User Profile ----
+  const isProfileSet = computed(() => userProfile.value.name.trim() !== "");
+
+  function updateUserProfile(name: string) {
+    userProfile.value.name = name;
+    save();
+  }
+
+  function setTheme(theme: "light" | "dark" | "system") {
+    userProfile.value.theme = theme;
+    save();
+  }
+
+  // ---- Categories ----
+  const deletedCategoryIds = ref<string[]>(
+    loadFromStorage("tracker_deleted_categories", []),
+  );
+
+  const allCategories = computed(() => {
+    return [...defaultCategories, ...customCategories.value].filter(
+      (c) => !deletedCategoryIds.value.includes(c.id),
+    );
+  });
+
+  const addCustomCategory = (cat: Omit<Category, "id" | "isDefault">) => {
+    const newCat: Category = {
+      ...cat,
+      id: crypto.randomUUID(),
+      isDefault: false,
+    };
+    customCategories.value.push(newCat);
+    saveToStorage("tracker_custom_categories", customCategories.value);
+  };
+
+  const deleteCustomCategory = (id: string) => {
+    const isCustom = customCategories.value.some((c) => c.id === id);
+    if (isCustom) {
+      customCategories.value = customCategories.value.filter(
+        (c) => c.id !== id,
+      );
+      saveToStorage("tracker_custom_categories", customCategories.value);
+    } else {
+      deletedCategoryIds.value.push(id);
+      saveToStorage("tracker_deleted_categories", deletedCategoryIds.value);
+    }
+  };
+
+  // ---- Book CRUD ----
+  const currentBook = computed(
+    () => books.value.find((b) => b.id === currentBookId.value) ?? null,
+  );
+
+  const createBook = (name: string, memberNames: string[]) => {
+    if (!name.trim()) return null; // guard: book name must not be empty
+    const members: Member[] = memberNames
+      .filter((n) => n.trim())
+      .map((n) => ({
+        id: crypto.randomUUID(),
+        name: n.trim(),
+      }));
+
+    const book: Book = {
+      id: crypto.randomUUID(),
+      name,
+      members,
+      createdAt: new Date().toISOString(),
+    };
+    books.value.push(book);
+    currentBookId.value = book.id;
+    save();
+    return book;
+  };
+
+  const selectBook = (bookId: string) => {
+    currentBookId.value = bookId;
+    save();
+  };
+
+  const deleteBook = (bookId: string) => {
+    books.value = books.value.filter((b) => b.id !== bookId);
+    records.value = records.value.filter((r) => r.bookId !== bookId);
+    if (currentBookId.value === bookId) {
+      currentBookId.value = books.value[0]?.id ?? null;
+    }
+    save();
+  };
+
+  const addMemberToBook = (bookId: string, memberName: string) => {
+    const book = books.value.find((b) => b.id === bookId);
+    if (!book || !memberName.trim()) return;
+    book.members.push({
+      id: crypto.randomUUID(),
+      name: memberName.trim(),
+    });
+    save();
+  };
+
+  // ---- Shared Book Records ----
+  const currentBookRecords = computed(() =>
+    records.value.filter((r) => r.bookId === currentBookId.value),
+  );
+
+  const addRecord = (record: Omit<RecordItem, "id" | "bookId">) => {
+    if (!currentBookId.value) return;
+    records.value.unshift({
+      ...record,
+      id: crypto.randomUUID(),
+      bookId: currentBookId.value,
+    });
+    save();
+  };
+
+  const deleteRecord = (id: string) => {
+    records.value = records.value.filter((r) => r.id !== id);
+    save();
+  };
+
+  // ---- Book Summaries ----
+  const totalExpense = computed(() =>
+    currentBookRecords.value
+      .filter((r) => r.type === "expense")
+      .reduce((s, r) => s + r.amount, 0),
+  );
+  const totalIncome = computed(() =>
+    currentBookRecords.value
+      .filter((r) => r.type === "income")
+      .reduce((s, r) => s + r.amount, 0),
+  );
+  const balance = computed(() => totalIncome.value - totalExpense.value);
+
+  // ---- Settlement Algorithm ----
+  const memberStats = computed(() => {
+    if (!currentBook.value) return [];
+    const allMemberIds = currentBook.value.members.map((m) => m.id);
+    return currentBook.value.members.map((member) => {
+      const paid = currentBookRecords.value
+        .filter((r) => r.type === "expense" && r.paidById === member.id)
+        .reduce((s, r) => s + r.amount, 0);
+      const owed = currentBookRecords.value
+        .filter((r) => {
+          if (r.type !== "expense") return false;
+          // "all" means split among all book members
+          const splitIds = r.splitAmongIds.includes("all")
+            ? allMemberIds
+            : r.splitAmongIds;
+          return splitIds.includes(member.id);
+        })
+        .reduce((s, r) => {
+          const splitIds = r.splitAmongIds.includes("all")
+            ? allMemberIds
+            : r.splitAmongIds;
+          return s + r.amount / splitIds.length;
+        }, 0);
+      return {
+        member,
+        paid: Math.round(paid),
+        owed: Math.round(owed),
+        net: Math.round(paid - owed),
+      };
+    });
+  });
+
+  const settlements = computed((): Settlement[] => {
+    if (!currentBook.value) return [];
+    const balances = memberStats.value.map((s) => ({
+      member: s.member,
+      net: s.net,
+    }));
+    const creditors = balances
+      .filter((b) => b.net > 0)
+      .sort((a, b) => b.net - a.net);
+    const debtors = balances
+      .filter((b) => b.net < 0)
+      .sort((a, b) => a.net - b.net);
+    const result: Settlement[] = [];
+    let ci = 0,
+      di = 0;
+    while (ci < creditors.length && di < debtors.length) {
+      const credit = creditors[ci],
+        debt = debtors[di];
+      const amount = Math.min(credit.net, -debt.net);
+      if (amount > 0)
+        result.push({ from: debt.member, to: credit.member, amount });
+      credit.net -= amount;
+      debt.net += amount;
+      if (credit.net === 0) ci++;
+      if (debt.net === 0) di++;
+    }
+    return result;
+  });
+
+  // ---- Personal Records ----
+  const addPersonalRecord = (record: Omit<PersonalRecord, "id">) => {
+    personalRecords.value.unshift({
+      ...record,
+      id: crypto.randomUUID(),
+    });
+    save();
+  };
+
+  const deletePersonalRecord = (id: string) => {
+    personalRecords.value = personalRecords.value.filter((r) => r.id !== id);
+    save();
+  };
+
+  // ---- Personal Summaries ----
+  const personalTotalExpense = computed(() =>
+    personalRecords.value
+      .filter((r) => r.type === "expense")
+      .reduce((s, r) => s + r.amount, 0),
+  );
+  const personalTotalIncome = computed(() =>
+    personalRecords.value
+      .filter((r) => r.type === "income")
+      .reduce((s, r) => s + r.amount, 0),
+  );
+  const personalBalance = computed(
+    () => personalTotalIncome.value - personalTotalExpense.value,
+  );
+
+  // ---- Import My Share from Book ----
+  // Imports this member's real personal cost (owed amount) into personal records.
+  const importMyShareFromBook = (memberId: string) => {
+    if (!currentBook.value) return;
+
+    // Guard: prevent duplicate import from the same book
+    const alreadyImported = personalRecords.value.some(
+      (r) => r.sourceBookId === currentBook.value!.id,
+    );
+    if (alreadyImported) return;
+    const stat = memberStats.value.find((s) => s.member.id === memberId);
+    if (!stat || stat.owed <= 0) return;
+
+    const today = new Date().toISOString().split("T")[0];
+    addPersonalRecord({
+      type: "expense",
+      amount: stat.owed,
+      category: "e8", // default "other" expense category id
+      date: today,
+      note: `來自帳本「${currentBook.value.name}」的分攤花費`,
+      sourceBookId: currentBook.value.id,
+    });
+  };
+
+  return {
+    userProfile,
+    isProfileSet,
+    updateUserProfile,
+    setTheme,
+    books,
+    records,
+    currentBookId,
+    currentBook,
+    currentBookRecords,
+    createBook,
+    selectBook,
+    deleteBook,
+    addMemberToBook,
+    addRecord,
+    deleteRecord,
+    totalExpense,
+    totalIncome,
+    balance,
+    memberStats,
+    settlements,
+    personalRecords,
+    addPersonalRecord,
+    deletePersonalRecord,
+    personalTotalExpense,
+    personalTotalIncome,
+    personalBalance,
+    importMyShareFromBook,
+
+    customCategories,
+    allCategories,
+    addCustomCategory,
+    deleteCustomCategory,
+  };
+});

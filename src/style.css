@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  @apply transition-colors duration-300 dark:bg-gray-900 dark:text-gray-200;
+}
+
+@layer components {
+  /* ────────────────────────────────────────
+     Layout
+  ──────────────────────────────────────── */
+  .page-container {
+    @apply min-h-screen bg-transparent pb-20;
+  }
+
+  .header-nav {
+    @apply flex items-center border-b border-gray-200 bg-white px-4 py-4 dark:border-gray-800 dark:bg-gray-900;
+  }
+
+  /* ────────────────────────────────────────
+     Form Elements
+  ──────────────────────────────────────── */
+  .label-text {
+    @apply mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300;
+  }
+
+  .input-field {
+    @apply block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-800 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-blue-400 dark:focus:ring-blue-400/20;
+  }
+
+  .input-field-icon {
+    @apply py-3 pl-12 pr-4;
+  }
+
+  /* Expense / Income selector pill inside bottom sheets */
+  .type-toggle-track {
+    @apply flex rounded-xl bg-gray-100 p-1 transition-colors dark:bg-gray-800;
+  }
+
+  .type-toggle-btn {
+    @apply flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all;
+  }
+
+  .type-toggle-btn--active-expense {
+    @apply bg-white text-red-600 shadow dark:bg-gray-700 dark:text-red-400;
+  }
+
+  .type-toggle-btn--active-income {
+    @apply bg-white text-green-600 shadow dark:bg-gray-700 dark:text-green-400;
+  }
+
+  .type-toggle-btn--inactive {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  /* ────────────────────────────────────────
+     Cards & Items
+  ──────────────────────────────────────── */
+  .card {
+    @apply rounded-2xl border border-transparent bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800;
+  }
+
+  /* Standard record row card (used in Home and Books) */
+  .record-card {
+    @apply rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-800;
+  }
+
+  /* The coloured icon square inside a record row */
+  .record-icon {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[22px];
+  }
+
+  /* Category grid button in forms */
+  .cat-btn {
+    @apply flex flex-col items-center justify-center gap-1.5 rounded-xl py-3 transition-all;
+  }
+
+  /* ────────────────────────────────────────
+     Chips / Tags
+  ──────────────────────────────────────── */
+
+  /* Small frosted pill on gradient headers (member names, etc.) */
+  .header-chip {
+    @apply rounded-full bg-white/20 px-2.5 py-1 text-xs font-medium text-white;
+  }
+
+  /* Metadata tag inside a record card ("先付", etc.) */
+  .tag-pill {
+    @apply rounded-md bg-gray-100 px-2 py-1 text-[10px] font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400;
+  }
+
+  /* ────────────────────────────────────────
+     Buttons
+  ──────────────────────────────────────── */
+
+  /* Ghost icon button on gradient headers */
+  .btn-ghost-white {
+    @apply rounded-full bg-white/20 p-2 transition-colors hover:bg-white/30;
+  }
+
+  /* Inline delete button on a record row */
+  .btn-delete {
+    @apply p-1 text-gray-400 transition-colors hover:text-red-400 dark:text-gray-500 dark:hover:text-red-300;
+  }
+
+  /* ────────────────────────────────────────
+     Overlays / Bottom Sheets
+  ──────────────────────────────────────── */
+  .sheet-backdrop {
+    @apply absolute inset-0 bg-black/40 backdrop-blur-[2px];
+  }
+
+  /* ────────────────────────────────────────
+     Empty States
+  ──────────────────────────────────────── */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-12 text-gray-400 dark:text-gray-500;
+  }
+
+  /* ────────────────────────────────────────
+     Section Titles (list heading + count)
+  ──────────────────────────────────────── */
+  .section-title {
+    @apply font-bold text-gray-800 dark:text-gray-200;
+  }
+
+  .section-count {
+    @apply text-xs text-gray-400 dark:text-gray-500;
+  }
+
+  /* Secondary / hint text */
+  .hint-text {
+    @apply text-xs text-gray-400 dark:text-gray-500;
+  }
+}
