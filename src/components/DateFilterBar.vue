@@ -60,17 +60,21 @@ export interface DateFilter {
   date: string;
 }
 
-const props = defineProps<{ dates: string[] }>();
+const props = defineProps<{ dates: string[]; initialMode?: FilterMode; hideDateMode?: boolean }>();
 const emit = defineEmits<{ (e: "change", filter: DateFilter): void }>();
 
 const { locale } = useI18n();
-const MODES: FilterMode[] = ["all", "year", "month", "date"];
+const MODES = computed<FilterMode[]>(() => {
+  const base: FilterMode[] = ["all", "year", "month"];
+  if (!props.hideDateMode) base.push("date");
+  return base;
+});
 
 const today = new Date().toISOString().split("T")[0];
 const currentYear = today.slice(0, 4);
 const currentMonth = today.slice(5, 7);
 
-const mode = ref<FilterMode>("all");
+const mode = ref<FilterMode>(props.initialMode ?? "all");
 const year = ref(currentYear);
 const month = ref(currentMonth);
 const date = ref(today);
@@ -108,7 +112,7 @@ watch(year, () => {
 });
 
 // Emit whenever any filter dimension changes
-watch([mode, year, month, date], emitFilter);
+watch([mode, year, month, date], emitFilter, { immediate: true });
 
 function setMode(newMode: FilterMode) {
   mode.value = newMode;

@@ -40,6 +40,15 @@ export interface PersonalRecord {
   sourceBookId?: string; // set when imported from a shared book
 }
 
+export interface RecordTemplate {
+  id: string;
+  name: string;
+  type: "expense" | "income";
+  amount: number | null; // null if amount isn't pre-filled
+  category: string;
+  note: string;
+}
+
 // User & Settings
 export interface UserProfile {
   name: string;
@@ -203,6 +212,9 @@ export const useTrackerStore = defineStore("tracker", () => {
   const customCategories = ref<Category[]>(
     loadFromStorage("tracker_custom_categories", []),
   );
+  const recordTemplates = ref<RecordTemplate[]>(
+    loadFromStorage("tracker_templates", []),
+  );
 
   // ---- Persistence ----
   const save = () => {
@@ -212,6 +224,7 @@ export const useTrackerStore = defineStore("tracker", () => {
     saveToStorage("tracker_personal_records", personalRecords.value);
     saveToStorage("tracker_user_profile", userProfile.value);
     saveToStorage("tracker_custom_categories", customCategories.value);
+    saveToStorage("tracker_templates", recordTemplates.value);
   };
 
   // ---- User Profile ----
@@ -493,6 +506,25 @@ export const useTrackerStore = defineStore("tracker", () => {
     });
   };
 
+  // ---- Templates ----
+  const addTemplate = (template: Omit<RecordTemplate, "id">) => {
+    recordTemplates.value.push({ ...template, id: crypto.randomUUID() });
+    save();
+  };
+
+  const updateTemplate = (id: string, updates: Partial<RecordTemplate>) => {
+    const idx = recordTemplates.value.findIndex(t => t.id === id);
+    if (idx !== -1) {
+      recordTemplates.value[idx] = { ...recordTemplates.value[idx], ...updates };
+      save();
+    }
+  };
+
+  const deleteTemplate = (id: string) => {
+    recordTemplates.value = recordTemplates.value.filter(t => t.id !== id);
+    save();
+  };
+
   return {
     userProfile,
     isProfileSet,
@@ -529,5 +561,11 @@ export const useTrackerStore = defineStore("tracker", () => {
     allCategories,
     addCustomCategory,
     deleteCustomCategory,
+
+    // New template related exports
+    recordTemplates,
+    addTemplate,
+    updateTemplate,
+    deleteTemplate,
   };
 });

@@ -88,6 +88,29 @@
             />
           </svg>
         </button>
+
+        <!-- Template Setting -->
+        <button
+          @click="showTemplateSettings = true"
+          class="flex w-full items-center justify-between border-t border-gray-50 p-4 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700/50 dark:active:bg-gray-700"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-600 dark:bg-pink-900/30"
+            >
+              <CategoryIcon name="receipt_long" class="h-5 w-5" />
+            </div>
+            <span class="font-bold text-gray-700 dark:text-gray-200">{{ $t("profile.templateSet") }}</span>
+          </div>
+          <svg
+            class="h-5 w-5 text-gray-300 dark:text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all dark:border-gray-800 dark:bg-gray-800">
@@ -124,6 +147,12 @@
     <CategorySettingsModal
       v-if="showCategorySettings"
       @close="showCategorySettings = false"
+    />
+
+    <!-- Template Settings Modal -->
+    <TemplateSettingsModal
+      v-if="showTemplateSettings"
+      @close="showTemplateSettings = false"
     />
 
     <!-- Language Selection Sheet -->
@@ -163,12 +192,14 @@ import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTrackerStore } from "../stores/tracker";
 import CategorySettingsModal from "../components/CategorySettingsModal.vue";
+import TemplateSettingsModal from "../components/TemplateSettingsModal.vue";
 import CategoryIcon from "../components/CategoryIcon.vue";
 import CloseButton from "../components/CloseButton.vue";
 
 const { locale } = useI18n();
 const store = useTrackerStore();
 const showCategorySettings = ref(false);
+const showTemplateSettings = ref(false);
 const showLangSheet = ref(false);
 
 const langNameMap = {

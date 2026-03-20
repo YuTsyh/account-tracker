@@ -36,6 +36,37 @@
       </button>
     </div>
 
+    <!-- Templates List (Horizontal Scroll) -->
+    <div v-if="store.recordTemplates.length > 0" class="mt-5 px-4">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="section-title">{{ $t("templates.title") }}</h2>
+      </div>
+      <div class="custom-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
+        <button
+          v-for="tpl in store.recordTemplates"
+          :key="tpl.id"
+          @click="openNewRecordFromTemplate(tpl.id)"
+          class="flex shrink-0 items-center justify-start gap-3 rounded-2xl border border-gray-100 bg-white p-2.5 pr-5 shadow-sm transition-transform active:scale-95 dark:border-gray-700 dark:bg-gray-800"
+        >
+          <div
+            :class="[
+              'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl',
+              getTemplateCategoryStyle(tpl.category).bg,
+              getTemplateCategoryStyle(tpl.category).text,
+            ]"
+          >
+            <CategoryIcon :name="getTemplateCategoryStyle(tpl.category).icon" />
+          </div>
+          <div class="flex flex-col items-start gap-0.5 text-left max-w-[120px]">
+            <span class="w-full truncate text-sm font-bold text-gray-700 dark:text-gray-200">{{ tpl.name }}</span>
+            <span v-if="tpl.amount" class="w-full truncate text-[11px] font-bold tabular-nums" :class="tpl.type === 'expense' ? 'text-red-500' : 'text-green-500'">
+              ${{ Math.round(tpl.amount).toLocaleString() }}
+            </span>
+          </div>
+        </button>
+      </div>
+    </div>
+
     <!-- Personal Records -->
     <div class="mt-5 px-4">
       <div class="mb-3 flex items-center justify-between">
@@ -49,7 +80,7 @@
       </div>
 
       <template v-else>
-        <DateFilterBar :dates="recordDates" @change="onFilterChange" class="mb-3" />
+        <DateFilterBar :dates="recordDates" initialMode="month" @change="onFilterChange" class="mb-3" />
 
         <div v-if="filteredPersonalRecords.length === 0" class="empty-state py-8 text-sm">
           <div class="mb-2 text-3xl">🔍</div>
@@ -64,7 +95,7 @@
           class="record-card cursor-pointer"
         >
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <div class="flex min-w-0 items-center gap-3">
               <div
                 :class="[
                   'record-icon',
@@ -74,17 +105,33 @@
               >
                 <CategoryIcon :name="getCategoryStyle(record.category).icon" />
               </div>
-              <div>
-                <p class="section-title text-sm">
-                  {{ getLocalizedCategoryName(record.category) }}
-                </p>
-                <p class="hint-text mt-0.5">{{ formatDate(record.date, locale) }}</p>
+              <div class="min-w-0 flex-1">
+                <div class="flex min-w-0 items-center gap-2">
+                  <p class="section-title shrink-0 whitespace-nowrap text-sm">
+                    {{ getLocalizedCategoryName(record.category) }}
+                  </p>
+                  <span v-if="record.note" class="hint-text truncate text-xs min-w-0 before:mr-0.5 before:content-['•']">
+                    {{ record.note }}
+                  </span>
+                </div>
+                <div class="mt-0.5 flex items-center gap-2">
+                  <p class="hint-text shrink-0">{{ formatDate(record.date, locale) }}</p>
+                  <span
+                    v-if="record.sourceBookId"
+                    class="inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-50 px-1.5 py-0.5 text-[10px] text-violet-500 dark:bg-violet-900/30 dark:text-violet-400"
+                  >
+                    <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
+                    </svg>
+                    {{ $t("home.fromBook") }}
+                  </span>
+                </div>
               </div>
             </div>
             <div class="flex items-center gap-2">
               <p
                 :class="[
-                  'max-w-[120px] truncate font-bold text-right',
+                  'max-w-[100px] truncate font-bold text-right tabular-nums',
                   record.type === 'expense' ? 'text-red-500' : 'text-green-500',
                 ]"
                 :title="(record.type === 'expense' ? '-' : '+') + record.amount.toLocaleString()"
@@ -101,18 +148,6 @@
               </button>
             </div>
           </div>
-          <div v-if="record.note || record.sourceBookId" class="mt-2 flex items-center gap-2">
-            <span v-if="record.note" class="hint-text truncate">{{ record.note }}</span>
-            <span
-              v-if="record.sourceBookId"
-              class="inline-flex shrink-0 items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-xs text-violet-500 dark:bg-violet-900/30 dark:text-violet-400"
-            >
-              <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
-              </svg>
-              {{ $t("home.fromBook") }}
-            </span>
-          </div>
           </div>
         </div>
       </template>
@@ -122,7 +157,7 @@
     <DraggableFab @click="openNewRecord" />
 
     <!-- Sheets (extracted components) -->
-    <AddPersonalRecordSheet v-model="showForm" :editRecordId="editRecordId" />
+    <AddPersonalRecordSheet v-model="showForm" :editRecordId="editRecordId" :initialTemplateId="useTemplateId" />
     <ImportFromBookSheet v-model="showImportSheet" />
   </div>
 </template>
@@ -145,6 +180,7 @@ const { locale, te, t } = useI18n();
 const showForm = ref(false);
 const showImportSheet = ref(false);
 const editRecordId = ref<string | undefined>(undefined);
+const useTemplateId = ref<string | undefined>(undefined);
 
 // ---- Date Filter ----
 const dateFilter = ref<DateFilter>({ mode: "all", year: "", month: "", date: "" });
@@ -173,11 +209,34 @@ const filteredBalance = computed(() => filteredIncome.value - filteredExpense.va
 
 const openNewRecord = () => {
   editRecordId.value = undefined;
+  useTemplateId.value = undefined;
   showForm.value = true;
 };
 
 const openEditRecord = (id: string) => {
   editRecordId.value = id;
+  useTemplateId.value = undefined;
+  showForm.value = true;
+};
+
+const openNewRecordFromTemplate = (templateId: string) => {
+  const tpl = store.recordTemplates.find(t => t.id === templateId);
+  if (tpl && tpl.amount !== null) {
+    // Template stores category id, but records store category name. Resolve it:
+    const catName = store.allCategories.find(c => c.id === tpl.category)?.name ?? tpl.category;
+    store.addPersonalRecord({
+      type: tpl.type,
+      amount: tpl.amount,
+      category: catName,
+      date: new Date().toISOString().split("T")[0],
+      note: tpl.note,
+    });
+    // Record is added, no need to open sheet
+    return;
+  }
+  
+  editRecordId.value = undefined;
+  useTemplateId.value = templateId;
   showForm.value = true;
 };
 
@@ -188,6 +247,15 @@ const categoryMap = computed(() =>
 
 const getCategoryStyle = (categoryName: string) => {
   const cat = categoryMap.value.get(categoryName);
+  const color = cat?.color ?? "gray";
+  return {
+    icon: cat?.icon ?? "more_horiz",
+    ...(colorMap[color] ?? colorMap.gray),
+  };
+};
+
+const getTemplateCategoryStyle = (categoryId: string) => {
+  const cat = store.allCategories.find(c => c.id === categoryId);
   const color = cat?.color ?? "gray";
   return {
     icon: cat?.icon ?? "more_horiz",

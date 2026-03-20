@@ -127,6 +127,7 @@ import CalculatorKeyboard from "../CalculatorKeyboard.vue";
 const props = defineProps<{ 
   modelValue: boolean;
   editRecordId?: string;
+  initialTemplateId?: string;
 }>();
 const emit = defineEmits<{
   (e: "update:modelValue", v: boolean): void;
@@ -188,7 +189,7 @@ watch(
   },
 );
 
-// Reset form or populate from editRecordId when sheet opens
+// Reset form or populate from editRecordId/initialTemplateId when sheet opens
 watch(
   () => props.modelValue,
   (open) => {
@@ -206,6 +207,24 @@ watch(
           return;
         }
       }
+      
+      if (props.initialTemplateId) {
+        const t = store.recordTemplates.find(x => x.id === props.initialTemplateId);
+        if (t) {
+          // Template stores category id, but records store category name. Resolve it:
+          const catName = store.allCategories.find(c => c.id === t.category)?.name ?? t.category;
+          form.value = {
+            type: t.type,
+            amountStr: t.amount !== null ? String(t.amount) : "",
+            category: catName,
+            date: today,
+            note: t.note,
+          };
+          showKeyboard.value = t.amount === null;
+          return;
+        }
+      }
+
       form.value = defaultForm();
       showKeyboard.value = true;
     } else {

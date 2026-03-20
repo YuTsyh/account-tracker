@@ -177,7 +177,7 @@
             class="record-card cursor-pointer"
           >
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
+              <div class="flex min-w-0 items-center gap-3">
                 <div
                   :class="[
                     'record-icon',
@@ -187,8 +187,15 @@
                 >
                   <CategoryIcon :name="getCategoryIcon(record.category)" />
                 </div>
-                <div class="flex-1">
-                  <p class="section-title text-sm">{{ getLocalizedCategoryName(record.category) }}</p>
+                <div class="min-w-0 flex-1">
+                  <div class="flex min-w-0 items-center gap-2">
+                    <p class="section-title shrink-0 whitespace-nowrap text-sm">
+                      {{ getLocalizedCategoryName(record.category) }}
+                    </p>
+                    <span v-if="record.note" class="hint-text truncate text-xs min-w-0 before:mr-0.5 before:content-['•']">
+                      {{ record.note }}
+                    </span>
+                  </div>
                   <p class="hint-text mt-0.5">{{ formatDate(record.date) }}</p>
                 </div>
               </div>
@@ -236,7 +243,6 @@
                 <span class="hint-text text-[10px]">{{ record.splitAmongIds.includes("all") ? $t("books.splitAmontAll") : $t("books.splitAmongNum", { count: record.splitAmongIds.length }) }}</span>
               </div>
             </div>
-            <p v-if="record.note" class="hint-text mt-1.5">{{ record.note }}</p>
           </div>
           </div>
         </template>
