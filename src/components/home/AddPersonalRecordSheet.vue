@@ -87,13 +87,26 @@
             </div>
           </div>
 
-          <input v-model="form.date" type="date" class="input-field text-sm" />
-          <input
-            v-model="form.note"
-            type="text"
-            :placeholder="$t('common.note')"
-            class="input-field text-sm"
-          />
+            <!-- Date & Note -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="label-text !text-xs">{{ $t("common.date") }}</label>
+                <input
+                  v-model="form.date"
+                  type="date"
+                  class="input-field !py-2 text-sm"
+                />
+              </div>
+              <div class="flex flex-col">
+                <label class="label-text !text-xs">{{ $t("common.note") }}</label>
+                <input
+                  v-model="form.note"
+                  type="text"
+                  :placeholder="$t('common.note')"
+                  class="input-field !py-2 text-sm"
+                />
+              </div>
+            </div>
 
           <div class="flex gap-3 pt-1">
             <button
