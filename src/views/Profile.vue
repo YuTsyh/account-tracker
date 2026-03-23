@@ -62,95 +62,43 @@
         </div>
 
         <!-- Category Setting -->
-        <button
+        <ProfileSettingItem
+          :title="$t('profile.categorySet')"
+          iconName="category"
+          colorClasses="bg-violet-50 text-violet-600 dark:bg-violet-900/30"
+          :isFirst="true"
           @click="showCategorySettings = true"
-          class="flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-gray-700/50 dark:active:bg-gray-700"
-        >
-          <div class="flex items-center gap-3">
-            <div
-              class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-900/30"
-            >
-              <CategoryIcon name="category" class="h-5 w-5" />
-            </div>
-            <span class="font-bold text-gray-700 dark:text-gray-200">{{ $t("profile.categorySet") }}</span>
-          </div>
-          <svg
-            class="h-5 w-5 text-gray-300 dark:text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
+        />
 
         <!-- Template Setting -->
-        <button
+        <ProfileSettingItem
+          :title="$t('profile.templateSet')"
+          iconName="receipt_long"
+          colorClasses="bg-pink-50 text-pink-600 dark:bg-pink-900/30"
           @click="showTemplateSettings = true"
-          class="flex w-full items-center justify-between border-t border-gray-50 p-4 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700/50 dark:active:bg-gray-700"
-        >
-          <div class="flex items-center gap-3">
-            <div
-              class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-600 dark:bg-pink-900/30"
-            >
-              <CategoryIcon name="receipt_long" class="h-5 w-5" />
-            </div>
-            <span class="font-bold text-gray-700 dark:text-gray-200">{{ $t("profile.templateSet") }}</span>
-          </div>
-          <svg
-            class="h-5 w-5 text-gray-300 dark:text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        />
+
         <!-- Language Setting -->
-        <button @click="showLangSheet = true" class="flex w-full cursor-pointer items-center justify-between border-t border-gray-50 p-4 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700/50 dark:active:bg-gray-700">
-          <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-900/30">
-              <CategoryIcon name="language" class="h-5 w-5" />
-            </div>
-            <span class="font-bold text-gray-700 dark:text-gray-200">{{ $t("profile.languageSet") }}</span>
-          </div>
-          <div class="flex items-center gap-2">
+        <ProfileSettingItem
+          :title="$t('profile.languageSet')"
+          iconName="language"
+          colorClasses="bg-blue-50 text-blue-500 dark:bg-blue-900/30"
+          @click="showLangSheet = true"
+        >
+          <template #right>
             <span class="text-sm font-bold text-gray-500 dark:text-gray-400">
               {{ langNameMap[$i18n.locale as keyof typeof langNameMap] || 'English' }}
             </span>
-            <svg
-              class="h-5 w-5 text-gray-300 dark:text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div>
-        </button>
+          </template>
+        </ProfileSettingItem>
 
         <!-- Login Setting -->
-        <button @click="router.push('/login')" class="flex w-full cursor-pointer items-center justify-between border-t border-gray-50 p-4 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700/50 dark:active:bg-gray-700">
-          <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-500 dark:bg-emerald-900/30">
-              <CategoryIcon name="login" class="h-5 w-5" />
-            </div>
-            <span class="font-bold text-gray-700 dark:text-gray-200">{{ $t("profile.login") }}</span>
-          </div>
-          <svg class="h-5 w-5 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <ProfileSettingItem
+          :title="$t('profile.login')"
+          iconName="login"
+          colorClasses="bg-emerald-50 text-emerald-500 dark:bg-emerald-900/30"
+          @click="router.push('/login')"
+        />
       </div>
     </div>
 
@@ -204,6 +152,7 @@ import CategorySettingsModal from "../components/CategorySettingsModal.vue";
 import TemplateSettingsModal from "../components/TemplateSettingsModal.vue";
 import CategoryIcon from "../components/CategoryIcon.vue";
 import CloseButton from "../components/CloseButton.vue";
+import ProfileSettingItem from "../components/ProfileSettingItem.vue";
 
 const { locale } = useI18n();
 const router = useRouter();
