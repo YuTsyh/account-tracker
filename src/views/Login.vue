@@ -54,7 +54,7 @@
           </div>
 
           <button
-            @click="showAnonymousForm = true"
+            @click="openAnonymousForm"
             class="w-full rounded-2xl bg-gray-900 px-4 py-4 text-sm font-bold text-white shadow-sm transition-all hover:bg-gray-800 active:scale-[0.98] dark:bg-200 dark:text-gray-900 dark:hover:bg-white"
           >
             {{ $t("login.anonymousLogin") }}
@@ -74,16 +74,18 @@
 
       <!-- Anonymous Form -->
       <div v-else class="space-y-6">
+      <form v-else @submit.prevent="handleStart" class="space-y-6">
         <div class="space-y-2">
           <label class="px-1 text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">
             {{ $t("setup.namePrompt") }}
           </label>
           <input
+            ref="nameInput"
             v-model="name"
+            required
             type="text"
             :placeholder="$t('login.namePlaceholder')"
             class="w-full rounded-2xl border-2 border-gray-100 bg-white px-5 py-4 text-sm font-bold text-gray-900 placeholder:text-gray-300 focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-700 dark:focus:border-violet-500"
-            @keyup.enter="handleStart"
           />
         </div>
 
@@ -95,7 +97,7 @@
 
         <div class="flex flex-col gap-3">
           <button
-            @click="handleStart"
+            type="submit"
             :disabled="!name.trim()"
             class="w-full rounded-2xl bg-violet-600 px-4 py-4 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-700 active:scale-[0.98] disabled:opacity-50"
           >
@@ -103,19 +105,20 @@
           </button>
           
           <button
+            type="button"
             @click="showAnonymousForm = false"
             class="text-xs font-bold text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400"
           >
             ← {{ $t("login.backToOptions") }}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick, useTemplateRef } from 'vue';
 import { useTrackerStore } from '../stores/tracker';
 import { useRouter, useRoute } from 'vue-router';
 import CategoryIcon from '../components/CategoryIcon.vue';
@@ -126,6 +129,13 @@ const route = useRoute();
 
 const showAnonymousForm = ref(false);
 const name = ref('');
+const nameInput = useTemplateRef('nameInput');
+
+const openAnonymousForm = async () => {
+  showAnonymousForm.value = true;
+  await nextTick();
+  nameInput.value.focus();
+};
 
 const handleGoogleLogin = () => {
   const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
