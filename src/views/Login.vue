@@ -51,7 +51,7 @@
 
           <button
             @click="openAnonymousForm"
-            class="w-full rounded-2xl bg-gray-900 px-4 py-4 text-sm font-bold text-white shadow-sm transition-all hover:bg-gray-800 active:scale-[0.98] dark:bg-200 dark:text-gray-900 dark:hover:bg-white"
+            class="w-full rounded-2xl bg-gray-900 px-4 py-4 text-sm font-bold text-white shadow-sm transition-all hover:bg-gray-800 active:scale-[0.98] dark:bg-white dark:text-gray-900 dark:hover:bg-white"
           >
             {{ $t("login.anonymousLogin") }}
           </button>
