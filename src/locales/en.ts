@@ -20,6 +20,17 @@ export default {
     statistics: "Stats",
     profile: "Profile",
   },
+  landing: {
+    title: "Account Tracker",
+    subtitle: "Your best assistant for personal finance and group expenses",
+    description: "Whether it's daily tracking or splitting travel costs with friends, Account Tracker helps you manage every expense effortlessly.",
+    getStarted: "Get Started",
+    features: {
+      personal: "Personal Accounts",
+      group: "Shared Ledgers",
+      sync: "Cloud Sync",
+    },
+  },
   home: {
     personalAccount: "Personal Account",
     importFromBook: "Import from Book",

@@ -147,7 +147,7 @@ const handleGoogleLogin = () => {
 const handleStart = () => {
   if (name.value.trim()) {
     store.loginAnonymous(name.value);
-    router.push('/');
+    router.push('/dashboard');
   }
 };
 
@@ -162,7 +162,7 @@ onMounted(() => {
       avatar: query.avatar as string,
     });
     // Clear URL parameters
-    router.replace('/');
+    router.replace('/dashboard');
   }
 });
 </script>

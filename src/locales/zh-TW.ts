@@ -20,6 +20,17 @@ export default {
     statistics: "統計",
     profile: "我",
   },
+  landing: {
+    title: "Account Tracker",
+    subtitle: "個人理財與團體分帳的最佳助手",
+    description: "無論是日常記帳還是與朋友出遊分帳，Account Tracker 都能幫您輕鬆管理每一筆開銷。",
+    getStarted: "開始使用",
+    features: {
+      personal: "個人帳戶整理",
+      group: "共享帳本分帳",
+      sync: "跨裝置雲端同步",
+    },
+  },
   home: {
     personalAccount: "個人帳戶",
     importFromBook: "從其他帳本匯入花費",

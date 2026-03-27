@@ -20,6 +20,17 @@ export default {
     statistics: "統計",
     profile: "マイページ",
   },
+  landing: {
+    title: "Account Tracker",
+    subtitle: "個人財務とグループ割り勘の最高のアシスタント",
+    description: "日常の記録から友人との旅行の割り勘まで、Account Trackerはすべての支出を簡単に管理するのに役立ちます。",
+    getStarted: "はじめる",
+    features: {
+      personal: "個人家計簿",
+      group: "共有帳簿",
+      sync: "クラウド同期",
+    },
+  },
   home: {
     personalAccount: "個人口座",
     importFromBook: "他の帳簿から費用をインポート",

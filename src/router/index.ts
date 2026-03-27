@@ -8,14 +8,16 @@ import Login from "../views/Login.vue";
 import Statistics from "../views/Statistics.vue";
 import PrivacyPolicy from "../views/PrivacyPolicy.vue";
 import TermsOfService from "../views/TermsOfService.vue";
+import Landing from "../views/Landing.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    { path: "/", name: "landing", component: Landing },
     { path: "/login", name: "login", component: Login },
     { path: "/privacy", name: "privacy", component: PrivacyPolicy },
     { path: "/terms", name: "terms", component: TermsOfService },
-    { path: "/", name: "home", component: Home },
+    { path: "/dashboard", name: "home", component: Home },
     { path: "/profile", name: "profile", component: Profile },
     { path: "/add", name: "add", component: AddRecord },
     { path: "/books", name: "books", component: Books },
@@ -26,14 +28,17 @@ const router = createRouter({
 router.beforeEach((to) => {
   const store = useTrackerStore();
   
-  // If user has NO name set, they MUST go to login, unless going to privacy or terms
-  if (!store.isProfileSet && to.name !== "login" && to.name !== "privacy" && to.name !== "terms") {
+  // Public routes that don't require any profile or login
+  const publicRoutes = ["landing", "login", "privacy", "terms"];
+
+  // If user has NO name set, they MUST go to login, unless going to a public route
+  if (!store.isProfileSet && !publicRoutes.includes(to.name as string)) {
     return { name: "login" };
   }
 
   // If already FORMALLY logged in (Google), don't let them go back to login
   if (store.userProfile.isLoggedIn && to.name === "login") {
-    return { name: "home" };
+    return { name: "home" }; // home is now /dashboard
   }
 
   // Otherwise (Anonymous or Normal navigation), proceed
