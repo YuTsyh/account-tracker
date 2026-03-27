@@ -1,139 +1,174 @@
-# 📒 Account Tracker
+# Account Tracker
 
-> A multilingual personal finance and group expense-splitting app — installable on Android & iOS as a PWA.
+Account Tracker is a mobile-first Vue 3 app for personal finance tracking and small-group expense splitting.
 
-🔗 **Live Demo**: [feilian1999.github.io/account-tracker](https://feilian1999.github.io/account-tracker/)
-🛡️ **Privacy Policy**: [https://account-tracker-psi.vercel.app/privacy](https://account-tracker-psi.vercel.app/privacy)
-📝 **Terms of Service**: [https://account-tracker-psi.vercel.app/terms](https://account-tracker-psi.vercel.app/terms)
----
+It is designed as a local-first PWA, with optional backend integrations for Google login, cloud sync, and shared-book publishing and joining.
 
-## What is this project?
+## What the app does
 
-**Account Tracker** is a mobile-first Progressive Web App (PWA) that helps you manage both **personal finances** and **shared group expenses**.
+- Track personal income and expenses with categories, dates, notes, and quick templates
+- Create shared books for trips, roommates, or group events
+- Calculate settlements between members
+- Switch between Traditional Chinese, English, and Japanese
+- Install to mobile or desktop as a PWA
+- Use the app offline after the initial load
 
-Whether you're tracking your daily spending or splitting a trip's costs with friends, Account Tracker keeps everything organized in one place.
+## Current product shape
 
-### Key Features
+The app currently has two operating modes:
 
-| Feature | Description |
-|---|---|
-| 💰 **Personal Records** | Log income and expense entries with categories, amounts, dates, and notes |
-| 📒 **Shared Books** | Create expense books for trips or groups with multiple members |
-| ⚖️ **Smart Settlement** | Automatically calculates who owes whom using a greedy debt-minimization algorithm |
-| 🌐 **Multilingual** | Fully supports Traditional Chinese, English, and Japanese |
-| 🌙 **Dark Mode** | System-aware theme with manual toggle |
-| 🏷️ **Custom Categories** | Add personalized income/expense categories on top of built-in defaults |
-| 📱 **Installable PWA** | Works offline and can be installed to your Android/iOS home screen |
+1. Local-only mode
+   - Works without any backend
+   - Stores data in `localStorage`
+   - Supports anonymous setup and all core personal/group bookkeeping flows
+2. Connected mode
+   - Uses backend endpoints for Google auth, cloud backup/restore, and shared-book sync
+   - Frontend wiring exists in this repo, backend services do not
 
----
+This distinction matters. Core bookkeeping works locally. Cloud and auth features require `VITE_API_URL` to point at a compatible backend.
 
-## Tech Stack
+## Tech stack
 
 ### Frontend
-| Technology | Role |
-|---|---|
-| [Vue 3](https://vuejs.org/) + Composition API | Core UI framework |
-| [TypeScript](https://www.typescriptlang.org/) | Type-safe development |
-| [Pinia](https://pinia.vuejs.org/) | Global state management |
-| [Vue Router 5](https://router.vuejs.org/) | Client-side navigation |
-| [Vue I18n 11](https://vue-i18n.intlify.dev/) | Internationalization (zh-TW / en / ja) |
-| [Tailwind CSS 3](https://tailwindcss.com/) | Utility-first styling |
-| [Material Symbols](https://fonts.google.com/icons) | Icon set |
 
-### Tooling & Infrastructure
-| Technology | Role |
-|---|---|
-| [Vite 4](https://vitejs.dev/) | Build tool & dev server |
-| [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) + Workbox | PWA service worker & offline caching |
-| [GitHub Actions](https://github.com/features/actions) | CI/CD — auto-build & deploy on every push |
-| [GitHub Pages](https://pages.github.com/) | Static hosting |
+- Vue 3
+- TypeScript
+- Pinia
+- Vue Router 5
+- Vue I18n 11
+- Tailwind CSS 4
+- Material Symbols
 
-### Data Storage
-- **`localStorage`** — All data is stored locally on the device. No backend, no cloud, full privacy.
+### Tooling
 
----
+- Vite 7
+- `vite-plugin-pwa`
+- Capacitor 8
 
-## Getting Started
+## Getting started
 
 ### Prerequisites
-- Node.js v18+
+
+- Node.js 18+
 - npm
 
-### Local Development
+### Install
 
 ```bash
-# Clone the repository
-git clone https://github.com/Feilian1999/account-tracker.git
+git clone https://github.com/YuTsyh/account-tracker.git
 cd account-tracker
-
-# Install dependencies
 npm install
+```
 
-# Start dev server
+### Run locally
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Open `http://localhost:5173`.
 
-### Production Build
+### Production build
 
 ```bash
 npm run build
 ```
 
-Output goes to `dist/`. The PWA service worker and `manifest.webmanifest` are automatically generated.
+### Preview the production build
 
----
-
-## Project Structure
-
+```bash
+npm run preview
 ```
+
+## Optional backend configuration
+
+Frontend API calls are defined in [src/utils/api.ts](src/utils/api.ts).
+
+By default the app uses:
+
+```bash
+VITE_API_URL=http://localhost:8080/api
+```
+
+This is only needed for:
+
+- Google login
+- cloud backup / restore
+- publishing a shared book
+- joining or pulling a shared book from a share code
+
+## App routes
+
+Public routes:
+
+- `/`
+- `/login`
+- `/privacy`
+- `/terms`
+
+App routes after profile setup:
+
+- `/dashboard`
+- `/books`
+- `/add`
+- `/statistics`
+- `/profile`
+
+## Project structure
+
+```text
 src/
-├── components/         # Reusable UI components
-│   ├── home/           # Home page sheets (Add Record, Import from Book)
-│   └── books/          # Book-related sheets (Create, Settlement)
-├── views/              # Page-level views (Home, Books, Profile, Setup)
-├── stores/
-│   └── tracker.ts      # Central Pinia store — all state & business logic
-├── locales/            # i18n translation files (zh-TW, en, ja)
-├── utils/
-│   └── category.ts     # Category color/icon helpers
-├── router/             # Vue Router config
-└── i18n.ts             # i18n initialization
+  components/
+    books/          Book views, modals, sheets, and settlement UI
+    home/           Personal-record sheets and grouped record UI
+    statistics/     Charts and category breakdown UI
+  composables/      Reusable app logic such as toast helpers
+  locales/          zh-TW, en, ja translations
+  router/           Vue Router definitions and guards
+  stores/           Pinia store composition and feature modules
+  utils/            API client and category/date helpers
+  views/            Route-level pages
 ```
 
----
+The main store entrypoint is [src/stores/tracker.ts](src/stores/tracker.ts). It composes user, categories, books, personal records, templates, and cloud-sync actions into one Pinia store.
 
-## Installing on Android / iOS
+## Frontend quality notes
 
-Because this is a PWA, no app store is needed.
+Recent frontend cleanup focused on:
 
-1. Open the [live demo URL](https://feilian1999.github.io/account-tracker/) in **Chrome** (Android) or **Safari** (iOS)
-2. Tap the browser menu (⋮ on Android / Share on iOS)
-3. Select **"Add to Home Screen"** / **"Install App"**
-4. The app icon will appear on your home screen and launches in full-screen mode
+- semantic page landmarks such as `main`, `header`, `section`, and `nav`
+- better button, list, form, and dialog semantics
+- basic accessibility improvements for menus, sheets, and modals
+- keeping UI structure stable while reducing invalid or misleading HTML usage
 
----
+## PWA and mobile
 
-## Deployment
+This repo is set up as a PWA and also includes Capacitor packages for native shell builds.
 
-This project auto-deploys via **GitHub Actions** on every push to `main`.
+The Vite PWA config lives in [vite.config.ts](vite.config.ts). The generated app manifest currently uses:
 
-The workflow (`/.github/workflows/deploy.yml`) runs:
+- standalone display mode
+- portrait orientation
+- icon assets from `public/icon-192.png` and `public/icon-512.png`
+
+## Verification
+
+For frontend changes, the main checks are:
+
+```bash
+npm run build
 ```
-npm ci → npm run build → deploy dist/ to GitHub Pages
-```
 
----
+And then a manual browser pass with `npm run dev`, especially for:
 
-## Architecture Highlights
+- landing
+- login / anonymous setup
+- dashboard
+- books
+- statistics
+- profile
 
-- **Greedy Debt Settlement Algorithm** — Minimizes the number of transactions required to settle all debts within a group
-- **Offline-first PWA** — Service worker pre-caches all assets including Google Fonts; the app works with no internet connection after first load
-- **No Backend Required** — All data lives in `localStorage`. Zero server costs, zero privacy concerns
-- **i18n Auto-detection** — Automatically selects language based on `navigator.language` on first launch
-
----
+When testing locally, skip cloud and auth flows unless a backend is available.
 
 ## License
 
