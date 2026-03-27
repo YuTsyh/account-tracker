@@ -105,6 +105,11 @@
             ← {{ $t("login.backToOptions") }}
           </button>
         </div>
+        <div type="button" class="mt-8 text-center">
+          <router-link to="/privacy" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400">
+            {{ $t('privacy.title') }}
+          </router-link>
+        </div>
       </form>
     </div>
   </div>

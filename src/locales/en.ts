@@ -205,4 +205,31 @@ export default {
     total: "Total",
     records: "records",
   },
+  privacy: {
+    title: "Privacy Policy",
+    lastUpdated: "Last Updated: March 27, 2026",
+    intro: "Welcome to Account Tracker (hereinafter referred to as 'the App'). We value your privacy and this policy explains how we collect, use, and protect your information.",
+    dataCollection: {
+      title: "1. Data Collection and Use",
+      google: "When you sign in with your Google account, we obtain your name, email address, and avatar. This information is used solely to create your profile and provide cloud backup and synchronization features.",
+      records: "Financial records you enter in the App (amounts, categories, notes, etc.) are stored locally on your device. If you are signed in with a Google account, they will be synchronized to our encrypted cloud database.",
+    },
+    localStorage: {
+      title: "2. Local Storage",
+      content: "We use your browser's Local Storage to maintain your login status, preferences, and unsynchronized records to ensure a smooth user experience.",
+    },
+    dataSecurity: {
+      title: "3. Data Security",
+      content: "We are committed to protecting your personal information. Cloud synchronization uses encrypted transmission and storage, and we do not share or sell your data to any third parties.",
+    },
+    userRights: {
+      title: "4. User Rights",
+      content: "You can log out of your account at any time in the 'Profile Settings'. To request deletion of your cloud backup data, please contact the developer.",
+    },
+    contact: {
+      title: "5. Contact Us",
+      content: "If you have any questions about this Privacy Policy, please contact the developer via GitHub or other relevant channels.",
+    },
+    back: "Back",
+  },
 };

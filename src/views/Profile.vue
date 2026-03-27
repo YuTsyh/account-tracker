@@ -155,6 +155,13 @@
           </template>
         </ProfileSettingItem>
 
+        <ProfileSettingItem
+          :title="$t('privacy.title')"
+          iconName="shield"
+          colorClasses="bg-gray-50 text-gray-500 dark:bg-gray-900/30"
+          @click="router.push('/privacy')"
+        />
+
         <!-- Login / Logout Setting -->
         <ProfileSettingItem
           v-if="!store.userProfile.isLoggedIn"
