@@ -1,0 +1,104 @@
+<template>
+  <div class="page-container bg-white dark:bg-gray-950">
+    <!-- Header -->
+    <header class="header-nav sticky top-0 z-10 border-b border-gray-100 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
+      <button 
+        @click="router.back()" 
+        class="mr-3 rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+      >
+        <span class="material-icons-outlined text-2xl">arrow_back</span>
+      </button>
+      <h1 class="text-lg font-black tracking-tight text-gray-900 dark:text-white">
+        {{ $t('terms.title') }}
+      </h1>
+    </header>
+
+    <div class="px-6 py-8">
+      <div class="mb-8">
+        <p class="text-sm font-medium text-gray-400 dark:text-gray-500">
+          {{ $t('terms.lastUpdated') }}
+        </p>
+        <p class="mt-4 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+          {{ $t('terms.intro') }}
+        </p>
+      </div>
+
+      <div class="space-y-8">
+        <!-- Section 1 -->
+        <section>
+          <h2 class="text-base font-black text-gray-900 dark:text-white mb-3">
+            {{ $t('terms.acceptance.title') }}
+          </h2>
+          <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {{ $t('terms.acceptance.content') }}
+          </p>
+        </section>
+
+        <!-- Section 2 -->
+        <section>
+          <h2 class="text-base font-black text-gray-900 dark:text-white mb-3">
+            {{ $t('terms.serviceDescription.title') }}
+          </h2>
+          <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {{ $t('terms.serviceDescription.content') }}
+          </p>
+        </section>
+
+        <!-- Section 3 -->
+        <section>
+          <h2 class="text-base font-black text-gray-900 dark:text-white mb-3">
+            {{ $t('terms.userResponsibility.title') }}
+          </h2>
+          <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {{ $t('terms.userResponsibility.content') }}
+          </p>
+        </section>
+
+        <!-- Section 4 -->
+        <section>
+          <h2 class="text-base font-black text-gray-900 dark:text-white mb-3">
+            {{ $t('terms.dataStorage.title') }}
+          </h2>
+          <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {{ $t('terms.dataStorage.content') }}
+          </p>
+        </section>
+
+        <!-- Section 5 -->
+        <section>
+          <h2 class="text-base font-black text-gray-900 dark:text-white mb-3">
+            {{ $t('terms.modification.title') }}
+          </h2>
+          <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {{ $t('terms.modification.content') }}
+          </p>
+        </section>
+
+        <!-- Section 6 -->
+        <section>
+          <h2 class="text-base font-black text-gray-900 dark:text-white mb-3">
+            {{ $t('terms.disclaimer.title') }}
+          </h2>
+          <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {{ $t('terms.disclaimer.content') }}
+          </p>
+        </section>
+      </div>
+
+      <div class="mt-12 pb-8">
+        <button 
+          @click="router.back()"
+          class="w-full rounded-2xl border border-gray-200 py-4 text-sm font-bold text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-900"
+        >
+          {{ $t('terms.back') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+</script>

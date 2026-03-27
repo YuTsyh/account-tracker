@@ -162,6 +162,13 @@
           @click="router.push('/privacy')"
         />
 
+        <ProfileSettingItem
+          :title="$t('terms.title')"
+          iconName="description"
+          colorClasses="bg-gray-50 text-gray-500 dark:bg-gray-900/30"
+          @click="router.push('/terms')"
+        />
+
         <!-- Login / Logout Setting -->
         <ProfileSettingItem
           v-if="!store.userProfile.isLoggedIn"

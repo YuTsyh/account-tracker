@@ -232,4 +232,34 @@ export default {
     },
     back: "Back",
   },
+  terms: {
+    title: "Terms of Service",
+    lastUpdated: "Last Updated: March 27, 2026",
+    intro: "Welcome to Account Tracker (hereinafter referred to as 'the Service'). Please read these terms carefully before using the Service.",
+    acceptance: {
+      title: "1. Acceptance of Terms",
+      content: "By using the Service, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
+    },
+    serviceDescription: {
+      title: "2. Description of Service",
+      content: "The Service provides personal and group accounting record features. We strive to provide a stable and secure environment but do not guarantee uninterrupted service.",
+    },
+    userResponsibility: {
+      title: "3. User Responsibilities",
+      content: "You agree to use the Service only for lawful purposes and not to engage in any activity that may compromise the security or integrity of the Service. You are responsible for maintaining the confidentiality of your Google account credentials.",
+    },
+    dataStorage: {
+      title: "4. Data Storage and Risks",
+      content: "Data in anonymous mode is stored only in your browser's local storage; clearing your cache may lead to data loss. We protect cloud-synced data to the best of our ability, but you assume all inherent risks of digital data storage.",
+    },
+    modification: {
+      title: "5. Modification of Terms",
+      content: "We reserve the right to modify these terms at any time. Significant changes will be posted on this page without separate individual notice.",
+    },
+    disclaimer: {
+      title: "6. Disclaimer",
+      content: "The Service is provided on an 'as is' basis. The developer assumes no legal liability for any direct or indirect loss arising from the use of the Service.",
+    },
+    back: "Back",
+  },
 };

@@ -7,12 +7,14 @@ import Profile from "../views/Profile.vue";
 import Login from "../views/Login.vue";
 import Statistics from "../views/Statistics.vue";
 import PrivacyPolicy from "../views/PrivacyPolicy.vue";
+import TermsOfService from "../views/TermsOfService.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: "/login", name: "login", component: Login },
     { path: "/privacy", name: "privacy", component: PrivacyPolicy },
+    { path: "/terms", name: "terms", component: TermsOfService },
     { path: "/", name: "home", component: Home },
     { path: "/profile", name: "profile", component: Profile },
     { path: "/add", name: "add", component: AddRecord },
@@ -24,8 +26,8 @@ const router = createRouter({
 router.beforeEach((to) => {
   const store = useTrackerStore();
   
-  // If user has NO name set, they MUST go to login, unless going to privacy
-  if (!store.isProfileSet && to.name !== "login" && to.name !== "privacy") {
+  // If user has NO name set, they MUST go to login, unless going to privacy or terms
+  if (!store.isProfileSet && to.name !== "login" && to.name !== "privacy" && to.name !== "terms") {
     return { name: "login" };
   }
 
