@@ -3,7 +3,8 @@
 > A multilingual personal finance and group expense-splitting app — installable on Android & iOS as a PWA.
 
 🔗 **Live Demo**: [feilian1999.github.io/account-tracker](https://feilian1999.github.io/account-tracker/)
-
+🛡️ **Privacy Policy**: [https://account-tracker-psi.vercel.app/privacy](https://account-tracker-psi.vercel.app/privacy)
+📝 **Terms of Service**: [https://account-tracker-psi.vercel.app/terms](https://account-tracker-psi.vercel.app/terms)
 ---
 
 ## What is this project?

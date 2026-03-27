@@ -6,7 +6,7 @@
         @click="router.back()" 
         class="mr-3 rounded-full p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
       >
-        <span class="material-icons-outlined text-2xl">arrow_back</span>
+        <CategoryIcon name="arrow_back" class="text-2xl" />
       </button>
       <h1 class="text-lg font-black tracking-tight text-gray-900 dark:text-white">
         {{ $t('terms.title') }}
@@ -99,6 +99,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import CategoryIcon from '../components/CategoryIcon.vue';
 
 const router = useRouter();
 </script>
