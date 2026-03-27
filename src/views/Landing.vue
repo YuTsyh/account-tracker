@@ -4,7 +4,7 @@
     <main class="flex-grow flex flex-col items-center px-6">
       <!-- App Icon or Logo Area -->
       <div class="mb-8 w-24 h-24 bg-violet-100 dark:bg-violet-900/30 rounded-3xl flex items-center justify-center shadow-inner">
-        <span class="material-symbols-rounded text-5xl text-violet-600 dark:text-violet-400">account_balance_wallet</span>
+        <span class="material-symbols-outlined text-5xl text-violet-600 dark:text-violet-400">account_balance_wallet</span>
       </div>
 
       <!-- Hero Section -->
@@ -24,21 +24,21 @@
       <div class="w-full max-w-md space-y-4 mb-12">
         <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl flex items-center gap-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
           <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-rounded text-blue-500 dark:text-blue-400">person</span>
+            <span class="material-symbols-outlined text-blue-500 dark:text-blue-400">person</span>
           </div>
           <span class="font-medium text-gray-800 dark:text-gray-200">{{ $t('landing.features.personal') }}</span>
         </div>
         
         <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl flex items-center gap-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
           <div class="w-10 h-10 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-rounded text-green-500 dark:text-green-400">group</span>
+            <span class="material-symbols-outlined text-green-500 dark:text-green-400">group</span>
           </div>
           <span class="font-medium text-gray-800 dark:text-gray-200">{{ $t('landing.features.group') }}</span>
         </div>
 
         <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl flex items-center gap-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
           <div class="w-10 h-10 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-rounded text-amber-500 dark:text-amber-400">cloud_sync</span>
+            <span class="material-symbols-outlined text-amber-500 dark:text-amber-400">cloud_sync</span>
           </div>
           <span class="font-medium text-gray-800 dark:text-gray-200">{{ $t('landing.features.sync') }}</span>
         </div>
@@ -51,7 +51,7 @@
           class="w-full py-4 px-6 bg-violet-600 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600 text-white font-bold rounded-2xl shadow-lg shadow-violet-600/20 transform transition active:scale-95 flex items-center justify-center gap-2"
         >
           <span>{{ $t('landing.getStarted') }}</span>
-          <span class="material-symbols-rounded text-xl">arrow_forward</span>
+          <span class="material-symbols-outlined text-xl">arrow_forward</span>
         </button>
       </div>
     </main>
