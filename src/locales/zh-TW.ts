@@ -100,6 +100,11 @@ export default {
     selectAll: "全選",
     unselectAll: "取消全選",
     splitPerPerson: "每人分擔：NT$ {amount}",
+    splitEqual: "平均",
+    splitCustom: "自訂",
+    autoCalc: "自動計算",
+    splitOverflow: "超出 NT$ {excess}，請調整金額",
+    splitTotal: "總金額：NT$ {total}",
   },
   addRecord: {
     title: "新增紀錄",

@@ -25,6 +25,7 @@ export interface RecordItem {
   note: string;
   paidById: string;
   splitAmongIds: string[];
+  splitCustomAmounts?: Record<string, number>; // memberId -> amount, if custom split
 }
 
 export interface PersonalRecord {

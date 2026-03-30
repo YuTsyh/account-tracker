@@ -174,34 +174,97 @@
 
           <!-- Split Among -->
           <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-3 transition-colors dark:border-gray-700/50 dark:bg-gray-800/50 mt-2">
-            <div class="mb-2 flex items-center justify-between">
+            <!-- Header: label + mode toggle + select all -->
+            <div class="mb-3 flex items-center justify-between">
               <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-gray-400 text-[18px]">group</span>
                 {{ $t("recordSheet.splitAmong") }}
               </label>
-              <button type="button" @click="toggleAll" class="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400">
-                {{ form.splitAmongIds.length === members.length ? $t("recordSheet.unselectAll") : $t("recordSheet.selectAll") }}
-              </button>
+              <div class="flex items-center gap-2">
+                <!-- Mode Toggle -->
+                <div class="flex rounded-md bg-gray-200/70 p-0.5 dark:bg-gray-700">
+                  <button
+                    type="button"
+                    @click="form.splitMode = 'equal'"
+                    :class="['px-2 py-0.5 text-[11px] font-bold rounded transition-all', form.splitMode === 'equal' ? 'bg-white text-blue-700 shadow-sm dark:bg-gray-600 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400']"
+                  >{{ $t('recordSheet.splitEqual') }}</button>
+                  <button
+                    type="button"
+                    @click="form.splitMode = 'custom'"
+                    :class="['px-2 py-0.5 text-[11px] font-bold rounded transition-all', form.splitMode === 'custom' ? 'bg-white text-blue-700 shadow-sm dark:bg-gray-600 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400']"
+                  >{{ $t('recordSheet.splitCustom') }}</button>
+                </div>
+                <!-- Select All (equal mode only) -->
+                <button
+                  v-if="form.splitMode === 'equal'"
+                  type="button"
+                  @click="toggleAll"
+                  class="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                >
+                  {{ form.splitAmongIds.length === members.length ? $t("recordSheet.unselectAll") : $t("recordSheet.selectAll") }}
+                </button>
+              </div>
             </div>
-            <div class="flex flex-wrap gap-2 pl-4">
-              <button
-                v-for="m in members"
-                :key="m.id"
-                type="button"
-                @click="toggleMember(m.id)"
-                :class="[
-                  'rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all',
-                  form.splitAmongIds.includes(m.id)
-                    ? 'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/40 dark:text-blue-300 shadow-sm'
-                    : 'border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
-                ]"
-              >
-                {{ m.name }}
-              </button>
-            </div>
-            <p v-if="form.splitAmongIds.length > 0 && isValidAmount" class="mt-2 text-right text-xs font-bold text-blue-600 dark:text-blue-400">
-              {{ $t("recordSheet.splitPerPerson", { amount: Math.floor(Number(form.amountStr) / form.splitAmongIds.length).toLocaleString() }) }}
-            </p>
+
+            <!-- EQUAL MODE -->
+            <template v-if="form.splitMode === 'equal'">
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="m in members"
+                  :key="m.id"
+                  type="button"
+                  @click="toggleMember(m.id)"
+                  :class="[
+                    'rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all',
+                    form.splitAmongIds.includes(m.id)
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/40 dark:text-blue-300 shadow-sm'
+                      : 'border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
+                  ]"
+                >
+                  {{ m.name }}
+                </button>
+              </div>
+              <p v-if="form.splitAmongIds.length > 0 && isValidAmount" class="mt-2 text-right text-xs font-bold text-blue-600 dark:text-blue-400">
+                {{ $t("recordSheet.splitPerPerson", { amount: Math.floor(Number(form.amountStr) / form.splitAmongIds.length).toLocaleString() }) }}
+              </p>
+            </template>
+
+            <!-- CUSTOM MODE -->
+            <template v-else>
+              <div class="space-y-2">
+                <div
+                  v-for="m in members"
+                  :key="'custom-' + m.id"
+                  class="flex items-center gap-3 rounded-lg border bg-white px-3 py-2 dark:bg-gray-800"
+                  :class="autoMemberId === m.id ? 'border-blue-300 dark:border-blue-600' : 'border-gray-100 dark:border-gray-700'"
+                >
+                  <span class="w-16 text-xs font-bold text-gray-700 dark:text-gray-300 shrink-0 truncate">{{ m.name }}</span>
+                  <span class="text-gray-400 text-xs font-semibold">NT$</span>
+                  <template v-if="isAutoMember(m.id)">
+                    <span class="flex-1 text-right text-sm font-bold text-blue-600 dark:text-blue-400">
+                      {{ autoAmount >= 0 ? autoAmount.toLocaleString() : '—' }}
+                    </span>
+                    <span class="text-[10px] font-bold text-blue-400 dark:text-blue-500 shrink-0">{{ $t('recordSheet.autoCalc') }}</span>
+                  </template>
+                  <template v-else>
+                    <input
+                      v-model="form.splitCustomAmounts[m.id]"
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      class="flex-1 bg-transparent text-right text-sm font-bold text-gray-800 outline-none dark:text-gray-100"
+                    />
+                  </template>
+                </div>
+              </div>
+              <!-- Validation hint -->
+              <p v-if="isValidAmount && autoAmount < 0" class="mt-2 text-right text-xs font-bold text-red-500">
+                {{ $t('recordSheet.splitOverflow', { excess: Math.abs(autoAmount).toLocaleString() }) }}
+              </p>
+              <p v-else-if="isValidAmount" class="mt-2 text-right text-xs text-gray-400">
+                {{ $t('recordSheet.splitTotal', { total: Number(form.amountStr).toLocaleString() }) }}
+              </p>
+            </template>
           </div>
         </div>
 
@@ -221,7 +284,7 @@
         <!-- Submit Button -->
         <BaseButton
           type="submit"
-          :disabled="!isValidAmount || (form.type === 'expense' && form.splitAmongIds.length === 0)"
+          :disabled="!isSplitValid"
           class="mt-2 w-full shadow-lg shadow-blue-600/20"
         >
           {{ $t("common.save") }}
@@ -261,6 +324,8 @@ const defaultForm = () => ({
   categoryId: "",
   paidById: props.members[0]?.id ?? "",
   splitAmongIds: props.members.map((m) => m.id),
+  splitMode: "equal" as "equal" | "custom",
+  splitCustomAmounts: {} as Record<string, string>,
   date: today,
   note: "",
 });
@@ -306,6 +371,46 @@ const isValidAmount = computed(() => {
   return !isNaN(v) && v > 0;
 });
 
+// Custom split computed helpers
+const autoMemberId = computed(() => {
+  // The auto person is the LAST member whose input field is empty
+  const emptyMembers = props.members.filter(
+    (m) => !(form.value.splitCustomAmounts[m.id] ?? '').trim()
+  );
+  return emptyMembers.length > 0 ? emptyMembers[emptyMembers.length - 1].id : null;
+});
+
+const isAutoMember = (id: string) => id === autoMemberId.value;
+
+const customAllocated = computed(() => {
+  return props.members
+    .filter((m) => m.id !== autoMemberId.value)
+    .reduce((sum, m) => {
+      const v = Number(form.value.splitCustomAmounts[m.id] || 0);
+      return sum + (isNaN(v) ? 0 : v);
+    }, 0);
+});
+
+const autoAmount = computed(() => {
+  const total = Number(form.value.amountStr) || 0;
+  return Math.round((total - customAllocated.value) * 100) / 100;
+});
+
+const isSplitValid = computed(() => {
+  if (!isValidAmount.value) return false;
+  if (form.value.type !== 'expense') return true;
+  if (form.value.splitMode === 'equal') return form.value.splitAmongIds.length > 0;
+  // custom mode:
+  if (autoMemberId.value !== null) {
+    // there is an auto person → their share must be >= 0
+    return autoAmount.value >= 0;
+  } else {
+    // all amounts filled manually → total must match
+    const total = Number(form.value.amountStr) || 0;
+    return Math.abs(customAllocated.value - total) < 0.01;
+  }
+});
+
 const applyTemplate = (templateId: string) => {
   const t = store.recordTemplates.find((x) => x.id === templateId);
   if (!t) return;
@@ -340,12 +445,21 @@ watch(
         const r = store.records.find(x => x.id === props.editRecordId);
         if (r) {
           const cat = store.allCategories.find(c => c.name === r.category && c.type === r.type);
+          // Restore custom amounts if they were saved
+          const customAmts: Record<string, string> = {};
+          if (r.splitCustomAmounts) {
+            for (const [k, v] of Object.entries(r.splitCustomAmounts)) {
+              customAmts[k] = String(v);
+            }
+          }
           form.value = {
             type: r.type,
             amountStr: String(r.amount),
             categoryId: cat?.id || r.category,
             paidById: r.paidById,
             splitAmongIds: [...r.splitAmongIds],
+            splitMode: r.splitCustomAmounts ? 'custom' : 'equal',
+            splitCustomAmounts: customAmts,
             date: r.date,
             note: r.note,
           };
@@ -394,7 +508,21 @@ const handleSubmit = () => {
   const amt = Number(form.value.amountStr);
   if (!amt || isNaN(amt) || amt <= 0) return;
   const isExpense = form.value.type === "expense";
-  if (isExpense && form.value.splitAmongIds.length === 0) return;
+  if (isExpense && form.value.splitMode === 'equal' && form.value.splitAmongIds.length === 0) return;
+  if (isExpense && form.value.splitMode === 'custom' && autoAmount.value < 0) return;
+
+  // Build custom amounts map for storage
+  let splitCustomAmountsOut: Record<string, number> | undefined;
+  if (isExpense && form.value.splitMode === 'custom') {
+    splitCustomAmountsOut = {};
+    for (const m of props.members) {
+      if (isAutoMember(m.id)) {
+        splitCustomAmountsOut[m.id] = autoAmount.value;
+      } else {
+        splitCustomAmountsOut[m.id] = Number(form.value.splitCustomAmounts[m.id] || 0);
+      }
+    }
+  }
 
   const data = {
     type: form.value.type,
@@ -403,14 +531,15 @@ const handleSubmit = () => {
     date: form.value.date,
     note: form.value.note,
     paidById: isExpense ? form.value.paidById : "",
-    splitAmongIds: isExpense ? form.value.splitAmongIds : [],
+    splitAmongIds: isExpense ? props.members.map(m => m.id) : [],
+    splitCustomAmounts: splitCustomAmountsOut,
   };
 
   if (props.editRecordId) {
     store.updateRecord(props.editRecordId, data);
   } else {
     store.addRecord(data);
-    
+
     // Save as template if requested
     if (shouldSaveAsTemplate.value) {
       store.addTemplate({

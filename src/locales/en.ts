@@ -100,6 +100,11 @@ export default {
     selectAll: "Select All",
     unselectAll: "Unselect All",
     splitPerPerson: "Per person: NT$ {amount}",
+    splitEqual: "Equal",
+    splitCustom: "Custom",
+    autoCalc: "Auto",
+    splitOverflow: "Exceeds total by NT$ {excess}",
+    splitTotal: "Total: NT$ {total}",
   },
   addRecord: {
     title: "Add Record",

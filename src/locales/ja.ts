@@ -82,6 +82,11 @@ export default {
     selectAll: "すべて選択",
     unselectAll: "すべて選択解除",
     splitPerPerson: "1人あたり：NT$ {amount}",
+    splitEqual: "均等",
+    splitCustom: "カスタム",
+    autoCalc: "自動計算",
+    splitOverflow: "NT$ {excess} 超過しています",
+    splitTotal: "合計：NT$ {total}",
   },
   addRecord: {
     title: "記録を追加",
