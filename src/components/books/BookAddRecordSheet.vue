@@ -32,13 +32,13 @@
 
       <!-- 2. Foreground (Bottom Sheet): Add Record Form -->
       <section
-        class="animate-slide-up relative flex max-h-[70vh] w-full max-w-md flex-col rounded-t-[2rem] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transition-colors dark:bg-gray-900 pb-safe"
+        class="animate-slide-up relative flex max-h-[70vh] w-full flex-col rounded-t-[2rem] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transition-colors dark:bg-gray-900 pb-safe"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="sheetTitleId"
         :aria-describedby="sheetSubtitleId"
       >
-        <div class="mx-auto w-full flex flex-col h-full">
+        <div class="mx-auto w-full max-w-md flex flex-col h-full">
           <!-- Handle -->
           <div class="absolute -top-3 left-1/2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-white/50 backdrop-blur-md dark:bg-gray-600/50"></div>
 
