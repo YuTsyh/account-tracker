@@ -19,7 +19,7 @@
             >
               <div
                 class="flex h-12 w-12 items-center justify-center rounded-2xl text-[24px] transition-all"
-                :class="form.category === cat.name ? (form.type === 'expense' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-green-500 text-white shadow-lg shadow-green-500/30') : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'"
+                :class="form.category === cat.name ? (form.type === 'expense' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30') : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'"
               >
                 <CategoryIcon :name="cat.icon" />
               </div>
@@ -57,7 +57,7 @@
                   :class="[
                     'px-2.5 py-1 text-xs font-bold rounded-md transition-all',
                     form.type === 'expense'
-                      ? 'bg-white text-red-600 shadow-sm dark:bg-gray-700 dark:text-red-400'
+                      ? 'bg-white text-red-700 shadow-sm dark:bg-gray-700 dark:text-red-400'
                       : 'text-gray-500 dark:text-gray-400'
                   ]"
                 >{{ $t("common.expense") }}</div>
@@ -65,7 +65,7 @@
                   :class="[
                     'px-2.5 py-1 text-xs font-bold rounded-md transition-all',
                     form.type === 'income'
-                      ? 'bg-white text-green-600 shadow-sm dark:bg-gray-700 dark:text-green-400'
+                      ? 'bg-white text-emerald-700 shadow-sm dark:bg-gray-700 dark:text-emerald-400'
                       : 'text-gray-500 dark:text-gray-400'
                   ]"
                 >{{ $t("common.income") }}</div>
@@ -144,10 +144,10 @@
                   <span class="material-symbols-outlined text-gray-400 text-xl">category</span>
                   <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.category") }}</label>
                   <div class="flex-1 flex items-center justify-end gap-2 text-right">
-                     <span class="text-sm font-bold" :class="form.type === 'expense' ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400'">
+                     <span class="text-sm font-bold" :class="form.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'">
                        {{ $te(`categories.${currentCategoryId}`) ? $t(`categories.${currentCategoryId}`) : (form.category || $t('common.select')) }}
                      </span>
-                     <div v-if="currentCategoryId" class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm" :class="form.type === 'expense' ? 'bg-red-500' : 'bg-green-500'">
+                     <div v-if="currentCategoryId" class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm" :class="form.type === 'expense' ? 'bg-red-600' : 'bg-emerald-600'">
                        <CategoryIcon :name="currentCategoryIcon" class="text-[14px]" />
                      </div>
                   </div>
