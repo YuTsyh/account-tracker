@@ -117,7 +117,9 @@
                   v-model="form.date"
                   type="date"
                   required
-                  class="flex-1 bg-transparent text-right font-bold text-gray-800 dark:text-gray-200 outline-none w-full"
+                  @click="($event.target as HTMLInputElement).showPicker?.()"
+                  @focus="($event.target as HTMLInputElement).showPicker?.()"
+                  class="flex-1 bg-transparent text-right font-bold text-gray-800 dark:text-gray-200 outline-none w-full cursor-pointer relative z-10"
                 />
               </div>
 
