@@ -1,140 +1,126 @@
-# 📒 Account Tracker
+# Account Tracker
 
-> A multilingual personal finance and group expense-splitting app — installable on Android & iOS as a PWA.
+A modern, comprehensive, and collaborative financial tracking application built with Vue 3 and Go. It is designed to work seamlessly across web and mobile devices as a Progressive Web App (PWA) with native mobile capabilities via Capacitor.
 
-🔗 **Live Demo**: [feilian1999.github.io/account-tracker](https://feilian1999.github.io/account-tracker/)
-🛡️ **Privacy Policy**: [https://account-tracker-psi.vercel.app/privacy](https://account-tracker-psi.vercel.app/privacy)
-📝 **Terms of Service**: [https://account-tracker-psi.vercel.app/terms](https://account-tracker-psi.vercel.app/terms)
----
+## ✨ Key Features
 
-## What is this project?
+*   **Personal & Shared Books**: Manage your personal finances or collaborate with others (family, friends, roommates) using shared account books.
+*   **Easy Collaboration**: Share books easily via secure, 6-digit alphanumeric codes.
+*   **Multi-Currency Support**: Track expenses in various currencies seamlessly.
+*   **Interactive Visualizations**: Gain insights into your spending habits with clear, interactive charts (powered by Chart.js & vue-chartjs).
+*   **Robust Cloud Sync**: Auto-syncing with a backend server ensures your data is always up-to-date across all your devices, featuring intelligent debouncing to optimize performance.
+*   **Internationalization (i18n)**: Full support for multiple languages (currently English and Traditional Chinese).
+*   **Modern UI/UX**: Clean, responsive, and accessible interface built with Tailwind CSS v4, featuring a unified, animated toast notification system.
+*   **Cross-Platform**: Run as a standard web app, or build as native iOS and Android applications using Capacitor.
 
-**Account Tracker** is a mobile-first Progressive Web App (PWA) that helps you manage both **personal finances** and **shared group expenses**.
-
-Whether you're tracking your daily spending or splitting a trip's costs with friends, Account Tracker keeps everything organized in one place.
-
-### Key Features
-
-| Feature | Description |
-|---|---|
-| 💰 **Personal Records** | Log income and expense entries with categories, amounts, dates, and notes |
-| 📒 **Shared Books** | Create expense books for trips or groups with multiple members |
-| ⚖️ **Smart Settlement** | Automatically calculates who owes whom using a greedy debt-minimization algorithm |
-| 🌐 **Multilingual** | Fully supports Traditional Chinese, English, and Japanese |
-| 🌙 **Dark Mode** | System-aware theme with manual toggle |
-| 🏷️ **Custom Categories** | Add personalized income/expense categories on top of built-in defaults |
-| 📱 **Installable PWA** | Works offline and can be installed to your Android/iOS home screen |
-
----
-
-## Tech Stack
+## 🛠 Technology Stack
 
 ### Frontend
-| Technology | Role |
-|---|---|
-| [Vue 3](https://vuejs.org/) + Composition API | Core UI framework |
-| [TypeScript](https://www.typescriptlang.org/) | Type-safe development |
-| [Pinia](https://pinia.vuejs.org/) | Global state management |
-| [Vue Router 5](https://router.vuejs.org/) | Client-side navigation |
-| [Vue I18n 11](https://vue-i18n.intlify.dev/) | Internationalization (zh-TW / en / ja) |
-| [Tailwind CSS 3](https://tailwindcss.com/) | Utility-first styling |
-| [Material Symbols](https://fonts.google.com/icons) | Icon set |
+*   **Framework**: [Vue 3](https://vuejs.org/) (Composition API, `<script setup>`)
+*   **State Management**: [Pinia](https://pinia.vuejs.org/) (Modularized for maintainability)
+*   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+*   **Routing**: [Vue Router](https://router.vuejs.org/)
+*   **Build Tool**: [Vite](https://vitejs.dev/)
+*   **Mobile Container**: [Capacitor](https://capacitorjs.com/) (iOS/Android)
+*   **Icons**: [Google Material Symbols](https://fonts.google.com/icons)
+*   **Icons (Legacy)**: FontAwesome
+*   **Utility**: date-fns (Date manipulation), uuid (Unique IDs)
 
-### Tooling & Infrastructure
-| Technology | Role |
-|---|---|
-| [Vite 4](https://vitejs.dev/) | Build tool & dev server |
-| [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) + Workbox | PWA service worker & offline caching |
-| [GitHub Actions](https://github.com/features/actions) | CI/CD — auto-build & deploy on every push |
-| [GitHub Pages](https://pages.github.com/) | Static hosting |
+### Backend
+*   **Language**: Go
+*   **Database**: (Implementation dependent, handles shared spaces and syncing)
 
-### Data Storage
-- **`localStorage`** — All data is stored locally on the device. No backend, no cloud, full privacy.
+## 📂 Project Structure (Frontend)
 
----
+The frontend codebase is organized to separate concerns and maintain readability:
 
-## Getting Started
-
-### Prerequisites
-- Node.js v18+
-- npm
-
-### Local Development
-
-```bash
-# Clone the repository
-git clone https://github.com/Feilian1999/account-tracker.git
-cd account-tracker
-
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
+```text
+account-tracker/
+├── android/                # Capacitor Android project files
+├── ios/                    # Capacitor iOS project files
+├── src/
+│   ├── assets/             # Static assets (images, global CSS)
+│   ├── components/         # Reusable Vue components (UI elements, modals, charts)
+│   ├── composables/        # Shared Vue composition logic (e.g., useToast)
+│   ├── locales/            # i18n translation files (en.ts, zh-TW.ts)
+│   ├── router/             # Vue Router configuration
+│   ├── stores/             # Pinia state management modules
+│   │   ├── books.ts        # Book management, sharing logic
+│   │   ├── categories.ts   # Category CRUD
+│   │   ├── cloud-sync.ts   # Backend synchronization
+│   │   ├── personal.ts     # Personal expense records
+│   │   ├── tracker.ts      # Main compositional store linking modules
+│   │   └── ...             # Other modularized state files
+│   ├── views/              # Page-level Vue components
+│   ├── App.vue             # Root component
+│   └── main.ts             # Application entry point
+├── package.json            # Node dependencies and scripts
+├── tailwind.config.ts      # Tailwind CSS configuration
+├── tsconfig.json           # TypeScript configuration
+└── vite.config.ts          # Vite build configuration
 ```
 
-Open `http://localhost:5173` in your browser.
+## 🚀 Getting Started
 
-### Production Build
+### Prerequisites
+
+*   **Node.js**: (Version 18+ recommended)
+*   **npm** or **yarn** or **pnpm**: Node package manager.
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd account-tracker
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3.  **Environment Configuration:**
+    Create a `.env` file in the root directory and configure the API endpoint for cloud syncing and collaborative features:
+    ```env
+    VITE_API_URL=http://localhost:8080 # Replace with your Go backend URL
+    ```
+
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+    The app will be available at usually `http://localhost:5173`.
+
+### Building for Production
+
+To create a production-ready web build:
 
 ```bash
 npm run build
 ```
+The output will be in the `dist/` directory.
 
-Output goes to `dist/`. The PWA service worker and `manifest.webmanifest` are automatically generated.
+### Mobile Development (Capacitor)
 
----
+If you plan to deploy to iOS or Android, ensure you have the respective native environments set up (Xcode / Android Studio).
 
-## Project Structure
+1. Build the web project: `npm run build`
+2. Sync with Capacitor: `npx cap sync`
+3. Open native IDE: `npx cap open ios` or `npx cap open android`
 
-```
-src/
-├── components/         # Reusable UI components
-│   ├── home/           # Home page sheets (Add Record, Import from Book)
-│   └── books/          # Book-related sheets (Create, Settlement)
-├── views/              # Page-level views (Home, Books, Profile, Setup)
-├── stores/
-│   └── tracker.ts      # Central Pinia store — all state & business logic
-├── locales/            # i18n translation files (zh-TW, en, ja)
-├── utils/
-│   └── category.ts     # Category color/icon helpers
-├── router/             # Vue Router config
-└── i18n.ts             # i18n initialization
-```
+## 🏗 Recent Architectural Highlights
 
----
+*   **Store Modularization**: The monolithic state management has been split into dedicated, focused Pinia modules (`src/stores/*`), improving maintainability and reducing module complexity.
+*   **Global Notification System**: A centralized Toast Notification system (`useToast` composable) replaces standard browser alerts, providing a modern, consistent, and localized user feedback mechanism across the application.
+*   **Optimized Cloud Sync**: Aggressive debouncing is implemented on synchronization tasks to prevent race conditions and minimize unnecessary backend requests during rapid data entry.
 
-## Installing on Android / iOS
+## 🤝 Contributing
 
-Because this is a PWA, no app store is needed.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-1. Open the [live demo URL](https://feilian1999.github.io/account-tracker/) in **Chrome** (Android) or **Safari** (iOS)
-2. Tap the browser menu (⋮ on Android / Share on iOS)
-3. Select **"Add to Home Screen"** / **"Install App"**
-4. The app icon will appear on your home screen and launches in full-screen mode
+## 📄 License
 
----
-
-## Deployment
-
-This project auto-deploys via **GitHub Actions** on every push to `main`.
-
-The workflow (`/.github/workflows/deploy.yml`) runs:
-```
-npm ci → npm run build → deploy dist/ to GitHub Pages
-```
-
----
-
-## Architecture Highlights
-
-- **Greedy Debt Settlement Algorithm** — Minimizes the number of transactions required to settle all debts within a group
-- **Offline-first PWA** — Service worker pre-caches all assets including Google Fonts; the app works with no internet connection after first load
-- **No Backend Required** — All data lives in `localStorage`. Zero server costs, zero privacy concerns
-- **i18n Auto-detection** — Automatically selects language based on `navigator.language` on first launch
-
----
-
-## License
-
-MIT
+This project is licensed under the [MIT License](LICENSE).
