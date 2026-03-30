@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useTrackerStore } from "../stores/tracker";
 import Home from "../views/Home.vue";
-import AddRecord from "../views/AddRecord.vue";
 import Books from "../views/Books.vue";
 import Profile from "../views/Profile.vue";
 import Login from "../views/Login.vue";
@@ -19,7 +18,6 @@ const router = createRouter({
     { path: "/terms", name: "terms", component: TermsOfService },
     { path: "/dashboard", name: "home", component: Home },
     { path: "/profile", name: "profile", component: Profile },
-    { path: "/add", name: "add", component: AddRecord },
     { path: "/books", name: "books", component: Books },
     { path: "/statistics", name: "statistics", component: Statistics },
   ],
