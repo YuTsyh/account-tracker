@@ -12,13 +12,13 @@
             <button
               v-for="cat in activeCats" :key="cat.id"
               type="button"
-              @click="form.category = cat.name"
+              @click="form.categoryId = cat.id"
               class="flex flex-col items-center gap-1.5 transition-all group"
-              :class="form.category === cat.name ? 'scale-110 opacity-100' : 'opacity-80 hover:opacity-100'"
+              :class="form.categoryId === cat.id ? 'scale-110 opacity-100' : 'opacity-80 hover:opacity-100'"
             >
               <div
                 class="flex h-12 w-12 items-center justify-center rounded-2xl text-[24px] transition-all"
-                :class="form.category === cat.name ? (form.type === 'expense' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30') : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'"
+                :class="form.categoryId === cat.id ? (form.type === 'expense' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30') : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'"
               >
                 <CategoryIcon :name="cat.icon" />
               </div>
@@ -153,7 +153,7 @@
                   <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.category") }}</label>
                   <div class="flex-1 flex items-center justify-end gap-2 text-right">
                     <span class="text-sm font-bold" :class="form.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'">
-                      {{ $te(`categories.${currentCategoryId}`) ? $t(`categories.${currentCategoryId}`) : (form.category || $t('common.select')) }}
+                      {{ $te(`categories.${currentCategoryId}`) ? $t(`categories.${currentCategoryId}`) : (currentCategoryObj?.name || $t('common.select')) }}
                     </span>
                     <div v-if="currentCategoryId" class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm" :class="form.type === 'expense' ? 'bg-red-600' : 'bg-emerald-600'">
                       <CategoryIcon :name="currentCategoryIcon" class="text-[14px]" />
@@ -312,7 +312,7 @@ const sheetSubtitleId = `${baseId}-subtitle`;
 const defaultForm = () => ({
   type: "expense" as "expense" | "income",
   amountStr: "",
-  category: "",
+  categoryId: "",
   paidById: props.members[0]?.id ?? "",
   splitAmongIds: props.members.map((m) => m.id),
   date: today,
@@ -334,9 +334,9 @@ const activeCats = computed(() =>
 );
 
 const currentCategoryObj = computed(() =>
-  activeCats.value.find((c) => c.name === form.value.category)
+  activeCats.value.find((c) => c.id === form.value.categoryId)
 );
-const currentCategoryId = computed(() => currentCategoryObj.value?.id ?? "");
+const currentCategoryId = computed(() => form.value.categoryId);
 const currentCategoryIcon = computed(() => currentCategoryObj.value?.icon ?? "category");
 
 
@@ -364,9 +364,8 @@ const applyTemplate = (templateId: string) => {
   const t = store.recordTemplates.find((x) => x.id === templateId);
   if (!t) return;
   
-  const catName = store.allCategories.find((c) => c.id === t.category)?.name ?? t.category;
   form.value.type = t.type;
-  form.value.category = catName;
+  form.value.categoryId = t.category;
   form.value.amountStr = t.amount !== null ? String(t.amount) : "";
   form.value.note = t.note || "";
   
@@ -394,10 +393,11 @@ watch(
       if (props.editRecordId) {
         const r = store.records.find(x => x.id === props.editRecordId);
         if (r) {
+          const cat = store.allCategories.find(c => c.name === r.category && c.type === r.type);
           form.value = {
             type: r.type,
             amountStr: String(r.amount),
-            category: r.category,
+            categoryId: cat?.id || r.category,
             paidById: r.paidById,
             splitAmongIds: [...r.splitAmongIds],
             date: r.date,
@@ -407,7 +407,7 @@ watch(
         }
       }
       const reset = defaultForm();
-      reset.category = expenseCats.value[0]?.name ?? "";
+      reset.categoryId = expenseCats.value[0]?.id ?? "";
       form.value = reset;
       showKeyboard.value = true;
     } else {
@@ -420,8 +420,8 @@ watch(
   () => form.value.type,
   (newType) => {
     const cats = newType === "expense" ? expenseCats.value : incomeCats.value;
-    if (!cats.find((c) => c.name === form.value.category)) {
-      form.value.category = cats[0]?.name ?? "";
+    if (!cats.find((c) => c.id === form.value.categoryId)) {
+      form.value.categoryId = cats[0]?.id ?? "";
     }
   },
 );
@@ -453,7 +453,7 @@ const handleSubmit = () => {
   const data = {
     type: form.value.type,
     amount: amt,
-    category: form.value.category,
+    category: currentCategoryObj.value?.name || form.value.categoryId,
     date: form.value.date,
     note: form.value.note,
     paidById: isExpense ? form.value.paidById : "",
@@ -467,11 +467,10 @@ const handleSubmit = () => {
     
     // Save as template if requested
     if (shouldSaveAsTemplate.value) {
-      const catId = store.allCategories.find(c => c.name === form.value.category)?.id ?? form.value.category;
       store.addTemplate({
-        name: form.value.note || form.value.category,
+        name: form.value.note || currentCategoryObj.value?.name || form.value.categoryId,
         type: form.value.type,
-        category: catId,
+        category: form.value.categoryId,
         amount: amt,
         note: form.value.note,
       });
