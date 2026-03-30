@@ -21,7 +21,12 @@
         <div>
           <div class="flex items-center gap-2">
             <p class="text-xs font-medium text-blue-200">{{ $t("books.currentBook") }}</p>
-            <span v-if="isPulling" class="material-symbols-outlined animate-spin text-xs text-white/50" aria-hidden="true">sync</span>
+            <span
+              v-if="isPulling"
+              class="material-symbols-outlined animate-spin text-xs text-white/50"
+              style="animation-direction: reverse;"
+              aria-hidden="true"
+            >sync</span>
           </div>
           <h1 class="flex items-center gap-2 text-lg font-bold text-white">
             {{ book.name }}
