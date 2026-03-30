@@ -1,0 +1,69 @@
+<template>
+  <Teleport to="body">
+    <div
+      v-if="modelValue"
+      class="fixed inset-0 z-50 flex flex-col justify-end"
+      @click.self="close"
+    >
+      <!-- 1. Background (Top Area): Category Selector Backdrop -->
+      <div
+        class="flex-1 w-full overflow-y-auto bg-black/40 backdrop-blur-sm p-4 pt-12 pb-6 custom-scrollbar"
+        @click.self="close"
+      >
+        <div class="mx-auto w-full max-w-md">
+          <slot name="categories" />
+        </div>
+      </div>
+
+      <!-- 2. Foreground (Bottom Sheet): Form Panel -->
+      <div
+        class="animate-slide-up relative w-full bg-white pb-safe transition-colors dark:bg-gray-900 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)]"
+        :style="{ maxHeight: maxHeight }"
+      >
+        <div class="mx-auto w-full max-w-md flex flex-col h-full px-6 py-5">
+          <!-- Handle -->
+          <div class="absolute -top-3 left-1/2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-white/50 backdrop-blur-md dark:bg-gray-600/50"></div>
+
+          <!-- Header -->
+          <div class="mb-5 flex flex-wrap gap-2 items-center justify-between shrink-0">
+            <div>
+              <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ title }}</h2>
+              <p v-if="subtitle" class="text-[11px] font-medium text-gray-500 mt-0.5">{{ subtitle }}</p>
+            </div>
+            <slot name="header-actions" />
+          </div>
+
+          <!-- Scrollable Body  -->
+          <div class="overflow-y-auto no-scrollbar flex-1 -mx-2 px-2 pb-2">
+            <slot />
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+interface Props {
+  modelValue: boolean;
+  title: string;
+  subtitle?: string;
+  maxHeight?: string;
+}
+
+withDefaults(defineProps<Props>(), {
+  maxHeight: "70vh",
+});
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+}>();
+
+const close = () => emit("update:modelValue", false);
+</script>
+
+<style scoped>
+.pb-safe {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+}
+</style>

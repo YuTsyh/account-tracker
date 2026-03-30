@@ -1,14 +1,16 @@
 <template>
+  <!-- LIST VIEW: standard bottom sheet -->
   <BaseBottomSheet
+    v-if="!isCreating"
     :modelValue="modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
-    :title="isCreating ? (editingId ? $t('templates.editTemplate') : $t('templates.addTemplate')) : $t('templates.title')"
+    :title="$t('templates.title')"
     maxHeight="h-[85vh]"
     roundedClass="rounded-t-[2rem]"
     contentClass="flex-1 overflow-y-auto"
   >
-    <!-- List View -->
-    <div v-if="!isCreating" class="space-y-3 px-4 py-6">
+    <!-- List of templates -->
+    <div class="space-y-3 px-4 py-6">
       <div v-if="store.recordTemplates.length === 0" class="py-10 text-center text-sm text-gray-400">
         {{ $t("templates.noTemplates") }}
       </div>
@@ -57,96 +59,135 @@
       </div>
     </div>
 
-    <!-- Create View -->
-    <div v-else class="space-y-6 px-5 py-6">
-      <div class="mb-4">
+    <template #footer>
+      <BaseButton class="w-full shadow-lg shadow-blue-500/30" @click="openCreate">
+        <span class="mr-1 text-lg">+</span> {{ $t("templates.addTemplate") }}
+      </BaseButton>
+    </template>
+  </BaseBottomSheet>
+
+  <!-- CREATE / EDIT VIEW: dual-layer layout matching AddPersonalRecordSheet -->
+  <RecordSheetLayout
+    v-else
+    :modelValue="modelValue"
+    :title="editingId ? $t('templates.editTemplate') : $t('templates.addTemplate')"
+    @update:modelValue="onClose"
+  >
+    <!-- Category Grid (backdrop) -->
+    <template #categories>
+      <div class="grid grid-cols-4 sm:grid-cols-5 gap-y-6 gap-x-2">
         <button
-          @click="isCreating = false"
-          class="flex items-center gap-1 text-sm font-bold text-blue-600 dark:text-blue-400"
+          v-for="cat in availableCategories"
+          :key="cat.id"
+          type="button"
+          @click="newForm.category = cat.id"
+          class="flex flex-col items-center gap-1.5 transition-all"
+          :class="newForm.category === cat.id ? 'scale-110 opacity-100' : 'opacity-80 hover:opacity-100'"
         >
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          {{ $t('categories.backToList') }}
+          <div
+            class="flex h-12 w-12 items-center justify-center rounded-2xl text-[24px] transition-all"
+            :class="newForm.category === cat.id ? (newForm.type === 'expense' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30') : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'"
+          >
+            <CategoryIcon :name="cat.icon" />
+          </div>
+          <span class="text-xs font-bold text-center leading-tight whitespace-nowrap text-white drop-shadow-md">
+            {{ $te('categories.' + cat.id) ? $t('categories.' + cat.id) : cat.name }}
+          </span>
         </button>
       </div>
+    </template>
 
-      <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-800">
-        <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">{{ $t("templates.templateName") }}</label>
+    <!-- Header Actions -->
+    <template #header-actions>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          @click="newForm.type = newForm.type === 'expense' ? 'income' : 'expense'; resetCategory()"
+          class="flex rounded-lg bg-gray-100 p-0.5 dark:bg-gray-800 active:scale-95 transition-transform"
+        >
+          <div
+            :class="['px-2.5 py-1 text-xs font-bold rounded-md transition-all', newForm.type === 'expense' ? 'bg-white text-red-700 shadow-sm dark:bg-gray-700 dark:text-red-400' : 'text-gray-500 dark:text-gray-400']"
+          >{{ $t("common.expense") }}</div>
+          <div
+            :class="['px-2.5 py-1 text-xs font-bold rounded-md transition-all', newForm.type === 'income' ? 'bg-white text-emerald-700 shadow-sm dark:bg-gray-700 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400']"
+          >{{ $t("common.income") }}</div>
+        </button>
+        <CloseButton @click="onClose(false)" class="!p-1.5 bg-gray-100 dark:bg-gray-800 rounded-full" />
+      </div>
+    </template>
+
+    <!-- Form Body -->
+    <!-- Template Name -->
+    <div class="space-y-4">
+      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+        <span class="material-symbols-outlined text-gray-400 text-xl">label</span>
+        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("templates.templateName") }}</label>
         <input
           v-model="newForm.name"
           type="text"
           :placeholder="$t('templates.namePlaceholder')"
-          class="w-full border-b-2 border-gray-200 bg-transparent px-2 py-2 text-lg font-bold text-gray-800 outline-none transition-colors focus:border-blue-500 dark:border-gray-600 dark:text-gray-100"
+          class="flex-1 bg-transparent text-right font-bold text-gray-800 dark:text-gray-200 outline-none w-full"
         />
       </div>
 
-      <div class="flex rounded-xl bg-gray-200/60 p-1 transition-colors dark:bg-gray-800">
-        <button
-          type="button"
-          @click="newForm.type = 'expense'; resetCategory()"
-          :class="['flex-1 rounded-lg py-2 text-sm font-bold transition-all', newForm.type === 'expense' ? 'bg-white text-red-600 shadow' : 'text-gray-500']"
-        >
-          {{ $t("common.expense") }}
-        </button>
-        <button
-          type="button"
-          @click="newForm.type = 'income'; resetCategory()"
-          :class="['flex-1 rounded-lg py-2 text-sm font-bold transition-all', newForm.type === 'income' ? 'bg-white text-green-600 shadow' : 'text-gray-500']"
-        >
-          {{ $t("common.income") }}
-        </button>
-      </div>
-
-      <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-800">
-        <label class="mb-3 block text-sm font-bold text-gray-700 dark:text-gray-300">{{ $t('common.category') }}</label>
-        <div class="grid grid-cols-4 gap-3">
-          <button
-            v-for="cat in availableCategories"
-            :key="cat.id"
-            @click="newForm.category = cat.id"
-            :class="[
-              'flex flex-col items-center gap-1.5 rounded-xl p-2 transition-transform active:scale-95',
-              newForm.category === cat.id ? 'bg-gray-50 shadow-sm ring-2 ring-blue-500 dark:bg-gray-700/50' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
-            ]"
-          >
-            <div :class="['flex h-10 w-10 items-center justify-center rounded-xl text-xl', colorMap[cat.color]?.bg, colorMap[cat.color]?.text]">
-              <CategoryIcon :name="cat.icon" />
-            </div>
-            <span class="truncate text-[11px] font-medium text-gray-600 dark:text-gray-300 w-full text-center">{{ $te('categories.' + cat.id) ? $t('categories.' + cat.id) : cat.name }}</span>
-          </button>
+      <!-- Category display -->
+      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+        <span class="material-symbols-outlined text-gray-400 text-xl">category</span>
+        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.category") }}</label>
+        <div class="flex-1 flex items-center justify-end gap-2">
+          <span class="text-sm font-bold" :class="newForm.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'">
+            {{ selectedCategoryObj ? ($te('categories.' + selectedCategoryObj.id) ? $t('categories.' + selectedCategoryObj.id) : selectedCategoryObj.name) : $t('common.select') }}
+          </span>
+          <div v-if="selectedCategoryObj" class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm" :class="newForm.type === 'expense' ? 'bg-red-600' : 'bg-emerald-600'">
+            <CategoryIcon :name="selectedCategoryObj.icon" class="text-[14px]" />
+          </div>
         </div>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-800">
-        <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">{{ $t("templates.amountOptional") }}</label>
-        <input
-          v-model="amountStr"
-          type="number"
-          :placeholder="$t('templates.amountPlaceholder')"
-          class="w-full border-b-2 border-gray-200 bg-transparent px-2 py-2 text-lg font-bold text-gray-800 outline-none transition-colors focus:border-blue-500 dark:border-gray-600 dark:text-gray-100"
-        />
+      <!-- Amount (optional) -->
+      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
+        <span class="material-symbols-outlined text-gray-400 text-xl">attach_money</span>
+        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("templates.amountOptional") }}</label>
+        <div class="flex-1 flex items-center justify-end gap-1">
+          <span class="text-gray-400 font-semibold text-sm">NT$</span>
+          <input
+            v-model="amountStr"
+            type="number"
+            :placeholder="$t('templates.amountPlaceholder')"
+            class="w-full bg-transparent text-right text-xl font-bold text-gray-800 outline-none dark:text-gray-100"
+          />
+        </div>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-800">
-        <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">{{ $t("templates.noteOptional") }}</label>
+      <!-- Note (optional) -->
+      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3">
+        <span class="material-symbols-outlined text-gray-400 text-xl">edit_note</span>
+        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("templates.noteOptional") }}</label>
         <input
           v-model="newForm.note"
           type="text"
-          class="w-full border-b-2 border-gray-200 bg-transparent px-2 py-2 text-lg text-gray-800 outline-none transition-colors focus:border-blue-500 dark:border-gray-600 dark:text-gray-100"
+          class="flex-1 bg-transparent text-right font-medium text-gray-800 dark:text-gray-200 outline-none w-full"
         />
       </div>
-    </div>
 
-    <template #footer>
-      <BaseButton v-if="!isCreating" class="w-full shadow-lg shadow-blue-500/30" @click="openCreate">
-        <span class="mr-1 text-lg">+</span> {{ $t("templates.addTemplate") }}
-      </BaseButton>
-      <BaseButton v-else class="w-full" :disabled="!isFormValid" @click="saveTemplate">
-        {{ $t("templates.saveTemplate") }}
-      </BaseButton>
-    </template>
-  </BaseBottomSheet>
+      <!-- Save Button -->
+      <div class="flex gap-3 pt-2">
+        <button
+          @click="onClose(false)"
+          class="flex-1 rounded-xl bg-gray-100 py-3 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          {{ $t("common.cancel") }}
+        </button>
+        <button
+          @click="saveTemplate"
+          :disabled="!isFormValid"
+          class="flex-1 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white transition-colors hover:bg-violet-700 disabled:bg-gray-200 disabled:text-gray-400 shadow-md shadow-violet-500/20"
+        >
+          {{ $t("templates.saveTemplate") }}
+        </button>
+      </div>
+    </div>
+  </RecordSheetLayout>
 </template>
 
 <script setup lang="ts">
@@ -157,6 +198,8 @@ import { colorMapFull as colorMap } from "../utils/category";
 import BaseButton from "./BaseButton.vue";
 import CategoryIcon from "./CategoryIcon.vue";
 import BaseBottomSheet from "./BaseBottomSheet.vue";
+import RecordSheetLayout from "./RecordSheetLayout.vue";
+import CloseButton from "./CloseButton.vue";
 
 const store = useTrackerStore();
 defineProps({
@@ -180,6 +223,10 @@ const availableCategories = computed(() =>
   store.allCategories.filter((c) => c.type === newForm.value.type)
 );
 
+const selectedCategoryObj = computed(() =>
+  availableCategories.value.find((c) => c.id === newForm.value.category)
+);
+
 const isFormValid = computed(() => {
   return (newForm.value.name || '').trim() !== "" && newForm.value.category !== "";
 });
@@ -199,12 +246,7 @@ const deleteTemplate = (id: string, name: string) => {
 
 const openCreate = () => {
   editingId.value = null;
-  newForm.value = {
-    type: "expense",
-    name: "",
-    category: "",
-    note: "",
-  };
+  newForm.value = { type: "expense", name: "", category: "", note: "" };
   amountStr.value = "";
   resetCategory();
   isCreating.value = true;
@@ -212,12 +254,7 @@ const openCreate = () => {
 
 const openEdit = (tpl: RecordTemplate) => {
   editingId.value = tpl.id;
-  newForm.value = {
-    type: tpl.type,
-    name: tpl.name,
-    category: tpl.category,
-    note: tpl.note,
-  };
+  newForm.value = { type: tpl.type, name: tpl.name, category: tpl.category, note: tpl.note };
   amountStr.value = tpl.amount !== null ? String(tpl.amount) : "";
   isCreating.value = true;
 };
@@ -228,12 +265,19 @@ const resetCategory = () => {
   else newForm.value.category = "";
 };
 
+const onClose = (val: boolean) => {
+  if (!val) {
+    isCreating.value = false;
+  }
+  emit("update:modelValue", val);
+};
+
 const saveTemplate = () => {
   if (!isFormValid.value) return;
-  
+
   const rawAmount = String(amountStr.value).trim();
   const numAmount = rawAmount === "" ? null : parseFloat(rawAmount);
-  
+
   const data = {
     name: newForm.value.name.trim(),
     type: newForm.value.type,
