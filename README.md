@@ -64,7 +64,7 @@ account-tracker/
 
 ### Prerequisites
 
-*   **Node.js**: (Version 18+ recommended)
+*   **Node.js**: (Version 20.19.0+ recommended)
 *   **npm** or **yarn** or **pnpm**: Node package manager.
 
 ### Installation & Setup
