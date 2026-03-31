@@ -1,7 +1,8 @@
 <template>
   <Teleport to="body">
-    <div
-      v-if="modelValue"
+    <transition :name="store.userProfile.animations ? 'fade' : ''">
+      <div
+        v-if="modelValue"
       class="fixed inset-0 z-50 flex flex-col justify-end"
       @click.self="close"
     >
@@ -35,13 +36,15 @@
           <slot name="footer"></slot>
         </div>
       </section>
-    </div>
+      </div>
+    </transition>
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import { useId, toRef } from "vue";
 import CloseButton from "./CloseButton.vue";
+import { useTrackerStore } from "../stores/tracker";
 import { useEscapeKey } from "../composables/useEscapeKey";
 
 interface Props {
@@ -60,6 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits(["update:modelValue", "close"]);
+const store = useTrackerStore();
 const baseId = useId();
 const titleId = `${baseId}-title`;
 const subtitleId = `${baseId}-subtitle`;

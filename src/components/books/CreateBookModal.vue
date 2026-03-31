@@ -1,7 +1,8 @@
 <template>
   <Teleport to="body">
-    <div
-      v-if="modelValue"
+    <transition :name="store.userProfile.animations ? 'fade' : ''">
+      <div
+        v-if="modelValue"
       class="fixed inset-0 z-50 flex items-end justify-center bg-black/50"
       @click.self="close"
     >
@@ -45,7 +46,8 @@
           </BaseButton>
         </form>
       </section>
-    </div>
+      </div>
+    </transition>
   </Teleport>
 </template>
 

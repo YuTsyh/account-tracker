@@ -50,7 +50,8 @@
     </div>
 
     <Teleport to="body">
-      <div v-if="showPicker" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="showPicker = false">
+      <transition :name="store.userProfile.animations ? 'fade' : ''">
+        <div v-if="showPicker" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="showPicker = false">
         <section
           :id="pickerDialogId"
           class="w-full max-w-xs animate-slide-up rounded-3xl bg-white p-6 shadow-2xl dark:bg-gray-900"
@@ -90,6 +91,7 @@
           </div>
         </section>
       </div>
+      </transition>
     </Teleport>
   </div>
 </template>
@@ -97,6 +99,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useTrackerStore } from "../stores/tracker";
 import { useEscapeKey } from "../composables/useEscapeKey";
 
 const props = defineProps<{
@@ -108,6 +111,7 @@ const emit = defineEmits<{
   (e: "update:modelValue", value: string): void;
 }>();
 
+const store = useTrackerStore();
 const { locale } = useI18n();
 const transitionName = ref("slide-left");
 const showPicker = ref(false);
@@ -158,8 +162,13 @@ const getYearMonth = (offset: number) => {
 };
 
 const updateValue = (newValue: string) => {
-  if (newValue > props.modelValue) transitionName.value = "slide-left";
-  else if (newValue < props.modelValue) transitionName.value = "slide-right";
+  if (!store.userProfile.animations) {
+    transitionName.value = "";
+  } else if (newValue > props.modelValue) {
+    transitionName.value = "slide-left";
+  } else if (newValue < props.modelValue) {
+    transitionName.value = "slide-right";
+  }
   emit("update:modelValue", newValue);
 };
 

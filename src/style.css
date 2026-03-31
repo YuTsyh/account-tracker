@@ -152,3 +152,17 @@ body {
     @apply rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600;
   }
 }
+
+/* ────────────────────────────────────────
+   Animation Control
+   ──────────────────────────────────────── */
+.no-animations,
+.no-animations *,
+.no-animations *::before,
+.no-animations *::after {
+  animation-duration: 0.001s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001s !important;
+  animation-delay: 0s !important;
+  transition-delay: 0s !important;
+}

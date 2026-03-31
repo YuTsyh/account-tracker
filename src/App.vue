@@ -32,6 +32,14 @@ watch(
   },
   { immediate: true },
 );
+
+watch(
+  () => store.userProfile.animations,
+  (enabled) => {
+    document.documentElement.classList.toggle("no-animations", !enabled);
+  },
+  { immediate: true },
+);
 </script>
 
 <style>

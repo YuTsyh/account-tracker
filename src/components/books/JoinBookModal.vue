@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <transition name="fade">
+    <transition :name="store.userProfile.animations ? 'fade' : ''">
       <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="close">
         <section
           class="animate-slide-up w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl transition-colors dark:bg-gray-900"
