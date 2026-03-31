@@ -64,9 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useId, watch } from "vue";
+import { computed, ref, useId, watch, toRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTrackerStore } from "../../stores/tracker";
+import { useEscapeKey } from "../../composables/useEscapeKey";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -104,6 +105,8 @@ const close = () => {
   if (loading.value) return;
   emit("update:modelValue", false);
 };
+
+useEscapeKey(toRef(props, "modelValue"), close);
 
 const submit = async () => {
   if (!isValid.value || loading.value) return;

@@ -54,7 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useId, watch } from "vue";
+import { ref, useId, watch, toRef } from "vue";
+import { useEscapeKey } from "../../composables/useEscapeKey";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -82,6 +83,8 @@ watch(
 const close = () => {
   emit("update:modelValue", false);
 };
+
+useEscapeKey(toRef(props, "modelValue"), close);
 
 const copyCode = async () => {
   if (!props.shareCode) return;

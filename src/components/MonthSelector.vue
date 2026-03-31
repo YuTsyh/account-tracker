@@ -97,6 +97,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useEscapeKey } from "../composables/useEscapeKey";
 
 const props = defineProps<{
   modelValue: string;
@@ -199,6 +200,10 @@ const formattedDisplay = computed(() => {
 
   const monthName = date.toLocaleString("en-US", { month: "short" });
   return `${monthName} ${date.getFullYear()}`;
+});
+
+useEscapeKey(showPicker, () => {
+  showPicker.value = false;
 });
 </script>
 

@@ -18,7 +18,6 @@
         aria-modal="true"
         :aria-labelledby="titleId"
         :aria-describedby="subtitle ? subtitleId : undefined"
-        @keydown.esc="close"
       >
         <div class="z-10 flex shrink-0 items-center justify-between border-b border-gray-50 bg-white px-6 py-4 dark:border-gray-800 dark:bg-gray-800">
           <div class="min-w-0 flex-1">
@@ -41,8 +40,9 @@
 </template>
 
 <script setup lang="ts">
-import { useId } from "vue";
+import { useId, toRef } from "vue";
 import CloseButton from "./CloseButton.vue";
+import { useEscapeKey } from "../composables/useEscapeKey";
 
 interface Props {
   modelValue: boolean;
@@ -53,7 +53,7 @@ interface Props {
   contentClass?: string;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   maxHeight: "max-h-[90vh]",
   roundedClass: "rounded-t-3xl",
   contentClass: "px-4 py-6",
@@ -68,6 +68,8 @@ const close = () => {
   emit("update:modelValue", false);
   emit("close");
 };
+
+useEscapeKey(toRef(props, "modelValue"), close);
 </script>
 
 <style scoped>

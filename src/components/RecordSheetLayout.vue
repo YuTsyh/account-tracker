@@ -44,6 +44,9 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from "vue";
+import { useEscapeKey } from "../composables/useEscapeKey";
+
 interface Props {
   modelValue: boolean;
   title: string;
@@ -51,7 +54,7 @@ interface Props {
   maxHeight?: string;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   maxHeight: "70vh",
 });
 
@@ -60,6 +63,8 @@ const emit = defineEmits<{
 }>();
 
 const close = () => emit("update:modelValue", false);
+
+useEscapeKey(toRef(props, "modelValue"), close);
 </script>
 
 <style scoped>

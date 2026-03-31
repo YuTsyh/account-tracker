@@ -50,11 +50,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useId, watch } from "vue";
+import { ref, useId, watch, toRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTrackerStore } from "../../stores/tracker";
 import BaseButton from "../BaseButton.vue";
 import CloseButton from "../CloseButton.vue";
+import { useEscapeKey } from "../../composables/useEscapeKey";
 
 const props = defineProps<{
   modelValue: boolean;
@@ -98,6 +99,8 @@ watch(
 const close = () => {
   emit("update:modelValue", false);
 };
+
+useEscapeKey(toRef(props, "modelValue"), close);
 
 const handleCreate = () => {
   if (!form.value.name.trim()) return;
