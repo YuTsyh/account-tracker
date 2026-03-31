@@ -373,11 +373,11 @@ const isValidAmount = computed(() => {
 
 // Custom split computed helpers
 const autoMemberId = computed(() => {
-  // The auto person is the LAST member whose input field is empty
+  // Auto-calc only when EXACTLY one member has an empty field
   const emptyMembers = props.members.filter(
     (m) => !(form.value.splitCustomAmounts[m.id] ?? '').trim()
   );
-  return emptyMembers.length > 0 ? emptyMembers[emptyMembers.length - 1].id : null;
+  return emptyMembers.length === 1 ? emptyMembers[0].id : null;
 });
 
 const isAutoMember = (id: string) => id === autoMemberId.value;
