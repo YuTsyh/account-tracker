@@ -13,6 +13,7 @@ export default {
     totalExpense: "総支出",
     totalIncome: "総収入",
     net: "純額",
+    select: "選択してください",
   },
   nav: {
     home: "詳細",

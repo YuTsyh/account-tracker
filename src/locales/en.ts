@@ -13,6 +13,7 @@ export default {
     totalExpense: "Total Ex.",
     totalIncome: "Total Inc.",
     net: "Net",
+    select: "Select",
   },
   nav: {
     home: "Home",
