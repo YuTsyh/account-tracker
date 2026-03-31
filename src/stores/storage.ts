@@ -54,7 +54,10 @@ export async function loadFromStorage<T>(key: string, fallback: T): Promise<T> {
 export async function saveToStorage(key: string, data: unknown) {
   try {
     const db = await getDB();
-    await db.put(STORE_NAME, data, key);
+    // Deep-clone to strip Vue reactive Proxy wrappers — IndexedDB's
+    // structured-clone algorithm cannot handle Proxy objects.
+    const raw = JSON.parse(JSON.stringify(data));
+    await db.put(STORE_NAME, raw, key);
   } catch (e) {
     console.error(`[storage] Failed to save key "${key}" to IndexedDB:`, e);
   }
