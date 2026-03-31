@@ -236,30 +236,26 @@
                   v-for="m in members"
                   :key="'custom-' + m.id"
                   class="flex items-center gap-3 rounded-lg border bg-white px-3 py-2 dark:bg-gray-800"
-                  :class="autoMemberId === m.id ? 'border-blue-300 dark:border-blue-600' : 'border-gray-100 dark:border-gray-700'"
+                  :class="isUnfilled(m.id) && hasAnyFilled ? 'border-blue-200 dark:border-blue-700' : 'border-gray-100 dark:border-gray-700'"
                 >
                   <span class="w-16 text-xs font-bold text-gray-700 dark:text-gray-300 shrink-0 truncate">{{ m.name }}</span>
                   <span class="text-gray-400 text-xs font-semibold">NT$</span>
-                  <template v-if="isAutoMember(m.id)">
-                    <span class="flex-1 text-right text-sm font-bold text-blue-600 dark:text-blue-400">
-                      {{ autoAmount >= 0 ? autoAmount.toLocaleString() : '—' }}
-                    </span>
-                    <span class="text-[10px] font-bold text-blue-400 dark:text-blue-500 shrink-0">{{ $t('recordSheet.autoCalc') }}</span>
-                  </template>
-                  <template v-else>
+                  <div class="flex-1 relative">
                     <input
                       v-model="form.splitCustomAmounts[m.id]"
                       type="number"
                       min="0"
-                      placeholder="0"
-                      class="flex-1 bg-transparent text-right text-sm font-bold text-gray-800 outline-none dark:text-gray-100"
+                      :placeholder="isUnfilled(m.id) && hasAnyFilled && autoPerPerson >= 0 ? autoPerPerson.toLocaleString() : '0'"
+                      class="w-full bg-transparent text-right text-sm font-bold outline-none"
+                      :class="isUnfilled(m.id) && hasAnyFilled ? 'text-blue-500 dark:text-blue-400 placeholder:text-blue-400/60 dark:placeholder:text-blue-500/60' : 'text-gray-800 dark:text-gray-100'"
                     />
-                  </template>
+                  </div>
+                  <span v-if="isUnfilled(m.id) && hasAnyFilled" class="text-[10px] font-bold text-blue-400 dark:text-blue-500 shrink-0">{{ $t('recordSheet.autoCalc') }}</span>
                 </div>
               </div>
               <!-- Validation hint -->
-              <p v-if="isValidAmount && autoAmount < 0" class="mt-2 text-right text-xs font-bold text-red-500">
-                {{ $t('recordSheet.splitOverflow', { excess: Math.abs(autoAmount).toLocaleString() }) }}
+              <p v-if="isValidAmount && autoPerPerson < 0" class="mt-2 text-right text-xs font-bold text-red-500">
+                {{ $t('recordSheet.splitOverflow', { excess: Math.abs(remainingAmount).toLocaleString() }) }}
               </p>
               <p v-else-if="isValidAmount" class="mt-2 text-right text-xs text-gray-400">
                 {{ $t('recordSheet.splitTotal', { total: Number(form.amountStr).toLocaleString() }) }}
@@ -318,6 +314,12 @@ const emit = defineEmits<{
 const store = useTrackerStore();
 const today = new Date().toISOString().split("T")[0];
 
+const initCustomAmounts = () => {
+  const map: Record<string, string> = {};
+  for (const m of props.members) map[m.id] = '';
+  return map;
+};
+
 const defaultForm = () => ({
   type: "expense" as "expense" | "income",
   amountStr: "",
@@ -325,7 +327,7 @@ const defaultForm = () => ({
   paidById: props.members[0]?.id ?? "",
   splitAmongIds: props.members.map((m) => m.id),
   splitMode: "equal" as "equal" | "custom",
-  splitCustomAmounts: {} as Record<string, string>,
+  splitCustomAmounts: initCustomAmounts(),
   date: today,
   note: "",
 });
@@ -372,42 +374,52 @@ const isValidAmount = computed(() => {
 });
 
 // Custom split computed helpers
-const autoMemberId = computed(() => {
-  // Auto-calc only when EXACTLY one member has an empty field
-  const emptyMembers = props.members.filter(
-    (m) => !(form.value.splitCustomAmounts[m.id] ?? '').trim()
-  );
-  return emptyMembers.length === 1 ? emptyMembers[0].id : null;
+const isUnfilled = (id: string) => {
+  const val = String(form.value.splitCustomAmounts[id] ?? '').trim();
+  return val === '';
+};
+
+const hasAnyFilled = computed(() =>
+  props.members.some((m) => !isUnfilled(m.id))
+);
+
+// Sum of manually-filled member amounts
+const filledAllocated = computed(() => {
+  return props.members.reduce((sum, m) => {
+    if (isUnfilled(m.id)) return sum;
+    const v = Number(form.value.splitCustomAmounts[m.id] || 0);
+    return sum + (isNaN(v) ? 0 : v);
+  }, 0);
 });
 
-const isAutoMember = (id: string) => id === autoMemberId.value;
+// Count of unfilled members
+const unfilledCount = computed(() =>
+  props.members.filter((m) => isUnfilled(m.id)).length
+);
 
-const customAllocated = computed(() => {
-  return props.members
-    .filter((m) => m.id !== autoMemberId.value)
-    .reduce((sum, m) => {
-      const v = Number(form.value.splitCustomAmounts[m.id] || 0);
-      return sum + (isNaN(v) ? 0 : v);
-    }, 0);
-});
-
-const autoAmount = computed(() => {
+// Remaining total after filled members
+const remainingAmount = computed(() => {
   const total = Number(form.value.amountStr) || 0;
-  return Math.round((total - customAllocated.value) * 100) / 100;
+  return Math.round((total - filledAllocated.value) * 100) / 100;
+});
+
+// Per-person auto amount for each unfilled member
+const autoPerPerson = computed(() => {
+  if (unfilledCount.value === 0) return 0;
+  return Math.floor(remainingAmount.value / unfilledCount.value);
 });
 
 const isSplitValid = computed(() => {
   if (!isValidAmount.value) return false;
   if (form.value.type !== 'expense') return true;
   if (form.value.splitMode === 'equal') return form.value.splitAmongIds.length > 0;
-  // custom mode:
-  if (autoMemberId.value !== null) {
-    // there is an auto person → their share must be >= 0
-    return autoAmount.value >= 0;
+  // custom mode: remaining must be >= 0 (whether there are unfilled or not)
+  if (unfilledCount.value > 0) {
+    return remainingAmount.value >= 0;
   } else {
-    // all amounts filled manually → total must match
+    // all filled manually → total must match
     const total = Number(form.value.amountStr) || 0;
-    return Math.abs(customAllocated.value - total) < 0.01;
+    return Math.abs(filledAllocated.value - total) < 0.01;
   }
 });
 
@@ -445,8 +457,8 @@ watch(
         const r = store.records.find(x => x.id === props.editRecordId);
         if (r) {
           const cat = store.allCategories.find(c => c.name === r.category && c.type === r.type);
-          // Restore custom amounts if they were saved
-          const customAmts: Record<string, string> = {};
+          // Restore custom amounts — pre-populate all members, then overlay saved values
+          const customAmts: Record<string, string> = initCustomAmounts();
           if (r.splitCustomAmounts) {
             for (const [k, v] of Object.entries(r.splitCustomAmounts)) {
               customAmts[k] = String(v);
@@ -472,6 +484,20 @@ watch(
       showKeyboard.value = true;
     } else {
       showKeyboard.value = false;
+    }
+  },
+);
+
+// When switching to custom mode, ensure all member keys exist
+watch(
+  () => form.value.splitMode,
+  (mode) => {
+    if (mode === 'custom') {
+      for (const m of props.members) {
+        if (!(m.id in form.value.splitCustomAmounts)) {
+          form.value.splitCustomAmounts[m.id] = '';
+        }
+      }
     }
   },
 );
@@ -509,15 +535,15 @@ const handleSubmit = () => {
   if (!amt || isNaN(amt) || amt <= 0) return;
   const isExpense = form.value.type === "expense";
   if (isExpense && form.value.splitMode === 'equal' && form.value.splitAmongIds.length === 0) return;
-  if (isExpense && form.value.splitMode === 'custom' && autoAmount.value < 0) return;
+  if (isExpense && form.value.splitMode === 'custom' && remainingAmount.value < 0) return;
 
   // Build custom amounts map for storage
   let splitCustomAmountsOut: Record<string, number> | undefined;
   if (isExpense && form.value.splitMode === 'custom') {
     splitCustomAmountsOut = {};
     for (const m of props.members) {
-      if (isAutoMember(m.id)) {
-        splitCustomAmountsOut[m.id] = autoAmount.value;
+      if (isUnfilled(m.id)) {
+        splitCustomAmountsOut[m.id] = autoPerPerson.value;
       } else {
         splitCustomAmountsOut[m.id] = Number(form.value.splitCustomAmounts[m.id] || 0);
       }
@@ -554,3 +580,17 @@ const handleSubmit = () => {
   close();
 };
 </script>
+
+<style scoped>
+/* Hide spin buttons for number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+</style>
