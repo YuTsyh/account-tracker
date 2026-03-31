@@ -2,7 +2,7 @@
   <div class="flex min-h-screen flex-col bg-gray-50 pt-12 dark:bg-gray-900">
     <main class="flex flex-grow flex-col items-center px-6">
       <header class="mb-8 h-32 w-32 overflow-hidden rounded-3xl shadow-2xl shadow-violet-500/20 transition duration-300 hover:scale-105">
-        <img src="/magic-sheep.png" alt="Account Tracker app icon" class="h-full w-full object-cover" />
+        <img src="/magic-sheep-combined.png" alt="Account Tracker app icon" class="h-full w-full object-cover" />
       </header>
 
       <section class="mb-12 w-full max-w-md space-y-4 text-center" aria-labelledby="landing-title">

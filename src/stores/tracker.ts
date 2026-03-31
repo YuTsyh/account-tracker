@@ -23,8 +23,10 @@ export const useTrackerStore = defineStore("tracker", () => {
   const currentBookId = ref<string | null>(null);
   const personalRecords = ref<PersonalRecord[]>([]);
 
-  const userProfileDefaults: UserProfile = { name: "", theme: "system", animations: true, isLoggedIn: false };
-  const userProfile = ref<UserProfile>({ ...userProfileDefaults });
+  const userProfileDefaults: UserProfile = { name: "", theme: "sheep", animations: true, isLoggedIn: false };
+  // Pre-initialize theme from localStorage to prevent flash
+  const initialTheme = (localStorage.getItem("account-tracker-theme") as any) || "sheep";
+  const userProfile = ref<UserProfile>({ ...userProfileDefaults, theme: initialTheme });
 
   const customCategories = ref<Category[]>([]);
   const deletedCategoryIds = ref<string[]>([]);
@@ -72,12 +74,25 @@ export const useTrackerStore = defineStore("tracker", () => {
       records.value = loadedRecords;
       currentBookId.value = loadedCurrentBookId;
       personalRecords.value = loadedPersonalRecords;
+      
       userProfile.value = { ...userProfileDefaults, ...loadedUserProfile };
-      customCategories.value = loadedCustomCategories;
-      deletedCategoryIds.value = loadedDeletedCategories;
-      recordTemplates.value = loadedTemplates;
+      
+      // Theme migration: if theme was 'system' (old default) or missing, change to 'sheep'
+      if (!userProfile.value.theme || userProfile.value.theme === "system") {
+        userProfile.value.theme = "sheep";
+      }
+
+      customCategories.value = loadedCustomCategories || [];
+      deletedCategoryIds.value = loadedDeletedCategories || [];
+      recordTemplates.value = loadedTemplates || [];
 
       isInitialized.value = true;
+      
+      // Save the migrated profile if needed
+      if (userProfile.value.theme === "sheep" && loadedUserProfile?.theme !== "sheep") {
+        await saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
+      }
+
       console.log("[tracker] Store initialized from IndexedDB.");
     })();
 

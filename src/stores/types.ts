@@ -51,7 +51,7 @@ export interface UserProfile {
   name: string;
   avatar?: string;
   email?: string;
-  theme: "light" | "dark" | "system";
+  theme: "light" | "dark" | "system" | "sheep";
   animations: boolean;
   isLoggedIn: boolean;
   authToken?: string;

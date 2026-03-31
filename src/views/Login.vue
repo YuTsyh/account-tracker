@@ -2,8 +2,8 @@
   <main class="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6 py-12 dark:bg-gray-950">
     <section class="w-full max-w-sm" aria-labelledby="login-title">
       <header class="mb-10 text-center">
-        <div class="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-violet-600 text-white shadow-xl shadow-violet-500/20">
-          <CategoryIcon name="account_balance_wallet" class="text-5xl" />
+        <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-[2rem] shadow-xl shadow-violet-500/20">
+          <img src="/magic-sheep-combined.png" alt="Account Tracker" class="h-full w-full object-cover" />
         </div>
         <h1 id="login-title" class="text-2xl font-black tracking-tight text-gray-900 dark:text-white">
           {{ store.isProfileSet ? $t("login.linkAccountTitle") : $t("login.title") }}
@@ -129,7 +129,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, useTemplateRef } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import CategoryIcon from "../components/CategoryIcon.vue";
 import { useTrackerStore } from "../stores/tracker";
 
 const store = useTrackerStore();

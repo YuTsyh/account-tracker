@@ -2,17 +2,209 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body {
-  margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: #f3f4f6;
-  color: #1f2937;
-  @apply transition-colors duration-300 dark:bg-gray-900 dark:text-gray-200;
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+}
+
+.theme-sheep {
+  --primary: #d4a373;
+  --primary-dark: #bc8a5f;
+  --bg-main: #fefae0;
+  --text-main: #6b4226;
+  --secondary: #faedcd;
+  --accent-blue: #a3b18a;
+  /* sage green/blue for a natural feel */
+  --accent-green: #ccd5ae;
+}
+
+/* Global overrides for the sheep theme */
+.theme-sheep,
+.theme-sheep body {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+}
+
+.theme-sheep .bg-white {
+  background-color: #ffffff !important;
+}
+
+.theme-sheep .bg-gray-50 {
+  background-color: var(--bg-main) !important;
+}
+
+.theme-sheep .bg-gray-100,
+.theme-sheep .bg-gray-200\/60,
+.theme-sheep .bg-gray-200 {
+  background-color: var(--secondary) !important;
+}
+
+.theme-sheep .active\:bg-gray-300\/80:active,
+.theme-sheep .active\:bg-gray-200:active,
+.theme-sheep .active\:bg-gray-100:active,
+.theme-sheep .active\:bg-gray-50:active,
+.theme-sheep .hover\:bg-gray-100:hover {
+  background-color: var(--primary-dark) !important;
+  opacity: 0.8;
+}
+
+/* Specific for calculator buttons */
+.theme-sheep .btn-bg-white {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+}
+
+.theme-sheep .btn-bg-gray {
+  background-color: var(--secondary) !important;
+  color: var(--text-main) !important;
+}
+
+.theme-sheep .text-gray-900,
+.theme-sheep .text-gray-800,
+.theme-sheep .text-gray-700 {
+  color: var(--text-main) !important;
+}
+
+/* Override light backgrounds for settings/cards */
+.theme-sheep .bg-violet-50,
+.theme-sheep .bg-indigo-50,
+.theme-sheep .bg-blue-50,
+.theme-sheep .bg-orange-50,
+.theme-sheep .bg-emerald-50,
+.theme-sheep .bg-pink-50,
+.theme-sheep .bg-green-50,
+.theme-sheep .bg-cyan-50,
+.theme-sheep .bg-rose-50,
+.theme-sheep .bg-amber-50 {
+  background-color: var(--secondary) !important;
+}
+
+/* Override semantic text colors to fit the warm palette */
+.theme-sheep .text-violet-600,
+.theme-sheep .text-violet-500,
+.theme-sheep .text-indigo-600,
+.theme-sheep .text-indigo-500,
+.theme-sheep .text-blue-600,
+.theme-sheep .text-blue-500,
+.theme-sheep .text-orange-500,
+.theme-sheep .text-orange-600,
+.theme-sheep .text-cyan-500,
+.theme-sheep .text-cyan-600,
+.theme-sheep .text-pink-600,
+.theme-sheep .text-amber-500,
+.theme-sheep .text-amber-600,
+.theme-sheep .text-amber-700,
+.theme-sheep .text-amber-800 {
+  color: var(--primary) !important;
+}
+
+/* Functional emerald/green (Income/Success) - Use a softer version */
+.theme-sheep .text-emerald-500,
+.theme-sheep .text-emerald-600,
+.theme-sheep .text-green-600,
+.theme-sheep .text-green-500 {
+  color: #a3b18a !important;
+  /* Sage Green */
+}
+
+.theme-sheep .bg-emerald-500,
+.theme-sheep .bg-emerald-600,
+.theme-sheep .bg-green-600,
+.theme-sheep .bg-green-500 {
+  background-color: #a3b18a !important;
+}
+
+/* Functional red (Expense/Danger) - Use a warmer terracotta */
+.theme-sheep .text-red-500,
+.theme-sheep .text-red-600 {
+  color: #a44a3f !important;
+}
+
+.theme-sheep .bg-red-500,
+.theme-sheep .bg-red-600 {
+  background-color: #a44a3f !important;
+}
+
+/* Override primary action backgrounds */
+.theme-sheep .bg-violet-600,
+.theme-sheep .bg-violet-500,
+.theme-sheep .bg-indigo-600,
+.theme-sheep .bg-indigo-500,
+.theme-sheep .bg-blue-600,
+.theme-sheep .bg-blue-500 {
+  background-color: var(--primary) !important;
+}
+
+.theme-sheep .hover\:bg-violet-700:hover,
+.theme-sheep .hover\:bg-indigo-700:hover,
+.theme-sheep .hover\:bg-blue-700:hover,
+.theme-sheep .hover\:bg-violet-600:hover {
+  background-color: var(--primary-dark) !important;
+}
+
+.theme-sheep .active\:bg-violet-800,
+.theme-sheep .active\:bg-blue-800 {
+  background-color: var(--primary-dark) !important;
+}
+
+/* Shadows and Borders */
+.theme-sheep .shadow-violet-500\/20,
+.theme-sheep .shadow-indigo-500\/20,
+.theme-sheep .shadow-blue-500\/20,
+.theme-sheep .shadow-emerald-600\/30,
+.theme-sheep .shadow-red-600\/30,
+.theme-sheep .shadow-md {
+  --tw-shadow-color: rgba(212, 163, 115, 0.2) !important;
+}
+
+.theme-sheep {
+  --color-fab-violet: rgba(212, 163, 115, 0.5);
+  --color-fab-blue: rgba(212, 163, 115, 0.5);
+  --color-fab-indigo: rgba(212, 163, 115, 0.5);
+  --color-fab-emerald: rgba(212, 163, 115, 0.5);
+}
+
+/* Gradients */
+.theme-sheep .from-indigo-500,
+.theme-sheep .from-violet-500,
+.theme-sheep .from-blue-600,
+.theme-sheep .from-emerald-500 {
+  --tw-gradient-from: var(--primary) !important;
+  --tw-gradient-to: var(--primary-dark) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.theme-sheep .to-purple-600,
+.theme-sheep .to-indigo-600,
+.theme-sheep .to-indigo-700,
+.theme-sheep .to-teal-600 {
+  --tw-gradient-to: var(--primary-dark) !important;
+}
+
+.theme-sheep .text-violet-200,
+.theme-sheep .text-blue-200,
+.theme-sheep .text-emerald-200,
+.theme-sheep .text-indigo-200 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.theme-sheep .text-red-300 {
+  color: #e64b4b !important;
+  /* Lighter terracotta red for better visibility on dark brown */
+}
+
+.theme-sheep .text-green-300 {
+  color: #d9f99d !important;
+  /* Light lime/sage for visibility */
+}
+
+.theme-sheep .border-gray-100,
+.theme-sheep .border-gray-200 {
+  border-color: rgba(107, 66, 38, 0.1) !important;
 }
 
 @layer components {
+
   /* ────────────────────────────────────────
      Layout
   ──────────────────────────────────────── */
@@ -145,9 +337,11 @@ body {
     height: 4px;
     width: 4px;
   }
+
   .custom-scrollbar::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply rounded-full bg-gray-200 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600;
   }

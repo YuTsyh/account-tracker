@@ -43,7 +43,8 @@ export async function loadFromStorage<T>(key: string, fallback: T): Promise<T> {
   try {
     const db = await getDB();
     const data = await db.get(STORE_NAME, key);
-    return data !== undefined ? data : fallback;
+    // Treat both undefined and null as "not found" to use fallback
+    return (data !== undefined && data !== null) ? data : fallback;
   } catch (e) {
     console.warn(`[storage] Failed to read key "${key}" from IndexedDB, using fallback.`, e);
     return fallback;

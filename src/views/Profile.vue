@@ -54,43 +54,24 @@
         <h2 id="profile-preferences-heading" class="sr-only">{{ $t("profile.settingsTitle") }}</h2>
 
         <div
-          class="flex items-center justify-between border-b border-gray-50 p-4 transition-colors dark:border-gray-700"
+          class="flex cursor-pointer items-center justify-between border-b border-gray-50 p-4 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50"
+          @click="showThemeSheet = true"
         >
           <div class="flex items-center gap-3">
             <div
               class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-500 dark:bg-orange-900/30"
             >
-              <CategoryIcon name="routine" class="h-5 w-5" />
+              <CategoryIcon :name="themeIconMap[store.userProfile.theme || 'sheep']" class="h-5 w-5" />
             </div>
             <span class="font-bold text-gray-700 dark:text-gray-200">{{ $t("profile.themeSet") }}</span>
           </div>
 
-          <button
-            type="button"
-            role="switch"
-            :aria-checked="isDark"
-            :class="[
-              isDark ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600',
-              'relative inline-flex h-8 w-[52px] shrink-0 cursor-pointer items-center rounded-full transition-colors duration-300 ease-in-out focus:outline-none',
-            ]"
-            @click="toggleTheme"
-          >
-            <span class="sr-only">{{ $t("profile.themeSet") }}</span>
-            <span
-              :class="[
-                isDark ? 'translate-x-[26px]' : 'translate-x-[2px]',
-                'pointer-events-none flex h-[24px] w-[24px] transform items-center justify-center rounded-full bg-white shadow-sm ring-0 transition duration-300 ease-in-out',
-              ]"
-            >
-              <CategoryIcon
-                :name="isDark ? 'dark_mode' : 'light_mode'"
-                :class="[
-                  isDark ? 'text-indigo-500' : 'text-orange-500',
-                  'flex items-center justify-center text-[15px] leading-none',
-                ]"
-              />
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-gray-500 dark:text-gray-400">
+              {{ themeNameMap[store.userProfile.theme || "sheep"] }}
             </span>
-          </button>
+            <CategoryIcon name="chevron_right" class="h-5 w-5 text-gray-300" />
+          </div>
         </div>
 
         <div
@@ -272,6 +253,35 @@
     <TemplateSettingsModal v-model="showTemplateSettings" />
 
     <BaseBottomSheet
+      v-model="showThemeSheet"
+      :title="$t('profile.themeSet')"
+    >
+      <div class="space-y-2">
+        <button
+          v-for="(name, code) in themeNameMap"
+          :key="code"
+          type="button"
+          :aria-pressed="store.userProfile.theme === code"
+          :class="[
+            'flex w-full items-center justify-between rounded-2xl p-4 font-bold transition-all',
+            store.userProfile.theme === code
+              ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
+              : 'bg-gray-50 text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/80',
+          ]"
+          @click="setTheme(code)"
+        >
+          <div class="flex items-center gap-3">
+            <CategoryIcon :name="themeIconMap[code]" class="h-5 w-5" />
+            <span>{{ name }}</span>
+          </div>
+          <svg v-if="store.userProfile.theme === code" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+        </button>
+      </div>
+    </BaseBottomSheet>
+
+    <BaseBottomSheet
       v-model="showLangSheet"
       :title="$t('profile.languageSet')"
     >
@@ -300,7 +310,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import BaseBottomSheet from "../components/BaseBottomSheet.vue";
@@ -319,6 +329,7 @@ const store = useTrackerStore();
 const showCategorySettings = ref(false);
 const showTemplateSettings = ref(false);
 const showLangSheet = ref(false);
+const showThemeSheet = ref(false);
 const piggyFileInput = ref<HTMLInputElement | null>(null);
 const everydayFileInput = ref<HTMLInputElement | null>(null);
 const toast = useToast();
@@ -333,15 +344,23 @@ const toggleAnimations = async () => {
   await store.setAnimations(!store.userProfile.animations);
 };
 
-const isDark = computed(() => {
-  const theme = store.userProfile.theme || "system";
-  if (theme === "dark") return true;
-  if (theme === "light") return false;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-});
+const themeNameMap = {
+  sheep: "魔幻小羊",
+  light: "淺色模式",
+  dark: "深色模式",
+  system: "跟隨系統",
+};
 
-const toggleTheme = async () => {
-  await store.setTheme(isDark.value ? "light" : "dark");
+const themeIconMap = {
+  sheep: "pets",
+  light: "light_mode",
+  dark: "dark_mode",
+  system: "settings_brightness",
+};
+
+const setTheme = async (code: any) => {
+  await store.setTheme(code);
+  showThemeSheet.value = false;
 };
 
 const handleLogin = () => {

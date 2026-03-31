@@ -33,9 +33,11 @@ export function setupUserActions(
     await save();
   }
 
-  async function setTheme(theme: "light" | "dark" | "system") {
+  async function setTheme(theme: "light" | "dark" | "system" | "sheep") {
     userProfile.value.theme = theme;
+    // Save to both for different access patterns
     await saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
+    localStorage.setItem("account-tracker-theme", theme);
   }
 
   async function setAnimations(enabled: boolean) {
