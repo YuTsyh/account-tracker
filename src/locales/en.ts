@@ -161,6 +161,9 @@ export default {
     notLinked: "Not Linked",
     connected: "Connected",
     logoutConfirm: "Are you sure you want to logout? Data will be kept on this device.",
+    dataOperations: "Data Operations",
+    importPiggy: "Import from Piggy Book",
+    importSuccess: "Imported {count} records successfully!",
   },
   login: {
     title: "Login to Account Tracker",

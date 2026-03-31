@@ -143,6 +143,9 @@ export default {
     notLinked: "Not Linked",
     connected: "Connected",
     logoutConfirm: "ログアウトしてもよろしいですか？データはこのデバイスに保持されます。",
+    dataOperations: "データ操作",
+    importPiggy: "小豬記帳本からインポート",
+    importSuccess: "{count} 件の記録をインポートしました！",
   },
   login: {
     title: "Account Tracker にログイン",

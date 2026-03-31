@@ -74,5 +74,9 @@ export function setupPersonalActions(
     personalTotalIncome,
     personalBalance,
     importMyShareFromBook,
+    importPersonalRecords: (recordsToImport: PersonalRecord[]) => {
+      personalRecords.value.push(...recordsToImport);
+      save();
+    },
   };
 }

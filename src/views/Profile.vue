@@ -227,6 +227,28 @@
           {{ $t("profile.backupNote") }}
         </p>
       </section>
+
+      <section aria-labelledby="profile-data-ops-heading" class="space-y-3">
+        <h2 id="profile-data-ops-heading" class="px-2 text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          {{ $t("profile.dataOperations") }}
+        </h2>
+        <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all dark:border-gray-800 dark:bg-gray-800">
+          <ProfileSettingItem
+            :title="$t('profile.importPiggy')"
+            iconName="upload_file"
+            colorClasses="bg-amber-50 text-amber-600 dark:bg-amber-900/30"
+            :isFirst="true"
+            @click="triggerPiggyImport"
+          />
+          <input
+            ref="piggyFileInput"
+            type="file"
+            accept=".txt"
+            class="hidden"
+            @change="handlePiggyFile"
+          />
+        </div>
+      </section>
     </div>
 
     <CategorySettingsModal
@@ -273,7 +295,9 @@ import CategoryIcon from "../components/CategoryIcon.vue";
 import CategorySettingsModal from "../components/CategorySettingsModal.vue";
 import ProfileSettingItem from "../components/ProfileSettingItem.vue";
 import TemplateSettingsModal from "../components/TemplateSettingsModal.vue";
+import { useToast } from "../composables/useToast";
 import { useTrackerStore } from "../stores/tracker";
+import { parsePiggyBackup } from "../utils/piggyImport";
 
 const { locale, t } = useI18n();
 const router = useRouter();
@@ -281,6 +305,8 @@ const store = useTrackerStore();
 const showCategorySettings = ref(false);
 const showTemplateSettings = ref(false);
 const showLangSheet = ref(false);
+const piggyFileInput = ref<HTMLInputElement | null>(null);
+const toast = useToast();
 
 const langNameMap = {
   "zh-TW": "繁體中文",
@@ -322,5 +348,35 @@ const setLanguage = (code: string | number | symbol) => {
   locale.value = code as string;
   localStorage.setItem("account-tracker-lang", code as string);
   showLangSheet.value = false;
+};
+
+const triggerPiggyImport = () => {
+  piggyFileInput.value?.click();
+};
+
+const handlePiggyFile = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  const file = input.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    const content = e.target?.result as string;
+    try {
+      const records = parsePiggyBackup(content);
+      if (records.length > 0) {
+        store.importPersonalRecords(records);
+        toast.success(t("profile.importSuccess", { count: records.length }));
+      }
+    } catch (err) {
+      console.error("Import failed:", err);
+      toast.error("匯入失敗，請確認檔案格式是否正確");
+    }
+    // Reset input
+    input.value = "";
+  };
+
+  reader.readAsText(file);
 };
 </script>
