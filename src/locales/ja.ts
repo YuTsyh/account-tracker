@@ -88,6 +88,12 @@ export default {
     autoCalc: "自動計算",
     splitOverflow: "NT$ {excess} 超過しています",
     splitTotal: "合計：NT$ {total}",
+    validation: {
+      enterAmount: "金額を入力してください",
+      selectMembers: "メンバーを選択してください",
+      customOverflow: "合計を超えています",
+      customMismatch: "合計が一致しません",
+    },
   },
   addRecord: {
     title: "記録を追加",

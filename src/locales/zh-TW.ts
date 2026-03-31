@@ -104,8 +104,14 @@ export default {
     splitEqual: "平均",
     splitCustom: "自訂",
     autoCalc: "自動計算",
-    splitOverflow: "超出 NT$ {excess}，請調整金額",
-    splitTotal: "總金額：NT$ {total}",
+    splitOverflow: "超過 NT$ {excess}",
+    splitTotal: "合計：NT$ {total}",
+    validation: {
+      enterAmount: "請輸入金額",
+      selectMembers: "請選擇分帳成員",
+      customOverflow: "金額超過總額",
+      customMismatch: "各項總和不符",
+    },
   },
   addRecord: {
     title: "新增紀錄",

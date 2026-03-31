@@ -165,13 +165,14 @@
           >
             {{ $t("common.cancel") }}
           </button>
-          <button
+          <BaseButton
             @click="submit"
             :disabled="!isValidAmount"
-            class="flex-1 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white transition-colors hover:bg-violet-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:dark:bg-gray-800/50 disabled:dark:text-gray-600 shadow-md shadow-violet-500/20"
+            :variant="isValidAmount ? 'primary' : 'secondary'"
+            class="flex-1 !py-3 shadow-md transition-all sm:text-sm"
           >
-            {{ $t("common.save") }}
-          </button>
+            {{ saveButtonText }}
+          </BaseButton>
         </div>
       </div>
     </div>
@@ -180,12 +181,14 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useTrackerStore } from "../../stores/tracker";
 import { colorMap } from "../../utils/category";
 import CloseButton from "../CloseButton.vue";
 import CategoryIcon from "../CategoryIcon.vue";
 import CalculatorKeyboard from "../CalculatorKeyboard.vue";
 import RecordSheetLayout from "../RecordSheetLayout.vue";
+import BaseButton from "../BaseButton.vue";
 
 const props = defineProps<{ 
   modelValue: boolean;
@@ -196,6 +199,7 @@ const emit = defineEmits<{
   (e: "update:modelValue", v: boolean): void;
 }>();
 
+const { t } = useI18n();
 const store = useTrackerStore();
 const today = new Date().toISOString().split("T")[0];
 
@@ -247,6 +251,11 @@ const evaluateAmount = () => {
 const isValidAmount = computed(() => {
   const v = Number(form.value.amountStr);
   return !isNaN(v) && v > 0;
+});
+
+const saveButtonText = computed(() => {
+  if (!isValidAmount.value) return t("recordSheet.validation.enterAmount");
+  return t("common.save");
 });
 
 const applyTemplate = (templateId: string) => {

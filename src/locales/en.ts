@@ -104,8 +104,14 @@ export default {
     splitEqual: "Equal",
     splitCustom: "Custom",
     autoCalc: "Auto",
-    splitOverflow: "Exceeds total by NT$ {excess}",
+    splitOverflow: "NT$ {excess} excess",
     splitTotal: "Total: NT$ {total}",
+    validation: {
+      enterAmount: "Enter Amount",
+      selectMembers: "Select Members",
+      customOverflow: "Exceeds Total",
+      customMismatch: "Total Mismatch",
+    },
   },
   addRecord: {
     title: "Add Record",

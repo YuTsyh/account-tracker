@@ -281,15 +281,17 @@
         <BaseButton
           type="submit"
           :disabled="!isSplitValid"
+          :variant="isSplitValid ? 'primary' : 'secondary'"
           class="mt-2 w-full shadow-lg shadow-blue-600/20"
         >
-          {{ $t("common.save") }}
+          {{ saveButtonText }}
         </BaseButton>
       </div>
     </form>
   </RecordSheetLayout>
 </template>
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import { computed, ref, watch } from "vue";
 import { useTrackerStore } from "../../stores/tracker";
 import type { Member } from "../../stores/tracker";
@@ -299,7 +301,6 @@ import BaseButton from "../BaseButton.vue";
 import CloseButton from "../CloseButton.vue";
 import CategoryIcon from "../CategoryIcon.vue";
 import CalculatorKeyboard from "../CalculatorKeyboard.vue";
-
 const props = defineProps<{
   modelValue: boolean;
   bookName: string;
@@ -311,6 +312,7 @@ const emit = defineEmits<{
   "update:modelValue": [value: boolean];
 }>();
 
+const { t } = useI18n();
 const store = useTrackerStore();
 const today = new Date().toISOString().split("T")[0];
 
@@ -421,6 +423,24 @@ const isSplitValid = computed(() => {
     const total = Number(form.value.amountStr) || 0;
     return Math.abs(filledAllocated.value - total) < 0.01;
   }
+});
+
+const saveButtonText = computed(() => {
+  if (!isValidAmount.value) return t("recordSheet.validation.enterAmount");
+  if (form.value.type !== "expense") return t("common.save");
+  
+  if (form.value.splitMode === 'equal') {
+    if (form.value.splitAmongIds.length === 0) return t("recordSheet.validation.selectMembers");
+  } else {
+    // custom mode
+    if (remainingAmount.value < 0) return t("recordSheet.validation.customOverflow");
+    if (unfilledCount.value === 0) {
+      const total = Number(form.value.amountStr) || 0;
+      if (Math.abs(filledAllocated.value - total) >= 0.01) return t("recordSheet.validation.customMismatch");
+    }
+  }
+
+  return t("common.save");
 });
 
 const applyTemplate = (templateId: string) => {
