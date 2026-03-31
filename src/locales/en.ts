@@ -163,7 +163,9 @@ export default {
     logoutConfirm: "Are you sure you want to logout? Data will be kept on this device.",
     dataOperations: "Data Operations",
     importPiggy: "Import from Piggy Book",
+    importEveryday: "Import Everyday Bookkeeping (CSV)",
     importSuccess: "Imported {count} records successfully!",
+    importCSVError: "CSV format error, please check if it's from Everyday Bookkeeping",
   },
   login: {
     title: "Login to Account Tracker",

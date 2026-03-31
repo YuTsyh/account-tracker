@@ -238,9 +238,9 @@ function getCategoryIcon(id: string) {
   return store.allCategories.find((c) => c.id === id)?.icon || "more_horiz";
 }
 
-const deleteTemplate = (id: string, name: string) => {
+const deleteTemplate = async (id: string, name: string) => {
   if (confirm(t("templates.deleteConfirm", { name }))) {
-    store.deleteTemplate(id);
+    await store.deleteTemplate(id);
   }
 };
 
@@ -272,7 +272,7 @@ const onClose = (val: boolean) => {
   emit("update:modelValue", val);
 };
 
-const saveTemplate = () => {
+const saveTemplate = async () => {
   if (!isFormValid.value) return;
 
   const rawAmount = String(amountStr.value).trim();
@@ -287,9 +287,9 @@ const saveTemplate = () => {
   };
 
   if (editingId.value) {
-    store.updateTemplate(editingId.value, data);
+    await store.updateTemplate(editingId.value, data);
   } else {
-    store.addTemplate(data);
+    await store.addTemplate(data);
   }
   isCreating.value = false;
 };

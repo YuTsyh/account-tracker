@@ -157,7 +157,7 @@
                       type="button"
                       class="btn-delete ml-1 shrink-0"
                       :aria-label="$t('common.delete')"
-                      @click.stop="store.deleteRecord(record.id)"
+                      @click.stop="handleDeleteRecord(record.id)"
                     >
                       <svg
                         class="h-4 w-4"
@@ -277,11 +277,15 @@ const filteredBookBalance = computed(() => filteredBookIncome.value - filteredBo
 const getMemberName = (id: string) =>
   book.value?.members.find((member) => member.id === id)?.name ?? t("books.unknown");
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
   if (!book.value) return;
   if (window.confirm(t("books.deleteConfirm", { name: book.value.name }))) {
-    store.deleteBook(book.value.id);
+    await store.deleteBook(book.value.id);
     emit("back");
   }
+};
+
+const handleDeleteRecord = async (id: string) => {
+  await store.deleteRecord(id);
 };
 </script>

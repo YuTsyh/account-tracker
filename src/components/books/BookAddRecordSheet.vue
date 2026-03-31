@@ -549,7 +549,7 @@ const toggleAll = () => {
 
 const close = () => emit("update:modelValue", false);
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   evaluateAmount();
   const amt = Number(form.value.amountStr);
   if (!amt || isNaN(amt) || amt <= 0) return;
@@ -582,13 +582,13 @@ const handleSubmit = () => {
   };
 
   if (props.editRecordId) {
-    store.updateRecord(props.editRecordId, data);
+    await store.updateRecord(props.editRecordId, data);
   } else {
-    store.addRecord(data);
+    await store.addRecord(data);
 
     // Save as template if requested
     if (shouldSaveAsTemplate.value) {
-      store.addTemplate({
+      await store.addTemplate({
         name: form.value.note || currentCategoryObj.value?.name || form.value.categoryId,
         type: form.value.type,
         category: form.value.categoryId,

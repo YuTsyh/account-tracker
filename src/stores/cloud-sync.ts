@@ -14,7 +14,7 @@ export function setupCloudSyncActions(
   personalRecords: Ref<PersonalRecord[]>,
   customCategories: Ref<Category[]>,
   recordTemplates: Ref<RecordTemplate[]>,
-  save: () => void
+  save: () => Promise<void>
 ) {
   const toast = useToast();
 
@@ -46,7 +46,7 @@ export function setupCloudSyncActions(
       records.value = data.records || [];
       personalRecords.value = data.personal_records || [];
       recordTemplates.value = data.templates || [];
-      save();
+      await save();
       toast.success("資料已成功從雲端回復！");
     } catch {
       toast.error("下載失敗，請稍後再試。");

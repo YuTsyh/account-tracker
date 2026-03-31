@@ -77,9 +77,9 @@ const currentBook = computed(
   () => store.books.find((book) => book.id === selectedBookId.value) ?? null,
 );
 
-const openBook = (id: string) => {
+const openBook = async (id: string) => {
   selectedBookId.value = id;
-  store.selectBook(id);
+  await store.selectBook(id);
 };
 
 const openNewBook = () => {

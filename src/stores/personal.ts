@@ -10,25 +10,25 @@ export function setupPersonalActions(
   personalRecords: Ref<PersonalRecord[]>,
   memberStats: ComputedRef<{ member: { id: string; name: string }; paid: number; owed: number; net: number }[]>,
   currentBook: ComputedRef<{ id: string; name: string } | null>,
-  save: () => void
+  save: () => Promise<void>
 ) {
   // ---- CRUD ----
-  const addPersonalRecord = (record: Omit<PersonalRecord, "id">) => {
+  const addPersonalRecord = async (record: Omit<PersonalRecord, "id">) => {
     personalRecords.value.unshift({ ...record, id: crypto.randomUUID() });
-    save();
+    await save();
   };
 
-  const updatePersonalRecord = (id: string, record: Partial<Omit<PersonalRecord, "id">>) => {
+  const updatePersonalRecord = async (id: string, record: Partial<Omit<PersonalRecord, "id">>) => {
     const idx = personalRecords.value.findIndex((r) => r.id === id);
     if (idx !== -1) {
       personalRecords.value[idx] = { ...personalRecords.value[idx], ...record };
-      save();
+      await save();
     }
   };
 
-  const deletePersonalRecord = (id: string) => {
+  const deletePersonalRecord = async (id: string) => {
     personalRecords.value = personalRecords.value.filter((r) => r.id !== id);
-    save();
+    await save();
   };
 
   // ---- Summaries ----
@@ -74,9 +74,9 @@ export function setupPersonalActions(
     personalTotalIncome,
     personalBalance,
     importMyShareFromBook,
-    importPersonalRecords: (recordsToImport: PersonalRecord[]) => {
+    importPersonalRecords: async (recordsToImport: PersonalRecord[]) => {
       personalRecords.value.push(...recordsToImport);
-      save();
+      await save();
     },
   };
 }

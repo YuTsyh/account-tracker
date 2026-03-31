@@ -178,7 +178,7 @@
           :dateGroup="dateGroup"
           :records="records"
           @edit="openEditRecord"
-          @delete="store.deletePersonalRecord"
+          @delete="handleDeletePersonalRecord"
         />
       </div>
     </section>
@@ -262,11 +262,11 @@ const openEditRecord = (id: string) => {
   showForm.value = true;
 };
 
-const openNewRecordFromTemplate = (templateId: string) => {
+const openNewRecordFromTemplate = async (templateId: string) => {
   const tpl = store.recordTemplates.find((t) => t.id === templateId);
   if (tpl && tpl.amount !== null) {
     const catName = store.allCategories.find((c) => c.id === tpl.category)?.name ?? tpl.category;
-    store.addPersonalRecord({
+    await store.addPersonalRecord({
       type: tpl.type,
       amount: tpl.amount,
       category: catName,
@@ -288,5 +288,9 @@ const getTemplateCategoryStyle = (categoryId: string) => {
     icon: cat?.icon ?? "more_horiz",
     ...(colorMap[color] ?? colorMap.gray),
   };
+};
+
+const handleDeletePersonalRecord = async (id: string) => {
+  await store.deletePersonalRecord(id);
 };
 </script>

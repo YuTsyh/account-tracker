@@ -20,7 +20,7 @@ export function setupBookActions(
   records: Ref<RecordItem[]>,
   currentBookId: Ref<string | null>,
   userProfile: Ref<UserProfile>,
-  save: () => void
+  save: () => Promise<void>
 ) {
   // ---- Computed ----
   const currentBook = computed(
@@ -66,7 +66,7 @@ export function setupBookActions(
         ...records.value.filter((r) => r.bookId !== bookId),
         ...data.records,
       ];
-      save();
+      await save();
     } catch (e) {
       console.error("[sync] Failed to pull shared book:", e);
     }
@@ -88,7 +88,7 @@ export function setupBookActions(
     try {
       const res = await shareBookToCloud(payload);
       book.shareCode = res.data.code;
-      save();
+      await save();
       return book.shareCode;
     } catch (e) {
       console.error("[sync] Failed to publish book:", e);
@@ -122,7 +122,7 @@ export function setupBookActions(
       books.value.push(newBook);
       records.value.push(...data.records);
       currentBookId.value = newBook.id;
-      save();
+      await save();
 
       if (shouldSyncBack) {
         syncSharedBook(newBook.id);
@@ -139,7 +139,7 @@ export function setupBookActions(
   //  Book CRUD
   // =====================
 
-  const createBook = (name: string, memberNames: string[]) => {
+  const createBook = async (name: string, memberNames: string[]) => {
     if (!name.trim()) return null;
     const members: Member[] = memberNames
       .filter((n) => n.trim())
@@ -153,16 +153,16 @@ export function setupBookActions(
     };
     books.value.push(book);
     currentBookId.value = book.id;
-    save();
+    await save();
     return book;
   };
 
-  const selectBook = (bookId: string) => {
+  const selectBook = async (bookId: string) => {
     currentBookId.value = bookId;
-    save();
+    await save();
   };
 
-  const updateBook = (bookId: string, name: string, memberNames: string[]) => {
+  const updateBook = async (bookId: string, name: string, memberNames: string[]) => {
     const book = books.value.find((b) => b.id === bookId);
     if (!book || !name.trim()) return null;
 
@@ -193,25 +193,25 @@ export function setupBookActions(
 
     book.name = name.trim();
     book.members = newMembers;
-    save();
+    await save();
     syncSharedBook(bookId);
     return book;
   };
 
-  const deleteBook = (bookId: string) => {
+  const deleteBook = async (bookId: string) => {
     books.value = books.value.filter((b) => b.id !== bookId);
     records.value = records.value.filter((r) => r.bookId !== bookId);
     if (currentBookId.value === bookId) {
       currentBookId.value = books.value[0]?.id ?? null;
     }
-    save();
+    await save();
   };
 
-  const addMemberToBook = (bookId: string, memberName: string) => {
+  const addMemberToBook = async (bookId: string, memberName: string) => {
     const book = books.value.find((b) => b.id === bookId);
     if (!book || !memberName.trim()) return;
     book.members.push({ id: crypto.randomUUID(), name: memberName.trim() });
-    save();
+    await save();
     syncSharedBook(bookId);
   };
 
@@ -219,32 +219,32 @@ export function setupBookActions(
   //  Book Record CRUD
   // =====================
 
-  const addRecord = (record: Omit<RecordItem, "id" | "bookId">) => {
+  const addRecord = async (record: Omit<RecordItem, "id" | "bookId">) => {
     if (!currentBookId.value) return;
     records.value.unshift({
       ...record,
       id: crypto.randomUUID(),
       bookId: currentBookId.value,
     });
-    save();
+    await save();
     syncSharedBook(currentBookId.value);
   };
 
-  const updateRecord = (id: string, record: Partial<Omit<RecordItem, "id" | "bookId">>) => {
+  const updateRecord = async (id: string, record: Partial<Omit<RecordItem, "id" | "bookId">>) => {
     const idx = records.value.findIndex((r) => r.id === id);
     if (idx !== -1) {
       const bookId = records.value[idx].bookId;
       records.value[idx] = { ...records.value[idx], ...record };
-      save();
+      await save();
       syncSharedBook(bookId);
     }
   };
 
-  const deleteRecord = (id: string) => {
+  const deleteRecord = async (id: string) => {
     const record = records.value.find((r) => r.id === id);
     if (record) {
       records.value = records.value.filter((r) => r.id !== id);
-      save();
+      await save();
       syncSharedBook(record.bookId);
     }
   };

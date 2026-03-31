@@ -163,7 +163,9 @@ export default {
     logoutConfirm: "確定要登出嗎？資料將保留在此裝置。",
     dataOperations: "資料與備份操作",
     importPiggy: "匯入小豬記帳本備份",
+    importEveryday: "匯入天天記帳備份 (CSV)",
     importSuccess: "成功匯入 {count} 筆紀錄！",
+    importCSVError: "CSV 檔案格式錯誤，請確認是否為天天記帳匯出的檔案",
   },
   login: {
     title: "登入 Account Tracker",

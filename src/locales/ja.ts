@@ -145,7 +145,9 @@ export default {
     logoutConfirm: "ログアウトしてもよろしいですか？データはこのデバイスに保持されます。",
     dataOperations: "データ操作",
     importPiggy: "小豬記帳本からインポート",
+    importEveryday: "天天記帳からインポート (CSV)",
     importSuccess: "{count} 件の記録をインポートしました！",
+    importCSVError: "CSV形式のエラーです。天天記帳のファイルか確認してください",
   },
   login: {
     title: "Account Tracker にログイン",

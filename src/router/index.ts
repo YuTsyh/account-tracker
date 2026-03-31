@@ -23,8 +23,13 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const store = useTrackerStore();
+
+  // Ensure store is loaded from IndexedDB before evaluating auth rules
+  if (!store.isInitialized) {
+    await store.init();
+  }
   
   // Public routes that don't require any profile or login
   const publicRoutes = ["landing", "login", "privacy", "terms"];

@@ -104,7 +104,7 @@ const close = () => {
 
 useEscapeKey(toRef(props, "modelValue"), close);
 
-const handleCreate = () => {
+const handleCreate = async () => {
   if (!form.value.name.trim()) return;
   const memberNames = form.value.membersText
     .split("\n")
@@ -113,12 +113,12 @@ const handleCreate = () => {
   const defaultMembers = memberNames.length > 0 ? memberNames : [store.userProfile.name || t("common.me")];
 
   if (props.editBookId) {
-    store.updateBook(props.editBookId, form.value.name.trim(), defaultMembers);
+    await store.updateBook(props.editBookId, form.value.name.trim(), defaultMembers);
     close();
     return;
   }
 
-  const book = store.createBook(form.value.name.trim(), defaultMembers);
+  const book = await store.createBook(form.value.name.trim(), defaultMembers);
   if (!book) return;
   close();
   emit("created", book.id);

@@ -1,22 +1,61 @@
-/**
- * Typed localStorage helpers with error handling.
- */
+import { openDB, type IDBPDatabase } from "idb";
 
-export function loadFromStorage<T>(key: string, fallback: T): T {
+const DB_NAME = "account-tracker-db";
+const STORE_NAME = "key-value-store";
+const DB_VERSION = 1;
+
+let dbPromise: Promise<IDBPDatabase> | null = null;
+
+function getDB() {
+  if (!dbPromise) {
+    dbPromise = openDB(DB_NAME, DB_VERSION, {
+      upgrade(db) {
+        db.createObjectStore(STORE_NAME);
+      },
+    });
+  }
+  return dbPromise;
+}
+
+/**
+ * Migration from localStorage to IndexedDB.
+ * Should be called during store initialization.
+ */
+export async function migrateFromLocalStorage() {
+  for (const [key, storageKey] of Object.entries(STORAGE_KEYS)) {
+    const localData = localStorage.getItem(storageKey);
+    if (localData) {
+      try {
+        const parsed = JSON.parse(localData);
+        await saveToStorage(storageKey, parsed);
+        // After successful migration to IDB, we can optionally clear localStorage
+        // but it's safer to keep it for one more version or clear it specifically.
+        localStorage.removeItem(storageKey);
+        console.log(`[storage] Migrated ${key} from localStorage to IndexedDB.`);
+      } catch (e) {
+        console.error(`[storage] Failed to migrate ${key}:`, e);
+      }
+    }
+  }
+}
+
+export async function loadFromStorage<T>(key: string, fallback: T): Promise<T> {
   try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    console.warn(`[storage] Failed to read key "${key}", using fallback.`);
+    const db = await getDB();
+    const data = await db.get(STORE_NAME, key);
+    return data !== undefined ? data : fallback;
+  } catch (e) {
+    console.warn(`[storage] Failed to read key "${key}" from IndexedDB, using fallback.`, e);
     return fallback;
   }
 }
 
-export function saveToStorage(key: string, data: unknown) {
+export async function saveToStorage(key: string, data: unknown) {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    const db = await getDB();
+    await db.put(STORE_NAME, data, key);
   } catch (e) {
-    console.error(`[storage] Failed to save key "${key}":`, e);
+    console.error(`[storage] Failed to save key "${key}" to IndexedDB:`, e);
   }
 }
 

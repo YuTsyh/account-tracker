@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="store.isInitialized"
     class="relative mx-auto min-h-screen max-w-md overflow-hidden bg-gray-50 transition-colors duration-300 dark:bg-gray-900 sm:rounded-none md:rounded-3xl md:shadow-2xl"
   >
     <router-view v-slot="{ Component }">
@@ -10,15 +11,22 @@
     <BottomNav v-if="store.isProfileSet" />
     <ToastContainer />
   </div>
+  <div v-else class="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div class="h-12 w-12 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
+import { onBeforeMount, watch } from "vue";
 import { useTrackerStore } from "./stores/tracker";
 import BottomNav from "./components/BottomNav.vue";
 import ToastContainer from "./components/ToastContainer.vue";
 
 const store = useTrackerStore();
+
+onBeforeMount(async () => {
+  await store.init();
+});
 
 watch(
   () => store.userProfile.theme,

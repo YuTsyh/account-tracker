@@ -249,10 +249,10 @@ const incomeCats = computed(() =>
   store.allCategories.filter((c) => c.type === "income"),
 );
 
-const confirmDeleteCategory = (id: string, name: string) => {
+const confirmDeleteCategory = async (id: string, name: string) => {
   const transName = te(`categories.${id}`) ? t(`categories.${id}`) : name;
   if (confirm(t("categories.deleteConfirm", { name: transName }))) {
-    store.deleteCustomCategory(id);
+    await store.deleteCustomCategory(id);
   }
 };
 
@@ -283,9 +283,9 @@ const openCreate = () => {
   isCreating.value = true;
 };
 
-const saveCustomCategory = () => {
+const saveCustomCategory = async () => {
   if (!newForm.value.name.trim()) return;
-  store.addCustomCategory({
+  await store.addCustomCategory({
     name: newForm.value.name.trim(),
     type: newForm.value.type,
     color: newForm.value.color,

@@ -247,6 +247,19 @@
             class="hidden"
             @change="handlePiggyFile"
           />
+          <ProfileSettingItem
+            :title="$t('profile.importEveryday')"
+            iconName="csv"
+            colorClasses="bg-blue-50 text-blue-600 dark:bg-blue-900/30"
+            @click="triggerEverydayImport"
+          />
+          <input
+            ref="everydayFileInput"
+            type="file"
+            accept=".csv"
+            class="hidden"
+            @change="handleEverydayFile"
+          />
         </div>
       </section>
     </div>
@@ -297,6 +310,7 @@ import ProfileSettingItem from "../components/ProfileSettingItem.vue";
 import TemplateSettingsModal from "../components/TemplateSettingsModal.vue";
 import { useToast } from "../composables/useToast";
 import { useTrackerStore } from "../stores/tracker";
+import { parseEverydayCSV } from "../utils/everydayImport";
 import { parsePiggyBackup } from "../utils/piggyImport";
 
 const { locale, t } = useI18n();
@@ -306,6 +320,7 @@ const showCategorySettings = ref(false);
 const showTemplateSettings = ref(false);
 const showLangSheet = ref(false);
 const piggyFileInput = ref<HTMLInputElement | null>(null);
+const everydayFileInput = ref<HTMLInputElement | null>(null);
 const toast = useToast();
 
 const langNameMap = {
@@ -314,8 +329,8 @@ const langNameMap = {
   ja: "日本語",
 };
 
-const toggleAnimations = () => {
-  store.setAnimations(!store.userProfile.animations);
+const toggleAnimations = async () => {
+  await store.setAnimations(!store.userProfile.animations);
 };
 
 const isDark = computed(() => {
@@ -325,8 +340,8 @@ const isDark = computed(() => {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 });
 
-const toggleTheme = () => {
-  store.setTheme(isDark.value ? "light" : "dark");
+const toggleTheme = async () => {
+  await store.setTheme(isDark.value ? "light" : "dark");
 };
 
 const handleLogin = () => {
@@ -334,13 +349,13 @@ const handleLogin = () => {
   window.location.href = `${backendUrl}/auth/google/login`;
 };
 
-const handleLogout = () => {
+const handleLogout = async () => {
   if (confirm(t("profile.logoutConfirm"))) {
     store.userProfile.isLoggedIn = false;
     store.userProfile.authToken = undefined;
     store.userProfile.avatar = undefined;
     store.userProfile.email = undefined;
-    store.updateUserProfile(store.userProfile.name);
+    await store.updateUserProfile(store.userProfile.name);
   }
 };
 
@@ -354,19 +369,19 @@ const triggerPiggyImport = () => {
   piggyFileInput.value?.click();
 };
 
-const handlePiggyFile = (event: Event) => {
+const handlePiggyFile = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (!input.files?.length) return;
 
   const file = input.files[0];
   const reader = new FileReader();
 
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     const content = e.target?.result as string;
     try {
       const records = parsePiggyBackup(content);
       if (records.length > 0) {
-        store.importPersonalRecords(records);
+        await store.importPersonalRecords(records);
         toast.success(t("profile.importSuccess", { count: records.length }));
       }
     } catch (err) {
@@ -378,5 +393,37 @@ const handlePiggyFile = (event: Event) => {
   };
 
   reader.readAsText(file);
+};
+
+const triggerEverydayImport = () => {
+  everydayFileInput.value?.click();
+};
+
+const handleEverydayFile = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  const file = input.files[0];
+  const reader = new FileReader();
+
+  reader.onload = async (e) => {
+    const content = e.target?.result as string;
+    try {
+      const records = parseEverydayCSV(content);
+      if (records.length > 0) {
+        await store.importPersonalRecords(records);
+        toast.success(t("profile.importSuccess", { count: records.length }));
+      } else {
+        toast.error(t("profile.importCSVError"));
+      }
+    } catch (err) {
+      console.error("Import failed:", err);
+      toast.error(t("profile.importCSVError"));
+    }
+    // Reset input
+    input.value = "";
+  };
+
+  reader.readAsText(file, "UTF-8");
 };
 </script>

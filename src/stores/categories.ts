@@ -17,20 +17,20 @@ export function setupCategoryActions(
     )
   );
 
-  const addCustomCategory = (cat: Omit<Category, "id" | "isDefault">) => {
+  const addCustomCategory = async (cat: Omit<Category, "id" | "isDefault">) => {
     const newCat: Category = { ...cat, id: crypto.randomUUID(), isDefault: false };
     customCategories.value.push(newCat);
-    saveToStorage(STORAGE_KEYS.CUSTOM_CATEGORIES, customCategories.value);
+    await saveToStorage(STORAGE_KEYS.CUSTOM_CATEGORIES, customCategories.value);
   };
 
-  const deleteCustomCategory = (id: string) => {
+  const deleteCustomCategory = async (id: string) => {
     const isCustom = customCategories.value.some((c) => c.id === id);
     if (isCustom) {
       customCategories.value = customCategories.value.filter((c) => c.id !== id);
-      saveToStorage(STORAGE_KEYS.CUSTOM_CATEGORIES, customCategories.value);
+      await saveToStorage(STORAGE_KEYS.CUSTOM_CATEGORIES, customCategories.value);
     } else {
       deletedCategoryIds.value.push(id);
-      saveToStorage(STORAGE_KEYS.DELETED_CATEGORIES, deletedCategoryIds.value);
+      await saveToStorage(STORAGE_KEYS.DELETED_CATEGORIES, deletedCategoryIds.value);
     }
   };
 

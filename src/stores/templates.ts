@@ -6,24 +6,24 @@ import type { RecordTemplate } from "./types";
  */
 export function setupTemplateActions(
   recordTemplates: Ref<RecordTemplate[]>,
-  save: () => void
+  save: () => Promise<void>
 ) {
-  const addTemplate = (template: Omit<RecordTemplate, "id">) => {
+  const addTemplate = async (template: Omit<RecordTemplate, "id">) => {
     recordTemplates.value.push({ ...template, id: crypto.randomUUID() });
-    save();
+    await save();
   };
 
-  const updateTemplate = (id: string, updates: Partial<RecordTemplate>) => {
+  const updateTemplate = async (id: string, updates: Partial<RecordTemplate>) => {
     const idx = recordTemplates.value.findIndex((t) => t.id === id);
     if (idx !== -1) {
       recordTemplates.value[idx] = { ...recordTemplates.value[idx], ...updates };
-      save();
+      await save();
     }
   };
 
-  const deleteTemplate = (id: string) => {
+  const deleteTemplate = async (id: string) => {
     recordTemplates.value = recordTemplates.value.filter((t) => t.id !== id);
-    save();
+    await save();
   };
 
   return { addTemplate, updateTemplate, deleteTemplate };

@@ -9,38 +9,38 @@ import { saveToStorage, STORAGE_KEYS } from "./storage";
  */
 export function setupUserActions(
   userProfile: Ref<UserProfile>,
-  save: () => void
+  save: () => Promise<void>
 ) {
   const isProfileSet = computed(() => userProfile.value.name.trim() !== "");
 
-  function updateUserProfile(name: string) {
+  async function updateUserProfile(name: string) {
     userProfile.value.name = name.trim();
-    save();
+    await save();
   }
 
-  function loginAnonymous(name: string) {
+  async function loginAnonymous(name: string) {
     userProfile.value.isLoggedIn = false;
     userProfile.value.authToken = undefined;
-    updateUserProfile(name);
+    await updateUserProfile(name);
   }
 
-  function loginGoogle(data: { name: string; email: string; avatar: string; token: string }) {
+  async function loginGoogle(data: { name: string; email: string; avatar: string; token: string }) {
     userProfile.value.name = data.name.trim();
     userProfile.value.email = data.email;
     userProfile.value.avatar = data.avatar;
     userProfile.value.authToken = data.token;
     userProfile.value.isLoggedIn = true;
-    save();
+    await save();
   }
 
-  function setTheme(theme: "light" | "dark" | "system") {
+  async function setTheme(theme: "light" | "dark" | "system") {
     userProfile.value.theme = theme;
-    saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
+    await saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
   }
 
-  function setAnimations(enabled: boolean) {
+  async function setAnimations(enabled: boolean) {
     userProfile.value.animations = enabled;
-    saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
+    await saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
   }
 
   return {

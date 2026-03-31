@@ -327,7 +327,7 @@ watch(
   },
 );
 
-const submit = () => {
+const submit = async () => {
   evaluateAmount();
   const amt = Number(form.value.amountStr);
   if (!amt || isNaN(amt) || amt <= 0) return;
@@ -341,13 +341,13 @@ const submit = () => {
   };
 
   if (props.editRecordId) {
-    store.updatePersonalRecord(props.editRecordId, data);
+    await store.updatePersonalRecord(props.editRecordId, data);
   } else {
-    store.addPersonalRecord(data);
+    await store.addPersonalRecord(data);
     
     // Save as template if requested
     if (shouldSaveAsTemplate.value) {
-      store.addTemplate({
+      await store.addTemplate({
         name: form.value.note || currentCategoryObj.value?.name || form.value.categoryId,
         type: form.value.type,
         category: form.value.categoryId,

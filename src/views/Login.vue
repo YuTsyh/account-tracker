@@ -151,17 +151,17 @@ const handleGoogleLogin = () => {
   window.location.href = `${backendUrl}/auth/google/login`;
 };
 
-const handleStart = () => {
+const handleStart = async () => {
   if (name.value.trim()) {
-    store.loginAnonymous(name.value);
+    await store.loginAnonymous(name.value);
     router.push("/dashboard");
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   const query = route.query;
   if (query.token && query.name) {
-    store.loginGoogle({
+    await store.loginGoogle({
       token: query.token as string,
       name: query.name as string,
       email: query.email as string,
