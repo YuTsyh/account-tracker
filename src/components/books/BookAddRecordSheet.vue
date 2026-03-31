@@ -257,8 +257,8 @@
               <p v-if="isValidAmount && autoPerPerson < 0" class="mt-2 text-right text-xs font-bold text-red-500">
                 {{ $t('recordSheet.splitOverflow', { excess: Math.abs(remainingAmount).toLocaleString() }) }}
               </p>
-              <p v-else-if="isValidAmount" class="mt-2 text-right text-xs text-gray-400">
-                {{ $t('recordSheet.splitTotal', { total: Number(form.amountStr).toLocaleString() }) }}
+              <p v-else-if="isValidAmount" class="mt-2 text-right text-xs font-bold" :class="Math.abs(filledAllocated - Number(form.amountStr)) < 0.01 ? 'text-emerald-500' : 'text-gray-400'">
+                {{ $t('recordSheet.splitTotal', { total: filledAllocated.toLocaleString() }) }} / {{ Number(form.amountStr).toLocaleString() }}
               </p>
             </template>
           </div>

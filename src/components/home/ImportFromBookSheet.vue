@@ -6,8 +6,10 @@
     :subtitle="$t('home.importSubtitle')"
     contentClass="pb-12 px-6"
   >
-    <div v-if="store.books.length === 0" class="empty-state py-8 text-sm">
-      <div class="mb-3 text-4xl">📭</div>
+    <div v-if="store.books.length === 0" class="empty-state py-8 text-sm opacity-40">
+      <div class="mb-3">
+        <span class="material-symbols-outlined text-5xl">inbox</span>
+      </div>
       {{ $t("home.noBooksForImport") }}
     </div>
 
@@ -18,7 +20,7 @@
         class="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50"
       >
         <p class="mb-3 flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-200">
-          <span class="text-lg">📒</span> {{ book.name }}
+          <span class="material-symbols-outlined text-blue-500">menu_book</span> {{ book.name }}
         </p>
         <div class="flex flex-wrap gap-2">
           <button

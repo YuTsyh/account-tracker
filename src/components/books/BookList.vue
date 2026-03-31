@@ -26,10 +26,10 @@
             @click="$emit('select', book.id)"
           >
             <div
-              class="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl dark:bg-blue-900/30"
+              class="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
               aria-hidden="true"
             >
-              📒
+              <span class="material-symbols-outlined text-2xl">menu_book</span>
             </div>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5">
@@ -47,26 +47,15 @@
                 {{ book.members.map((member) => member.name).join(" · ") }}
               </p>
             </div>
-            <svg
-              class="ml-2 h-5 w-5 shrink-0 text-gray-300 dark:text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <span class="material-symbols-outlined ml-2 shrink-0 text-gray-300 dark:text-gray-600">chevron_right</span>
           </button>
         </li>
       </ul>
 
       <div v-else class="empty-state" aria-live="polite">
-        <div class="mb-3 text-5xl opacity-80" aria-hidden="true">📭</div>
+        <div class="mb-3 flex justify-center opacity-40" aria-hidden="true">
+          <span class="material-symbols-outlined text-6xl">inbox</span>
+        </div>
         <p class="font-bold">{{ $t("books.noBooks") }}</p>
         <p class="mt-1 text-sm">{{ $t("books.createBookHint") }}</p>
       </div>
