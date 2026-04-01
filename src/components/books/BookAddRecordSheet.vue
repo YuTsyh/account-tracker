@@ -599,6 +599,14 @@ const handleSubmit = async () => {
   }
   close();
 };
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (val && store.currentBookId) {
+      store.pullSharedBook(store.currentBookId);
+    }
+  }
+);
 </script>
 
 <style scoped>

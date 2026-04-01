@@ -1,5 +1,5 @@
 import type { Ref } from "vue";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import type { Book, RecordItem, Member, Settlement, UserProfile, SharedBookPayload } from "./types";
 import { shareBookToCloud, fetchSharedBook, updateSharedBook } from "../utils/api";
 
@@ -30,6 +30,11 @@ export function setupBookActions(
   const currentBookRecords = computed(() =>
     records.value.filter((r) => r.bookId === currentBookId.value)
   );
+
+  // Auto-pull when current book changes
+  watch(currentBookId, (newId) => {
+    if (newId) pullSharedBook(newId);
+  }, { immediate: true });
 
   // =====================
   //  Shared Book Sync
@@ -160,6 +165,8 @@ export function setupBookActions(
   const selectBook = async (bookId: string) => {
     currentBookId.value = bookId;
     await save();
+    // Background pull if shared
+    pullSharedBook(bookId);
   };
 
   const updateBook = async (bookId: string, name: string, memberNames: string[]) => {

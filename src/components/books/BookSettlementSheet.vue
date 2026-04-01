@@ -154,21 +154,28 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from "vue";
+import { useTrackerStore } from "../../stores/tracker";
 import type { Settlement } from "../../stores/tracker";
 import CategoryIcon from "../CategoryIcon.vue";
 import BaseBottomSheet from "../BaseBottomSheet.vue";
 
-defineProps<{
+const props = defineProps<{
   modelValue: boolean;
   bookName: string;
-  memberStats: {
-    member: { id: string; name: string };
-    paid: number;
-    owed: number;
-    net: number;
-  }[];
+  memberStats: any[];
   settlements: Settlement[];
 }>();
 
-defineEmits<{ "update:modelValue": [value: boolean] }>();
+const emit = defineEmits<{ "update:modelValue": [value: boolean] }>();
+const store = useTrackerStore();
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (val && store.currentBookId) {
+      store.pullSharedBook(store.currentBookId);
+    }
+  }
+);
 </script>
