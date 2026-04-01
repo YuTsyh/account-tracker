@@ -7,13 +7,13 @@
       @click.self="close"
     >
       <div
-        class="absolute inset-0 animate-fade-in bg-black/40 backdrop-blur-[2px]"
+        class="absolute inset-0 animate-fade-in bg-black/40"
         aria-hidden="true"
         @click="close"
       ></div>
 
       <section
-        class="animate-slide-up relative flex max-w-full flex-col overflow-hidden bg-white shadow-2xl transition-colors dark:bg-gray-900"
+        class="animate-slide-up will-change-transform relative flex max-w-full flex-col overflow-hidden bg-white shadow-2xl transition-colors dark:bg-gray-900"
         :class="[maxHeight, roundedClass]"
         role="dialog"
         aria-modal="true"

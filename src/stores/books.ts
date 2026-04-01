@@ -116,11 +116,30 @@ export function setupBookActions(
       const newBook: Book = { ...data.book, shareCode: code };
 
       // Auto-enroll the joining user as a member
+      const myId = userProfile.value.id;
       const myName = userProfile.value.name || "我";
-      const amIMember = newBook.members.some((m: Member) => m.name === myName);
+      
+      // Check if I am already in the member list by userId
+      const existingMemberByUserId = newBook.members.find((m: Member) => m.userId === myId);
+      
       let shouldSyncBack = false;
-      if (!amIMember) {
-        newBook.members = [...newBook.members, { id: crypto.randomUUID(), name: myName }];
+      if (!existingMemberByUserId) {
+        // If not found by userId, try to match by name (case-insensitive)
+        const existingMemberByName = newBook.members.find(
+          (m: Member) => !m.userId && m.name.trim().toLowerCase() === myName.trim().toLowerCase()
+        );
+
+        if (existingMemberByName) {
+          // Link my userId to the existing placeholder member
+          existingMemberByName.userId = myId;
+        } else {
+          // If no matching name found, add me as a NEW member
+          newBook.members.push({ 
+            id: crypto.randomUUID(), 
+            name: myName,
+            userId: myId 
+          });
+        }
         shouldSyncBack = true;
       }
 
@@ -130,7 +149,9 @@ export function setupBookActions(
       await save();
 
       if (shouldSyncBack) {
-        syncSharedBook(newBook.id);
+        // Critical: Must sync back IMMEDIATELY and AWAIT it.
+        // Otherwise, subsequent pull (triggered by selectBook) will overwrite local changes.
+        await _syncSharedBookImmediate(newBook.id);
       }
 
       return newBook;
@@ -148,7 +169,14 @@ export function setupBookActions(
     if (!name.trim()) return null;
     const members: Member[] = memberNames
       .filter((n) => n.trim())
-      .map((n) => ({ id: crypto.randomUUID(), name: n.trim() }));
+      .map((n, i) => {
+        const m: Member = { id: crypto.randomUUID(), name: n.trim() };
+        // Assume the first member added is the current user if they are creating it
+        if (i === 0 && userProfile.value.id) {
+          m.userId = userProfile.value.id;
+        }
+        return m;
+      });
 
     const book: Book = {
       id: crypto.randomUUID(),
@@ -270,26 +298,49 @@ export function setupBookActions(
 
   const memberStats = computed(() => {
     if (!currentBook.value) return [];
-    const allMemberIds = currentBook.value.members.map((m) => m.id);
-    return currentBook.value.members.map((member) => {
-      const paid = currentBookRecords.value
-        .filter((r) => r.type === "expense" && r.paidById === member.id)
-        .reduce((s, r) => s + r.amount, 0);
-      const owed = currentBookRecords.value
-        .filter((r) => {
-          if (r.type !== "expense") return false;
-          const splitIds = r.splitAmongIds.includes("all") ? allMemberIds : r.splitAmongIds;
-          return splitIds.includes(member.id);
-        })
-        .reduce((s, r) => {
-          // If custom split amounts exist and this member has a custom amount, use it
-          if (r.splitCustomAmounts && r.splitCustomAmounts[member.id] !== undefined) {
-            return s + r.splitCustomAmounts[member.id];
+    
+    const members = currentBook.value.members;
+    const allMemberIds = members.map((m) => m.id);
+    
+    // Initialize maps for faster accumulation
+    const paidMap: Record<string, number> = {};
+    const owedMap: Record<string, number> = {};
+    members.forEach(m => {
+      paidMap[m.id] = 0;
+      owedMap[m.id] = 0;
+    });
+
+    currentBookRecords.value.forEach(r => {
+      if (r.type !== "expense") return;
+
+      // Add to paid amount
+      if (paidMap[r.paidById] !== undefined) {
+        paidMap[r.paidById] += r.amount;
+      }
+
+      // Calculate and distribute owed amount
+      const splitIds = r.splitAmongIds.includes("all") ? allMemberIds : r.splitAmongIds;
+      if (r.splitCustomAmounts) {
+        // Handle custom split amounts
+        Object.entries(r.splitCustomAmounts).forEach(([memberId, amount]) => {
+          if (owedMap[memberId] !== undefined) {
+            owedMap[memberId] += amount;
           }
-          // Otherwise fall back to equal split
-          const splitIds = r.splitAmongIds.includes("all") ? allMemberIds : r.splitAmongIds;
-          return s + r.amount / splitIds.length;
-        }, 0);
+        });
+      } else if (splitIds.length > 0) {
+        // Handle equal split
+        const share = r.amount / splitIds.length;
+        splitIds.forEach(id => {
+          if (owedMap[id] !== undefined) {
+            owedMap[id] += share;
+          }
+        });
+      }
+    });
+
+    return members.map(member => {
+      const paid = paidMap[member.id] || 0;
+      const owed = owedMap[member.id] || 0;
       return {
         member,
         paid: Math.round(paid),

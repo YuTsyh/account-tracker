@@ -118,8 +118,9 @@ const submit = async () => {
     const uppercaseCode = code.value.trim().toUpperCase();
     const newBook = await store.joinBookByCode(uppercaseCode);
     if (newBook) {
-      emit("joined", newBook.id);
+      loading.value = false;
       close();
+      emit("joined", newBook.id);
     }
   } catch (err: any) {
     if (err.response?.status === 404) {

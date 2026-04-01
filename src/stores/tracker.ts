@@ -81,6 +81,10 @@ export const useTrackerStore = defineStore("tracker", () => {
       if (!userProfile.value.id) {
         userProfile.value.id = crypto.randomUUID();
         console.log(`[tracker] Generated new UUID for user: ${userProfile.value.id}`);
+        // Proactively register the new user on the backend
+        setTimeout(() => {
+          cloudSyncActions.backupByUUID();
+        }, 500);
       }
 
       // Theme migration: if theme was 'system' (old default) or missing, change to 'sheep'

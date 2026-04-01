@@ -5,6 +5,7 @@
 export interface Member {
   id: string;
   name: string;
+  userId?: string; // Optional link to actual user ID (even for anonymous users)
 }
 
 export interface Book {

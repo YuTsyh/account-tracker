@@ -22,13 +22,13 @@
             :key="stat.member.id"
             class="flex flex-col rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-800"
           >
-            <div class="mb-3 flex items-center gap-3 min-w-0">
+            <div class="mb-3 flex items-center gap-3">
               <div
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-lg font-bold text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
+                class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-lg font-bold text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
               >
                 {{ stat.member.name.charAt(0) }}
               </div>
-              <span class="font-bold text-gray-800 dark:text-gray-200 truncate">{{
+              <span class="font-bold text-gray-800 dark:text-gray-200">{{
                 stat.member.name
               }}</span>
             </div>

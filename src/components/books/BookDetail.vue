@@ -18,7 +18,7 @@
             />
           </svg>
         </button>
-        <div>
+        <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
             <p class="text-xs font-medium text-blue-200">{{ $t("books.currentBook") }}</p>
             <span
@@ -29,14 +29,14 @@
             >sync</span>
           </div>
           <h1 class="flex items-center gap-2 text-lg font-bold text-white">
-            {{ book.name }}
-            <span v-if="book.shareCode" class="material-symbols-outlined text-sm opacity-60" :title="$t('books.share.title')" aria-hidden="true">cloud_done</span>
+            <span class="truncate">{{ book.name }}</span>
+            <span v-if="book.shareCode" class="material-symbols-outlined shrink-0 text-sm opacity-60" :title="$t('books.share.title')" aria-hidden="true">cloud_done</span>
           </h1>
         </div>
-        <div class="ml-auto flex items-center gap-1 sm:gap-2">
+        <div class="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
           <button
             type="button"
-            class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white shadow-sm transition-colors hover:bg-white/30"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-white shadow-sm transition-colors hover:bg-white/30"
             :aria-label="$t('books.share.title')"
             @click="$emit('share')"
           >
@@ -44,7 +44,7 @@
           </button>
           <button
             type="button"
-            class="flex h-8 items-center gap-1.5 rounded-full bg-white/20 px-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-white/30"
+            class="flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-white/20 px-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-white/30"
             @click="$emit('settle')"
           >
             <span class="material-symbols-outlined text-[18px]" aria-hidden="true">receipt_long</span>
@@ -52,7 +52,7 @@
           </button>
           <button
             type="button"
-            class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white shadow-sm transition-colors hover:bg-white/30"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-white shadow-sm transition-colors hover:bg-white/30"
             :aria-label="$t('books.editBook')"
             @click="$emit('edit')"
           >
@@ -60,7 +60,7 @@
           </button>
           <button
             type="button"
-            class="flex h-8 w-8 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-red-400/50 hover:text-white"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-red-400/50 hover:text-white"
             :aria-label="$t('common.delete')"
             @click="confirmDelete"
           >
