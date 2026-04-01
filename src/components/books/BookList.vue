@@ -32,7 +32,7 @@
               <span class="material-symbols-outlined text-2xl">menu_book</span>
             </div>
             <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-1.5">
+              <div class="flex min-w-0 items-center gap-1.5">
                 <p class="section-title truncate">{{ book.name }}</p>
                 <span
                   v-if="book.shareCode"

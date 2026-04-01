@@ -19,8 +19,9 @@
         :key="book.id"
         class="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50"
       >
-        <p class="mb-3 flex items-center gap-2 text-sm font-bold text-gray-700 dark:text-gray-200">
-          <span class="material-symbols-outlined text-blue-500">menu_book</span> {{ book.name }}
+        <p class="mb-3 flex items-center gap-2 min-w-0 text-sm font-bold text-gray-700 dark:text-gray-200">
+          <span class="material-symbols-outlined shrink-0 text-blue-500">menu_book</span>
+          <span class="truncate">{{ book.name }}</span>
         </p>
         <div class="flex flex-wrap gap-2">
           <button

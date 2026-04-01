@@ -426,6 +426,7 @@ const handleLogout = async () => {
     store.userProfile.authToken = undefined;
     store.userProfile.avatar = undefined;
     store.userProfile.email = undefined;
+    store.userProfile.id = crypto.randomUUID();
     await store.updateUserProfile(store.userProfile.name);
   }
 };

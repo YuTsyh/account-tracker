@@ -26,10 +26,10 @@
           <div class="absolute -top-3 left-1/2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-white/50 backdrop-blur-md dark:bg-gray-600/50"></div>
 
           <!-- Header -->
-          <div class="mb-5 flex flex-wrap gap-2 items-center justify-between shrink-0">
-            <div>
-              <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ title }}</h2>
-              <p v-if="subtitle" class="text-[11px] font-medium text-gray-500 mt-0.5">{{ subtitle }}</p>
+          <div class="mb-5 flex items-center justify-between gap-4 shrink-0 overflow-hidden">
+            <div class="min-w-0 flex-1">
+              <h2 class="text-lg font-bold truncate text-gray-800 dark:text-gray-200">{{ title }}</h2>
+              <p v-if="subtitle" class="text-[11px] font-medium truncate text-gray-500 mt-0.5">{{ subtitle }}</p>
             </div>
             <slot name="header-actions" />
           </div>
