@@ -24,7 +24,8 @@ export function setupUserActions(
     await updateUserProfile(name);
   }
 
-  async function loginGoogle(data: { name: string; email: string; avatar: string; token: string }) {
+  async function loginGoogle(data: { id: string; name: string; email: string; avatar: string; token: string }) {
+    userProfile.value.id = data.id;
     userProfile.value.name = data.name.trim();
     userProfile.value.email = data.email;
     userProfile.value.avatar = data.avatar;

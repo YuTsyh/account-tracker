@@ -218,8 +218,9 @@ const handleStart = async () => {
 
 onMounted(async () => {
   const query = route.query;
-  if (query.token && query.name) {
+  if (query.token && query.name && query.id) {
     await store.loginGoogle({
+      id: query.id as string,
       token: query.token as string,
       name: query.name as string,
       email: query.email as string,
