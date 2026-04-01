@@ -204,6 +204,7 @@
         </h2>
         <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all dark:border-gray-800 dark:bg-gray-800">
           <ProfileSettingItem
+            :disabled="store.isSyncing"
             :title="$t('profile.backupToCloud')"
             iconName="cloud_upload"
             colorClasses="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30"
@@ -211,6 +212,7 @@
             @click="store.syncToCloud"
           />
           <ProfileSettingItem
+            :disabled="store.isSyncing"
             :title="$t('profile.restoreFromCloud')"
             iconName="cloud_download"
             colorClasses="bg-blue-50 text-blue-600 dark:bg-blue-900/30"
@@ -228,6 +230,7 @@
         </h2>
         <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all dark:border-gray-800 dark:bg-gray-800">
           <ProfileSettingItem
+            :disabled="store.isSyncing"
             :title="$t('profile.backupByUUID')"
             iconName="save"
             colorClasses="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30"
@@ -235,12 +238,14 @@
             @click="store.backupByUUID"
           />
           <ProfileSettingItem
+            :disabled="store.isSyncing"
             :title="$t('profile.restoreByUUID')"
             iconName="restore"
             colorClasses="bg-amber-50 text-amber-600 dark:bg-amber-900/30"
             @click="handleRestoreByUUID"
           />
           <ProfileSettingItem
+            :disabled="store.isSyncing"
             :title="$t('profile.importPiggy')"
             iconName="upload_file"
             colorClasses="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30"
@@ -254,6 +259,7 @@
             @change="handlePiggyFile"
           />
           <ProfileSettingItem
+            :disabled="store.isSyncing"
             :title="$t('profile.importEveryday')"
             iconName="csv"
             colorClasses="bg-blue-50 text-blue-600 dark:bg-blue-900/30"
@@ -373,6 +379,7 @@ const copyUUID = async () => {
 };
 
 const handleRestoreByUUID = async () => {
+  if (store.isSyncing) return;
   const uuid = prompt(t("profile.restoreByUUIDPrompt"));
   if (uuid && uuid.trim()) {
     await store.restoreByUUID(uuid.trim());

@@ -1,4 +1,4 @@
-import type { Ref } from "vue";
+import { ref, type Ref } from "vue";
 import type { Book, RecordItem, Category, PersonalRecord, RecordTemplate, UserProfile } from "./types";
 import { pushSyncData, pullSyncData, pushSyncByUUID, pullSyncByUUID } from "../utils/api";
 import { useToast } from "../composables/useToast";
@@ -19,9 +19,11 @@ export function setupCloudSyncActions(
 ) {
   const toast = useToast();
   const { t } = i18n.global;
+  const isSyncing = ref(false);
 
   const syncToCloud = async () => {
-    if (!userProfile.value.isLoggedIn || !userProfile.value.authToken) return;
+    if (!userProfile.value.isLoggedIn || !userProfile.value.authToken || isSyncing.value) return;
+    isSyncing.value = true;
     const payload = {
       books: books.value,
       records: records.value,
@@ -34,6 +36,8 @@ export function setupCloudSyncActions(
       toast.success(t("sync.success"));
     } catch {
       toast.error(t("sync.error"));
+    } finally {
+      isSyncing.value = false;
     }
   };
 
@@ -48,8 +52,9 @@ export function setupCloudSyncActions(
   };
 
   const overwriteFromCloud = async () => {
-    if (!userProfile.value.isLoggedIn || !userProfile.value.authToken) return;
+    if (!userProfile.value.isLoggedIn || !userProfile.value.authToken || isSyncing.value) return;
     if (!confirm(t("sync.confirmOverwrite"))) return;
+    isSyncing.value = true;
     try {
       const response = await pullSyncData();
       if (response.data) {
@@ -58,10 +63,14 @@ export function setupCloudSyncActions(
       }
     } catch {
       toast.error(t("sync.pullError"));
+    } finally {
+      isSyncing.value = false;
     }
   };
 
   const backupByUUID = async () => {
+    if (isSyncing.value) return;
+    isSyncing.value = true;
     const payload = {
       books: books.value,
       records: records.value,
@@ -74,12 +83,15 @@ export function setupCloudSyncActions(
       toast.success(t("sync.backupSuccess"));
     } catch {
       toast.error(t("sync.backupError"));
+    } finally {
+      isSyncing.value = false;
     }
   };
 
   const restoreByUUID = async (uuid: string) => {
-    if (!uuid) return;
+    if (!uuid || isSyncing.value) return;
     if (!confirm(t("sync.confirmOverwrite"))) return;
+    isSyncing.value = true;
     try {
       const response = await pullSyncByUUID(uuid);
       if (response.data) {
@@ -94,9 +106,11 @@ export function setupCloudSyncActions(
       }
     } catch {
       toast.error(t("sync.restoreUUIDError"));
+    } finally {
+      isSyncing.value = false;
     }
     return false;
   };
 
-  return { syncToCloud, overwriteFromCloud, backupByUUID, restoreByUUID, applyCloudData };
+  return { syncToCloud, overwriteFromCloud, backupByUUID, restoreByUUID, applyCloudData, isSyncing };
 }
