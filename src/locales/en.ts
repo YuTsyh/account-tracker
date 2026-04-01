@@ -166,6 +166,9 @@ export default {
     importEveryday: "Import Everyday Bookkeeping (CSV)",
     importSuccess: "Imported {count} records successfully!",
     importCSVError: "CSV format error, please check if it's from Everyday Bookkeeping",
+    backupByUUID: "Backup to UUID",
+    restoreByUUID: "Restore from UUID",
+    restoreByUUIDPrompt: "Please enter the UUID to restore:",
   },
   login: {
     title: "Login to Account Tracker",
@@ -179,6 +182,10 @@ export default {
     namePlaceholder: "Enter your name (e.g., Allen)",
     startBtn: "Start Now",
     backToOptions: "Back to Login Options",
+    restoreFoundTitle: "Cloud Backup Found",
+    restoreFoundSubtitle: "Existing data was found on your Google account. Do you want to restore it and overwrite current local data?",
+    restoreConfirm: "Restore Backup",
+    restoreSkip: "Keep Local Data",
   },
   templates: {
     title: "Record Templates",
@@ -239,6 +246,17 @@ export default {
     i2: "Allowance",
     i3: "Bonus",
     i4: "Other",
+  },
+  sync: {
+    success: "Data synced to cloud successfully!",
+    error: "Sync failed, please try again later.",
+    restoreSuccess: "Data restored from cloud successfully!",
+    pullError: "Download failed, please try again later.",
+    backupSuccess: "Backup successful! You can restore using this UUID anytime.",
+    backupError: "Backup failed, please try again later.",
+    restoreUUIDSuccess: "Data restored from UUID successfully!",
+    restoreUUIDError: "Restore failed, please check if the UUID is correct.",
+    confirmOverwrite: "This will overwrite all local data on this device. Are you sure you want to continue?",
   },
   statistics: {
     title: "Statistics",

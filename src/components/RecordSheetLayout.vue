@@ -58,7 +58,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  maxHeight: "70vh",
+  maxHeight: "90vh",
 });
 
 const emit = defineEmits<{

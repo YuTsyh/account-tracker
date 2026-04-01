@@ -166,6 +166,9 @@ export default {
     importEveryday: "匯入天天記帳備份 (CSV)",
     importSuccess: "成功匯入 {count} 筆紀錄！",
     importCSVError: "CSV 檔案格式錯誤，請確認是否為天天記帳匯出的檔案",
+    backupByUUID: "備份此 UUID 紀錄",
+    restoreByUUID: "由 UUID 恢復紀錄",
+    restoreByUUIDPrompt: "請輸入欲恢復的 UUID：",
   },
   login: {
     title: "登入 Account Tracker",
@@ -179,6 +182,10 @@ export default {
     namePlaceholder: "請輸入您的稱呼 (例如：小明)",
     startBtn: "開始使用",
     backToOptions: "返回個人設定",
+    restoreFoundTitle: "發現雲端備份",
+    restoreFoundSubtitle: "您的 Google 帳戶在雲端已有記帳資料，是否要恢復並覆蓋目前本地資料？",
+    restoreConfirm: "恢復備份",
+    restoreSkip: "保留目前資料",
   },
   templates: {
     title: "快速記帳範本",
@@ -239,6 +246,17 @@ export default {
     i2: "零用錢",
     i3: "獎金",
     i4: "其他",
+  },
+  sync: {
+    success: "資料已成功同步至雲端！",
+    error: "同步失敗，請稍後再試。",
+    restoreSuccess: "資料已成功從雲端回復！",
+    pullError: "下載失敗，請稍後再試。",
+    backupSuccess: "備份成功！您可以隨時使用此 UUID 恢復。",
+    backupError: "備份失敗，請稍後再試。",
+    restoreUUIDSuccess: "資料已成功從 UUID 回復！",
+    restoreUUIDError: "恢復失敗，請確認 UUID 是否正確。",
+    confirmOverwrite: "這將會覆蓋此裝置上的所有本地資料，確定要繼續嗎？",
   },
   statistics: {
     title: "統計分析",

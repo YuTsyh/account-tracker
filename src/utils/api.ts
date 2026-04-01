@@ -46,6 +46,15 @@ export const pullSyncData = async () => {
   return api.get("/sync/pull");
 };
 
+// UUID-based Sync (Anonymous/Manual)
+export const pushSyncByUUID = async (uuid: string, data: Record<string, unknown>) => {
+  return api.post("/sync/push-uuid", { uuid, ...data });
+};
+
+export const pullSyncByUUID = async (uuid: string) => {
+  return api.get(`/sync/pull-uuid/${uuid}`);
+};
+
 // Shared Books
 export const shareBookToCloud = async (payload: SharedBookPayload) => {
   return api.post<ShareResponse>("/shared/share", payload);

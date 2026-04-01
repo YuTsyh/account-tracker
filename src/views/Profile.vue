@@ -15,9 +15,22 @@
           />
           <span v-else aria-hidden="true">{{ store.userProfile.name.charAt(0) }}</span>
         </div>
-        <div>
+        <div class="flex-grow">
           <h1 class="text-2xl font-bold">{{ store.userProfile.name }}</h1>
-          <p class="text-indigo-200">
+          <div class="mt-1 flex items-center gap-2">
+            <p class="text-xs font-medium text-indigo-100 opacity-80">
+              ID: {{ store.userProfile.id }}
+            </p>
+            <button 
+              type="button"
+              class="flex h-5 w-5 items-center justify-center rounded bg-white/10 hover:bg-white/20 active:scale-90 transition-all font-bold"
+              @click="copyUUID"
+              title="Copy UUID"
+            >
+              <CategoryIcon :name="copied ? 'check' : 'content_copy'" class="!text-[10px]" />
+            </button>
+          </div>
+          <p class="mt-1 text-sm text-indigo-200">
             {{ store.userProfile.isLoggedIn ? $t("profile.cloudSynced") : $t("profile.localOnly") }}
           </p>
         </div>
@@ -215,10 +228,22 @@
         </h2>
         <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all dark:border-gray-800 dark:bg-gray-800">
           <ProfileSettingItem
+            :title="$t('profile.backupByUUID')"
+            iconName="save"
+            colorClasses="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30"
+            :isFirst="true"
+            @click="store.backupByUUID"
+          />
+          <ProfileSettingItem
+            :title="$t('profile.restoreByUUID')"
+            iconName="restore"
+            colorClasses="bg-amber-50 text-amber-600 dark:bg-amber-900/30"
+            @click="handleRestoreByUUID"
+          />
+          <ProfileSettingItem
             :title="$t('profile.importPiggy')"
             iconName="upload_file"
-            colorClasses="bg-amber-50 text-amber-600 dark:bg-amber-900/30"
-            :isFirst="true"
+            colorClasses="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30"
             @click="triggerPiggyImport"
           />
           <input
@@ -333,6 +358,26 @@ const showThemeSheet = ref(false);
 const piggyFileInput = ref<HTMLInputElement | null>(null);
 const everydayFileInput = ref<HTMLInputElement | null>(null);
 const toast = useToast();
+const copied = ref(false);
+
+const copyUUID = async () => {
+  try {
+    await navigator.clipboard.writeText(store.userProfile.id);
+    copied.value = true;
+    setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch (err) {
+    console.error("Failed to copy:", err);
+  }
+};
+
+const handleRestoreByUUID = async () => {
+  const uuid = prompt(t("profile.restoreByUUIDPrompt"));
+  if (uuid && uuid.trim()) {
+    await store.restoreByUUID(uuid.trim());
+  }
+};
 
 const langNameMap = {
   "zh-TW": "繁體中文",

@@ -48,6 +48,7 @@ export interface RecordTemplate {
 }
 
 export interface UserProfile {
+  id: string;
   name: string;
   avatar?: string;
   email?: string;

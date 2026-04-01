@@ -44,7 +44,13 @@
       <section class="mb-10 mt-auto w-full max-w-md">
         <button
           type="button"
-          class="flex w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 px-6 py-4 font-bold text-white shadow-lg shadow-violet-600/20 transition active:scale-95 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600"
+          :class="[
+            'flex w-full items-center justify-center gap-2',       /* Layout */
+            'rounded-2xl px-6 py-4',                               /* Shape & Spacing */
+            'bg-violet-600 text-white shadow-lg shadow-violet-600/20', /* Color & Shadow */
+            'dark:bg-violet-500 font-bold',                        /* Dark Mode & Typography */
+            'transition active:scale-95 hover:bg-violet-700 dark:hover:bg-violet-600', /* Interaction */
+          ]"
           @click="goToLogin"
         >
           <span>{{ $t("landing.getStarted") }}</span>

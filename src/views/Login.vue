@@ -16,7 +16,14 @@
       <div v-if="!showAnonymousForm" class="space-y-4">
         <button
           type="button"
-          class="group relative flex w-full items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm font-bold text-gray-700 shadow-sm transition-all hover:bg-gray-50 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+          :class="[
+            'group relative flex w-full items-center justify-center gap-3', /* Layout */
+            'rounded-2xl px-4 py-4',                                        /* Spacing & Shape */
+            'border border-gray-200 bg-white shadow-sm',                    /* Surface (Light) */
+            'dark:border-gray-800 dark:bg-gray-900',                        /* Surface (Dark) */
+            'text-sm font-bold text-gray-700 dark:text-gray-200',           /* Typography */
+            'transition-all hover:bg-gray-50 active:scale-[0.98] dark:hover:bg-gray-800', /* Interaction */
+          ]"
           @click="handleGoogleLogin"
         >
           <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -52,7 +59,12 @@
 
           <button
             type="button"
-            class="w-full rounded-2xl bg-gray-900 px-4 py-4 text-sm font-bold text-white shadow-sm transition-all hover:bg-gray-800 active:scale-[0.98] dark:bg-white dark:text-gray-900 dark:hover:bg-white"
+            :class="[
+              'w-full px-4 py-4 rounded-2xl shadow-sm',                     /* Layout & Shape */
+              'bg-gray-900 text-white dark:bg-white dark:text-gray-900',    /* Colors & Typography */
+              'text-sm font-bold',                                          /* Typography */
+              'transition-all hover:bg-gray-800 active:scale-[0.98] dark:hover:bg-white', /* Interaction */
+            ]"
             @click="openAnonymousForm"
           >
             {{ $t("login.anonymousLogin") }}
@@ -69,6 +81,32 @@
         </div>
       </div>
 
+      <div v-else-if="showRestorePrompt" class="space-y-6 text-center">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-500">
+          <CategoryIcon name="cloud_download" class="text-3xl" />
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ $t("login.restoreFoundTitle") }}</h2>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ $t("login.restoreFoundSubtitle") }}</p>
+        </div>
+        <div class="flex flex-col gap-3 pt-4">
+          <button
+            type="button"
+            class="w-full px-4 py-4 rounded-2xl bg-violet-600 text-white text-sm font-bold shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-700 active:scale-[0.98]"
+            @click="handleRestoreConfirm"
+          >
+            {{ $t("login.restoreConfirm") }}
+          </button>
+          <button
+            type="button"
+            class="w-full px-4 py-4 rounded-2xl border border-gray-200 bg-white text-gray-600 text-sm font-bold transition-all hover:bg-gray-50 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400"
+            @click="handleRestoreSkip"
+          >
+            {{ $t("login.restoreSkip") }}
+          </button>
+        </div>
+      </div>
+
       <form v-else class="space-y-6" @submit.prevent="handleStart">
         <div class="space-y-2">
           <label for="login-name" class="px-1 text-xs font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">
@@ -82,7 +120,13 @@
             type="text"
             autocomplete="name"
             :placeholder="$t('login.namePlaceholder')"
-            class="w-full rounded-2xl border-2 border-gray-100 bg-white px-5 py-4 text-sm font-bold text-gray-900 placeholder:text-gray-300 focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-700 dark:focus:border-violet-500"
+            :class="[
+              'w-full px-5 py-4 rounded-2xl border-2 outline-none',        /* Layout & Outline */
+              'bg-white border-gray-100 placeholder:text-gray-300',        /* Colors (Light) */
+              'dark:bg-gray-900 dark:border-gray-800 dark:placeholder:text-gray-700', /* Colors (Dark) */
+              'text-sm font-bold text-gray-900 dark:text-white',           /* Typography */
+              'focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:focus:border-violet-500', /* Focus State */
+            ]"
           />
         </div>
 
@@ -96,7 +140,11 @@
           <button
             type="submit"
             :disabled="!name.trim()"
-            class="w-full rounded-2xl bg-violet-600 px-4 py-4 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition-all hover:bg-violet-700 active:scale-[0.98] disabled:opacity-50"
+            :class="[
+              'w-full px-4 py-4 rounded-2xl shadow-lg shadow-violet-500/25', /* Layout & Shadow */
+              'bg-violet-600 text-white text-sm font-bold',                 /* Typography & Color */
+              'transition-all hover:bg-violet-700 active:scale-[0.98] disabled:opacity-50', /* States */
+            ]"
           >
             {{ $t("login.startBtn") }}
           </button>
@@ -127,17 +175,28 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, useTemplateRef } from "vue";
+import { useTemplateRef, nextTick, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTrackerStore } from "../stores/tracker";
+import { pullSyncData } from "../utils/api";
+import CategoryIcon from "../components/CategoryIcon.vue";
 
 const store = useTrackerStore();
 const router = useRouter();
 const route = useRoute();
 
 const showAnonymousForm = ref(false);
+const showRestorePrompt = ref(false);
+const existingCloudData = ref<any>(null);
 const name = ref("");
 const nameInput = useTemplateRef("nameInput");
+
+const handleRestoreConfirm = async () => {
+  if (existingCloudData.value) {
+    await store.applyCloudData(existingCloudData.value);
+  }
+  router.replace("/dashboard");
+};
 
 const openAnonymousForm = async () => {
   showAnonymousForm.value = true;
@@ -166,7 +225,29 @@ onMounted(async () => {
       email: query.email as string,
       avatar: query.avatar as string,
     });
-    router.replace("/dashboard");
+
+    // Check if cloud has data
+    try {
+      const response = await pullSyncData();
+      const hasData = response.data && (
+        (response.data.books?.length > 0) ||
+        (response.data.records?.length > 0) ||
+        (response.data.personal_records?.length > 0)
+      );
+
+      if (hasData) {
+        existingCloudData.value = response.data;
+        showRestorePrompt.value = true;
+      } else {
+        router.replace("/dashboard");
+      }
+    } catch {
+      router.replace("/dashboard");
+    }
   }
 });
+
+const handleRestoreSkip = () => {
+  router.replace("/dashboard");
+};
 </script>

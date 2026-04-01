@@ -49,12 +49,12 @@
 }
 
 /* Specific for calculator buttons */
-.theme-sheep .btn-bg-white {
+.theme-sheep .calculator-btn-white {
   background-color: var(--bg-main) !important;
   color: var(--text-main) !important;
 }
 
-.theme-sheep .btn-bg-gray {
+.theme-sheep .calculator-btn-gray {
   background-color: var(--secondary) !important;
   color: var(--text-main) !important;
 }
@@ -229,27 +229,6 @@
 
   .input-field-icon {
     @apply py-3 pl-12 pr-4;
-  }
-
-  /* Expense / Income selector pill inside bottom sheets */
-  .type-toggle-track {
-    @apply flex rounded-xl bg-gray-100 p-1 transition-colors dark:bg-gray-800;
-  }
-
-  .type-toggle-btn {
-    @apply flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all;
-  }
-
-  .type-toggle-btn--active-expense {
-    @apply bg-white text-red-600 shadow dark:bg-gray-700 dark:text-red-400;
-  }
-
-  .type-toggle-btn--active-income {
-    @apply bg-white text-green-600 shadow dark:bg-gray-700 dark:text-green-400;
-  }
-
-  .type-toggle-btn--inactive {
-    @apply text-gray-500 dark:text-gray-400;
   }
 
   /* ────────────────────────────────────────

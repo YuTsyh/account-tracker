@@ -23,7 +23,7 @@ export const useTrackerStore = defineStore("tracker", () => {
   const currentBookId = ref<string | null>(null);
   const personalRecords = ref<PersonalRecord[]>([]);
 
-  const userProfileDefaults: UserProfile = { name: "", theme: "sheep", animations: true, isLoggedIn: false };
+  const userProfileDefaults: UserProfile = { id: "", name: "", theme: "sheep", animations: true, isLoggedIn: false };
   // Pre-initialize theme from localStorage to prevent flash
   const initialTheme = (localStorage.getItem("account-tracker-theme") as any) || "sheep";
   const userProfile = ref<UserProfile>({ ...userProfileDefaults, theme: initialTheme });
@@ -77,6 +77,12 @@ export const useTrackerStore = defineStore("tracker", () => {
       
       userProfile.value = { ...userProfileDefaults, ...loadedUserProfile };
       
+      // Ensure user has a UUID
+      if (!userProfile.value.id) {
+        userProfile.value.id = crypto.randomUUID();
+        console.log(`[tracker] Generated new UUID for user: ${userProfile.value.id}`);
+      }
+
       // Theme migration: if theme was 'system' (old default) or missing, change to 'sheep'
       if (!userProfile.value.theme || userProfile.value.theme === "system") {
         userProfile.value.theme = "sheep";
@@ -88,8 +94,11 @@ export const useTrackerStore = defineStore("tracker", () => {
 
       isInitialized.value = true;
       
-      // Save the migrated profile if needed
-      if (userProfile.value.theme === "sheep" && loadedUserProfile?.theme !== "sheep") {
+      // Save the migrated profile if needed (theme change or new UUID)
+      if (
+        (userProfile.value.theme === "sheep" && loadedUserProfile?.theme !== "sheep") ||
+        (!loadedUserProfile?.id)
+      ) {
         await saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
       }
 
@@ -137,6 +146,7 @@ export const useTrackerStore = defineStore("tracker", () => {
 
     // Lifecycle
     init,
+    save,
 
     // User
     ...userActions,
