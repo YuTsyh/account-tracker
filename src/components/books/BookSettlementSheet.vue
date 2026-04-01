@@ -87,9 +87,10 @@
       <!-- Settlement Suggestions -->
       <div>
         <h3
-          class="mb-3 flex items-center gap-1.5 px-2 text-sm font-bold text-gray-500 dark:text-gray-400"
+          class="mb-3 flex items-center gap-2 px-2 text-sm font-bold text-gray-500 dark:text-gray-400"
         >
-          <CategoryIcon name="payments" class="h-4 w-4" /> {{ $t("settlementSheet.suggestedTransfers") }}
+          <CategoryIcon name="payments" class="h-4 w-4 shrink-0" />
+          <span>{{ $t("settlementSheet.suggestedTransfers") }}</span>
         </h3>
         <div
           v-if="settlements.length === 0"
