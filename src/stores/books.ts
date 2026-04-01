@@ -275,6 +275,11 @@ export function setupBookActions(
           return splitIds.includes(member.id);
         })
         .reduce((s, r) => {
+          // If custom split amounts exist and this member has a custom amount, use it
+          if (r.splitCustomAmounts && r.splitCustomAmounts[member.id] !== undefined) {
+            return s + r.splitCustomAmounts[member.id];
+          }
+          // Otherwise fall back to equal split
           const splitIds = r.splitAmongIds.includes("all") ? allMemberIds : r.splitAmongIds;
           return s + r.amount / splitIds.length;
         }, 0);
