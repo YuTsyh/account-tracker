@@ -40,6 +40,13 @@ watch(
 
     document.documentElement.classList.toggle("dark", isDark);
     document.documentElement.classList.toggle("theme-sheep", isSheep);
+
+    // Update theme-color meta tag for mobile status bar
+    const themeColor = isSheep ? "#d4a373" : isDark ? "#111827" : "#f9fafb";
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute("content", themeColor);
+    }
   },
   { immediate: true },
 );
