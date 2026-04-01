@@ -2,13 +2,13 @@
   <section aria-labelledby="books-list-heading">
     <header class="bg-gradient-to-br from-blue-600 to-indigo-700 px-4 pb-6 pt-10 shadow-lg">
       <div class="flex items-center justify-between gap-3">
-        <div>
-          <h1 id="books-list-heading" class="text-2xl font-bold text-white">{{ $t("books.title") }}</h1>
-          <p class="mt-1 text-sm text-blue-200">{{ $t("books.subtitle") }}</p>
+        <div class="min-w-0 flex-1">
+          <h1 id="books-list-heading" class="truncate text-2xl font-bold text-white">{{ $t("books.title") }}</h1>
+          <p class="mt-1 truncate text-sm text-blue-200">{{ $t("books.subtitle") }}</p>
         </div>
         <button
           type="button"
-          class="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-white/30"
+          class="flex shrink-0 items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-white/30"
           @click="$emit('join')"
         >
           <span class="material-symbols-outlined text-sm" aria-hidden="true">cloud_download</span>

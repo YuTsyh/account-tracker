@@ -31,7 +31,9 @@
               <h2 class="text-lg font-bold truncate text-gray-800 dark:text-gray-200">{{ title }}</h2>
               <p v-if="subtitle" class="text-[11px] font-medium truncate text-gray-500 mt-0.5">{{ subtitle }}</p>
             </div>
-            <slot name="header-actions" />
+            <div class="shrink-0 flex items-center justify-end">
+              <slot name="header-actions" />
+            </div>
           </div>
 
           <!-- Scrollable Body  -->
