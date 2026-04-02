@@ -69,7 +69,7 @@ export function setupCloudSyncActions(
   };
 
   const backupByUUID = async () => {
-    if (isSyncing.value) return;
+    if (isSyncing.value) return false;
     isSyncing.value = true;
     const payload = {
       books: books.value,
@@ -81,8 +81,10 @@ export function setupCloudSyncActions(
     try {
       await pushSyncByUUID(userProfile.value.id, payload);
       toast.success(t("sync.backupSuccess"));
+      return true;
     } catch {
       toast.error(t("sync.backupError"));
+      return false;
     } finally {
       isSyncing.value = false;
     }

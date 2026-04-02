@@ -253,6 +253,8 @@ export default {
     restoreSuccess: "クラウドからデータを復元しました！",
     pullError: "ダウンロードに失敗しました。後でもう一度お試しください。",
     backupSuccess: "バックアップが完了しました！このUUIDを使用していつでも復元できます。",
+    backupCopied: "バックアップが完了し、UUID をクリップボードにコピーしました。",
+    backupReady: "バックアップが完了しました。この UUID を保管してください：{uuid}",
     backupError: "バックアップに失敗しました。後でもう一度お試しください。",
     restoreUUIDSuccess: "UUIDからデータを復元しました！",
     restoreUUIDError: "復元に失敗しました。UUIDが正しいか確認してください。",

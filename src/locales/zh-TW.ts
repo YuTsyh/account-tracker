@@ -253,6 +253,8 @@ export default {
     restoreSuccess: "資料已成功從雲端回復！",
     pullError: "下載失敗，請稍後再試。",
     backupSuccess: "備份成功！您可以隨時使用此 UUID 恢復。",
+    backupCopied: "備份成功，UUID 已複製到剪貼簿。",
+    backupReady: "備份成功，請保留此 UUID：{uuid}",
     backupError: "備份失敗，請稍後再試。",
     restoreUUIDSuccess: "資料已成功從 UUID 回復！",
     restoreUUIDError: "恢復失敗，請確認 UUID 是否正確。",
