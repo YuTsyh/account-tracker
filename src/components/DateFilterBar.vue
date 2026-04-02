@@ -49,6 +49,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { getLocalDateString } from "../utils/date";
 
 export type FilterMode = "all" | "year" | "month" | "date";
 
@@ -59,7 +60,11 @@ export interface DateFilter {
   date: string;
 }
 
-const props = defineProps<{ dates: string[]; initialMode?: FilterMode; hideDateMode?: boolean }>();
+const props = defineProps<{
+  dates: string[];
+  initialMode?: FilterMode;
+  hideDateMode?: boolean;
+}>();
 const emit = defineEmits<{ (e: "change", filter: DateFilter): void }>();
 
 const { locale } = useI18n();
@@ -69,7 +74,7 @@ const MODES = computed<FilterMode[]>(() => {
   return base;
 });
 
-const today = new Date().toISOString().split("T")[0];
+const today = getLocalDateString();
 const currentYear = today.slice(0, 4);
 const currentMonth = today.slice(5, 7);
 
@@ -79,14 +84,20 @@ const month = ref(currentMonth);
 const date = ref(today);
 
 const availableYears = computed(() => {
-  const years = [...new Set(props.dates.map((d) => d.slice(0, 4)))].sort((a, b) =>
-    b.localeCompare(a),
+  const years = [...new Set(props.dates.map((d) => d.slice(0, 4)))].sort(
+    (a, b) => b.localeCompare(a),
   );
   return years.length > 0 ? years : [currentYear];
 });
 
 const availableMonthsForYear = computed(() =>
-  [...new Set(props.dates.filter((d) => d.startsWith(year.value)).map((d) => d.slice(5, 7)))].sort(),
+  [
+    ...new Set(
+      props.dates
+        .filter((d) => d.startsWith(year.value))
+        .map((d) => d.slice(5, 7)),
+    ),
+  ].sort(),
 );
 
 const formatMonth = (m: string): string =>
@@ -95,7 +106,12 @@ const formatMonth = (m: string): string =>
   );
 
 function emitFilter() {
-  emit("change", { mode: mode.value, year: year.value, month: month.value, date: date.value });
+  emit("change", {
+    mode: mode.value,
+    year: year.value,
+    month: month.value,
+    date: date.value,
+  });
 }
 
 watch(year, () => {
@@ -109,7 +125,10 @@ watch([mode, year, month, date], emitFilter, { immediate: true });
 
 function setMode(newMode: FilterMode) {
   mode.value = newMode;
-  if ((newMode === "year" || newMode === "month") && !availableYears.value.includes(year.value)) {
+  if (
+    (newMode === "year" || newMode === "month") &&
+    !availableYears.value.includes(year.value)
+  ) {
     year.value = availableYears.value[0];
   }
   if (newMode === "month") {

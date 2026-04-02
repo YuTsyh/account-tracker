@@ -7,22 +7,39 @@
   >
     <!-- Category Grid (backdrop area) -->
     <template #categories>
-      <div class="grid grid-cols-4 sm:grid-cols-5 gap-y-6 gap-x-2">
+      <div class="grid grid-cols-4 gap-x-2 gap-y-6 sm:grid-cols-5">
         <button
-          v-for="cat in activeCats" :key="cat.id"
+          v-for="cat in activeCats"
+          :key="cat.id"
           type="button"
           @click="form.categoryId = cat.id"
-          class="flex flex-col items-center gap-1.5 transition-all group"
-          :class="form.categoryId === cat.id ? 'scale-110 opacity-100' : 'opacity-80 hover:opacity-100'"
+          class="group flex flex-col items-center gap-1.5 transition-all"
+          :class="
+            form.categoryId === cat.id
+              ? 'scale-110 opacity-100'
+              : 'opacity-80 hover:opacity-100'
+          "
         >
           <div
             class="flex h-12 w-12 items-center justify-center rounded-2xl text-[24px] transition-all"
-            :class="form.categoryId === cat.id ? (form.type === 'expense' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30') : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'"
+            :class="
+              form.categoryId === cat.id
+                ? form.type === 'expense'
+                  ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                  : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
+                : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'
+            "
           >
             <CategoryIcon :name="cat.icon" />
           </div>
-          <span class="text-xs font-bold text-center leading-tight whitespace-nowrap text-white drop-shadow-md">
-            {{ $te(`categories.${cat.id}`) ? $t(`categories.${cat.id}`) : cat.name }}
+          <span
+            class="text-center text-xs leading-tight font-bold whitespace-nowrap text-white drop-shadow-md"
+          >
+            {{
+              $te(`categories.${cat.id}`)
+                ? $t(`categories.${cat.id}`)
+                : cat.name
+            }}
           </span>
         </button>
       </div>
@@ -34,34 +51,46 @@
         <button
           type="button"
           @click="form.type = form.type === 'expense' ? 'income' : 'expense'"
-          class="flex rounded-lg bg-gray-100 p-0.5 dark:bg-gray-800 active:scale-95 transition-transform"
+          class="flex rounded-lg bg-gray-100 p-0.5 transition-transform active:scale-95 dark:bg-gray-800"
         >
           <div
             :class="[
-              'px-2.5 py-1 text-xs font-bold rounded-md transition-all',
+              'rounded-md px-2.5 py-1 text-xs font-bold transition-all',
               form.type === 'expense'
                 ? 'bg-white text-red-700 shadow-sm dark:bg-gray-700 dark:text-red-400'
-                : 'text-gray-500 dark:text-gray-400'
+                : 'text-gray-500 dark:text-gray-400',
             ]"
-          >{{ $t("common.expense") }}</div>
+          >
+            {{ $t("common.expense") }}
+          </div>
           <div
             :class="[
-              'px-2.5 py-1 text-xs font-bold rounded-md transition-all',
+              'rounded-md px-2.5 py-1 text-xs font-bold transition-all',
               form.type === 'income'
                 ? 'bg-white text-emerald-700 shadow-sm dark:bg-gray-700 dark:text-emerald-400'
-                : 'text-gray-500 dark:text-gray-400'
+                : 'text-gray-500 dark:text-gray-400',
             ]"
-          >{{ $t("common.income") }}</div>
+          >
+            {{ $t("common.income") }}
+          </div>
         </button>
-        <CloseButton @click="close" class="!p-1.5 bg-gray-100 dark:bg-gray-800 rounded-full" />
+        <CloseButton
+          @click="close"
+          class="rounded-full bg-gray-100 !p-1.5 dark:bg-gray-800"
+        />
       </div>
     </template>
 
     <!-- Form Body -->
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <!-- Templates Quick Select -->
-      <div v-if="!editRecordId && store.recordTemplates.length > 0" class="-mx-2 mb-4">
-        <div class="flex items-center gap-2 overflow-x-auto px-2 pb-1 no-scrollbar">
+      <div
+        v-if="!editRecordId && store.recordTemplates.length > 0"
+        class="-mx-2 mb-4"
+      >
+        <div
+          class="no-scrollbar flex items-center gap-2 overflow-x-auto px-2 pb-1"
+        >
           <button
             v-for="tpl in store.recordTemplates"
             :key="tpl.id"
@@ -73,7 +102,10 @@
               class="flex h-5 w-5 items-center justify-center rounded-full"
               :class="[getTemplateColorClass(tpl.category)]"
             >
-              <CategoryIcon :name="getTemplateIcon(tpl.category)" style="transform: scale(0.6);" />
+              <CategoryIcon
+                :name="getTemplateIcon(tpl.category)"
+                style="transform: scale(0.6)"
+              />
             </div>
             {{ tpl.name }}
           </button>
@@ -81,25 +113,39 @@
       </div>
 
       <!-- 1. Date -->
-      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-        <span class="material-symbols-outlined text-gray-400 text-xl">calendar_today</span>
-        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.date") }}</label>
+      <div
+        class="flex items-center gap-3 border-b border-gray-100 pb-2 dark:border-gray-800"
+      >
+        <span class="material-symbols-outlined text-xl text-gray-400"
+          >calendar_today</span
+        >
+        <label
+          class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+          >{{ $t("common.date") }}</label
+        >
         <input
           v-model="form.date"
           type="date"
           required
           @click="($event.target as HTMLInputElement).showPicker?.()"
           @focus="($event.target as HTMLInputElement).showPicker?.()"
-          class="flex-1 bg-transparent text-right font-bold text-gray-800 dark:text-gray-200 outline-none w-full cursor-pointer relative z-10"
+          class="relative z-10 w-full flex-1 cursor-pointer bg-transparent text-right font-bold text-gray-800 outline-none dark:text-gray-200"
         />
       </div>
 
       <!-- 2. Amount -->
-      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-        <span class="material-symbols-outlined text-gray-400 text-xl">attach_money</span>
-        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.amount") }}</label>
-        <div class="flex-1 flex items-center justify-end gap-1">
-          <span class="text-gray-400 font-semibold text-sm">NT$</span>
+      <div
+        class="flex items-center gap-3 border-b border-gray-100 pb-2 dark:border-gray-800"
+      >
+        <span class="material-symbols-outlined text-xl text-gray-400"
+          >attach_money</span
+        >
+        <label
+          class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+          >{{ $t("common.amount") }}</label
+        >
+        <div class="flex flex-1 items-center justify-end gap-1">
+          <span class="text-sm font-semibold text-gray-400">NT$</span>
           <input
             v-model="form.amountStr"
             type="text"
@@ -107,7 +153,7 @@
             @focus="showKeyboard = true"
             required
             placeholder="0"
-            class="w-full bg-transparent text-right text-xl font-bold text-gray-800 outline-none dark:text-gray-100 caret-violet-500"
+            class="w-full bg-transparent text-right text-xl font-bold text-gray-800 caret-violet-500 outline-none dark:text-gray-100"
           />
         </div>
       </div>
@@ -116,43 +162,77 @@
         v-if="showKeyboard"
         v-model="form.amountStr"
         @submit="showKeyboard = false"
-        class="mt-1 mb-2 bg-gray-50 dark:bg-gray-800/50 p-2 rounded-2xl"
+        class="mt-1 mb-2 rounded-2xl bg-gray-50 p-2 dark:bg-gray-800/50"
       />
 
-      <div v-show="!showKeyboard" class="space-y-4 animate-fade-in">
+      <div v-show="!showKeyboard" class="animate-fade-in space-y-4">
         <!-- 3. Category Display -->
-        <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-          <span class="material-symbols-outlined text-gray-400 text-xl">category</span>
-          <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.category") }}</label>
-          <div class="flex-1 flex items-center justify-end gap-2 text-right">
-            <span class="text-sm font-bold" :class="form.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'">
-              {{ $te(`categories.${currentCategoryId}`) ? $t(`categories.${currentCategoryId}`) : (currentCategoryObj?.name || $t('common.select')) }}
+        <div
+          class="flex items-center gap-3 border-b border-gray-100 pb-2 dark:border-gray-800"
+        >
+          <span class="material-symbols-outlined text-xl text-gray-400"
+            >category</span
+          >
+          <label
+            class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >{{ $t("common.category") }}</label
+          >
+          <div class="flex flex-1 items-center justify-end gap-2 text-right">
+            <span
+              class="text-sm font-bold"
+              :class="
+                form.type === 'expense'
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-emerald-600 dark:text-emerald-400'
+              "
+            >
+              {{
+                $te(`categories.${currentCategoryId}`)
+                  ? $t(`categories.${currentCategoryId}`)
+                  : currentCategoryObj?.name || $t("common.select")
+              }}
             </span>
-            <div v-if="currentCategoryId" class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm" :class="form.type === 'expense' ? 'bg-red-600' : 'bg-emerald-600'">
+            <div
+              v-if="currentCategoryId"
+              class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm"
+              :class="form.type === 'expense' ? 'bg-red-600' : 'bg-emerald-600'"
+            >
               <CategoryIcon :name="currentCategoryIcon" class="text-[14px]" />
             </div>
           </div>
         </div>
 
         <!-- 4. Note -->
-        <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3">
-          <span class="material-symbols-outlined text-gray-400 text-xl">edit_note</span>
-          <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.note") }}</label>
+        <div
+          class="flex items-center gap-3 border-b border-gray-100 pb-3 dark:border-gray-800"
+        >
+          <span class="material-symbols-outlined text-xl text-gray-400"
+            >edit_note</span
+          >
+          <label
+            class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >{{ $t("common.note") }}</label
+          >
           <input
             v-model="form.note"
             type="text"
             :placeholder="$t('common.note')"
-            class="flex-1 bg-transparent text-right font-medium text-gray-800 dark:text-gray-200 outline-none w-full"
+            class="w-full flex-1 bg-transparent text-right font-medium text-gray-800 outline-none dark:text-gray-200"
           />
         </div>
 
         <!-- Paid By & Split Among -->
-        <div v-if="form.type === 'expense'" class="space-y-4 pt-2 mt-2">
+        <div v-if="form.type === 'expense'" class="mt-2 space-y-4 pt-2">
           <!-- Paid By -->
           <div class="flex flex-col gap-2 pt-2">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-gray-400 text-xl">person</span>
-              <label class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ $t("recordSheet.paidBy") }}</label>
+              <span class="material-symbols-outlined text-xl text-gray-400"
+                >person</span
+              >
+              <label
+                class="text-xs font-semibold text-gray-500 dark:text-gray-400"
+                >{{ $t("recordSheet.paidBy") }}</label
+              >
             </div>
             <div class="flex flex-wrap gap-2 pl-7">
               <button
@@ -173,26 +253,49 @@
           </div>
 
           <!-- Split Among -->
-          <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-3 transition-colors dark:border-gray-700/50 dark:bg-gray-800/50 mt-2">
+          <div
+            class="mt-2 rounded-xl border border-gray-100 bg-gray-50/50 p-3 transition-colors dark:border-gray-700/50 dark:bg-gray-800/50"
+          >
             <!-- Header: label + mode toggle + select all -->
             <div class="mb-3 flex items-center justify-between">
-              <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-gray-400 text-[18px]">group</span>
+              <label
+                class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400"
+              >
+                <span
+                  class="material-symbols-outlined text-[18px] text-gray-400"
+                  >group</span
+                >
                 {{ $t("recordSheet.splitAmong") }}
               </label>
               <div class="flex items-center gap-2">
                 <!-- Mode Toggle -->
-                <div class="flex rounded-md bg-gray-200/70 p-0.5 dark:bg-gray-700">
+                <div
+                  class="flex rounded-md bg-gray-200/70 p-0.5 dark:bg-gray-700"
+                >
                   <button
                     type="button"
                     @click="form.splitMode = 'equal'"
-                    :class="['px-2 py-0.5 text-[11px] font-bold rounded transition-all', form.splitMode === 'equal' ? 'bg-white text-blue-700 shadow-sm dark:bg-gray-600 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400']"
-                  >{{ $t('recordSheet.splitEqual') }}</button>
+                    :class="[
+                      'rounded px-2 py-0.5 text-[11px] font-bold transition-all',
+                      form.splitMode === 'equal'
+                        ? 'bg-white text-blue-700 shadow-sm dark:bg-gray-600 dark:text-blue-300'
+                        : 'text-gray-500 dark:text-gray-400',
+                    ]"
+                  >
+                    {{ $t("recordSheet.splitEqual") }}
+                  </button>
                   <button
                     type="button"
                     @click="form.splitMode = 'custom'"
-                    :class="['px-2 py-0.5 text-[11px] font-bold rounded transition-all', form.splitMode === 'custom' ? 'bg-white text-blue-700 shadow-sm dark:bg-gray-600 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400']"
-                  >{{ $t('recordSheet.splitCustom') }}</button>
+                    :class="[
+                      'rounded px-2 py-0.5 text-[11px] font-bold transition-all',
+                      form.splitMode === 'custom'
+                        ? 'bg-white text-blue-700 shadow-sm dark:bg-gray-600 dark:text-blue-300'
+                        : 'text-gray-500 dark:text-gray-400',
+                    ]"
+                  >
+                    {{ $t("recordSheet.splitCustom") }}
+                  </button>
                 </div>
                 <!-- Select All (equal mode only) -->
                 <button
@@ -201,7 +304,11 @@
                   @click="toggleAll"
                   class="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                 >
-                  {{ form.splitAmongIds.length === members.length ? $t("recordSheet.unselectAll") : $t("recordSheet.selectAll") }}
+                  {{
+                    form.splitAmongIds.length === members.length
+                      ? $t("recordSheet.unselectAll")
+                      : $t("recordSheet.selectAll")
+                  }}
                 </button>
               </div>
             </div>
@@ -217,15 +324,24 @@
                   :class="[
                     'rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all',
                     form.splitAmongIds.includes(m.id)
-                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/40 dark:text-blue-300 shadow-sm'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm dark:border-blue-400 dark:bg-blue-900/40 dark:text-blue-300'
                       : 'border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
                   ]"
                 >
                   {{ m.name }}
                 </button>
               </div>
-              <p v-if="form.splitAmongIds.length > 0 && isValidAmount" class="mt-2 text-right text-xs font-bold text-blue-600 dark:text-blue-400">
-                {{ $t("recordSheet.splitPerPerson", { amount: Math.floor(Number(form.amountStr) / form.splitAmongIds.length).toLocaleString() }) }}
+              <p
+                v-if="form.splitAmongIds.length > 0 && isValidAmount"
+                class="mt-2 text-right text-xs font-bold text-blue-600 dark:text-blue-400"
+              >
+                {{
+                  $t("recordSheet.splitPerPerson", {
+                    amount: Math.floor(
+                      Number(form.amountStr) / form.splitAmongIds.length,
+                    ).toLocaleString(),
+                  })
+                }}
               </p>
             </template>
 
@@ -236,29 +352,68 @@
                   v-for="m in members"
                   :key="'custom-' + m.id"
                   class="flex items-center gap-3 rounded-lg border bg-white px-3 py-2 dark:bg-gray-800"
-                  :class="isUnfilled(m.id) && hasAnyFilled ? 'border-blue-200 dark:border-blue-700' : 'border-gray-100 dark:border-gray-700'"
+                  :class="
+                    isUnfilled(m.id) && hasAnyFilled
+                      ? 'border-blue-200 dark:border-blue-700'
+                      : 'border-gray-100 dark:border-gray-700'
+                  "
                 >
-                  <span class="w-16 text-xs font-bold text-gray-700 dark:text-gray-300 shrink-0 truncate">{{ m.name }}</span>
-                  <span class="text-gray-400 text-xs font-semibold">NT$</span>
-                  <div class="flex-1 relative">
+                  <span
+                    class="w-16 shrink-0 truncate text-xs font-bold text-gray-700 dark:text-gray-300"
+                    >{{ m.name }}</span
+                  >
+                  <span class="text-xs font-semibold text-gray-400">NT$</span>
+                  <div class="relative flex-1">
                     <input
                       v-model="form.splitCustomAmounts[m.id]"
                       type="number"
                       min="0"
-                      :placeholder="isUnfilled(m.id) && hasAnyFilled && autoPerPerson >= 0 ? autoPerPerson.toLocaleString() : '0'"
+                      :placeholder="
+                        isUnfilled(m.id) && hasAnyFilled && autoPerPerson >= 0
+                          ? autoPerPerson.toLocaleString()
+                          : '0'
+                      "
                       class="w-full bg-transparent text-right text-sm font-bold outline-none"
-                      :class="isUnfilled(m.id) && hasAnyFilled ? 'text-blue-500 dark:text-blue-400 placeholder:text-blue-400/60 dark:placeholder:text-blue-500/60' : 'text-gray-800 dark:text-gray-100'"
+                      :class="
+                        isUnfilled(m.id) && hasAnyFilled
+                          ? 'text-blue-500 placeholder:text-blue-400/60 dark:text-blue-400 dark:placeholder:text-blue-500/60'
+                          : 'text-gray-800 dark:text-gray-100'
+                      "
                     />
                   </div>
-                  <span v-if="isUnfilled(m.id) && hasAnyFilled" class="text-[10px] font-bold text-blue-400 dark:text-blue-500 shrink-0">{{ $t('recordSheet.autoCalc') }}</span>
+                  <span
+                    v-if="isUnfilled(m.id) && hasAnyFilled"
+                    class="shrink-0 text-[10px] font-bold text-blue-400 dark:text-blue-500"
+                    >{{ $t("recordSheet.autoCalc") }}</span
+                  >
                 </div>
               </div>
               <!-- Validation hint -->
-              <p v-if="isValidAmount && autoPerPerson < 0" class="mt-2 text-right text-xs font-bold text-red-500">
-                {{ $t('recordSheet.splitOverflow', { excess: Math.abs(remainingAmount).toLocaleString() }) }}
+              <p
+                v-if="isValidAmount && autoPerPerson < 0"
+                class="mt-2 text-right text-xs font-bold text-red-500"
+              >
+                {{
+                  $t("recordSheet.splitOverflow", {
+                    excess: Math.abs(remainingAmount).toLocaleString(),
+                  })
+                }}
               </p>
-              <p v-else-if="isValidAmount" class="mt-2 text-right text-xs font-bold" :class="Math.abs(filledAllocated - Number(form.amountStr)) < 0.01 ? 'text-emerald-500' : 'text-gray-400'">
-                {{ $t('recordSheet.splitTotal', { total: filledAllocated.toLocaleString() }) }} / {{ Number(form.amountStr).toLocaleString() }}
+              <p
+                v-else-if="isValidAmount"
+                class="mt-2 text-right text-xs font-bold"
+                :class="
+                  Math.abs(filledAllocated - Number(form.amountStr)) < 0.01
+                    ? 'text-emerald-500'
+                    : 'text-gray-400'
+                "
+              >
+                {{
+                  $t("recordSheet.splitTotal", {
+                    total: filledAllocated.toLocaleString(),
+                  })
+                }}
+                / {{ Number(form.amountStr).toLocaleString() }}
               </p>
             </template>
           </div>
@@ -272,7 +427,10 @@
             type="checkbox"
             class="h-4.5 w-4.5 rounded-md border-2 border-gray-300 text-blue-600 focus:ring-blue-500/20 dark:border-gray-600 dark:bg-gray-800"
           />
-          <label for="saveAsTemplateBook" class="cursor-pointer text-xs font-bold text-gray-500 dark:text-gray-400">
+          <label
+            for="saveAsTemplateBook"
+            class="cursor-pointer text-xs font-bold text-gray-500 dark:text-gray-400"
+          >
             {{ $t("templates.saveAsTemplate") }}
           </label>
         </div>
@@ -301,6 +459,7 @@ import BaseButton from "../BaseButton.vue";
 import CloseButton from "../CloseButton.vue";
 import CategoryIcon from "../CategoryIcon.vue";
 import CalculatorKeyboard from "../CalculatorKeyboard.vue";
+import { getLocalDateString } from "../../utils/date";
 const props = defineProps<{
   modelValue: boolean;
   bookName: string;
@@ -314,11 +473,11 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const store = useTrackerStore();
-const today = new Date().toISOString().split("T")[0];
+const today = getLocalDateString();
 
 const initCustomAmounts = () => {
   const map: Record<string, string> = {};
-  for (const m of props.members) map[m.id] = '';
+  for (const m of props.members) map[m.id] = "";
   return map;
 };
 
@@ -349,11 +508,12 @@ const activeCats = computed(() =>
 );
 
 const currentCategoryObj = computed(() =>
-  activeCats.value.find((c) => c.id === form.value.categoryId)
+  activeCats.value.find((c) => c.id === form.value.categoryId),
 );
 const currentCategoryId = computed(() => form.value.categoryId);
-const currentCategoryIcon = computed(() => currentCategoryObj.value?.icon ?? "category");
-
+const currentCategoryIcon = computed(
+  () => currentCategoryObj.value?.icon ?? "category",
+);
 
 const evaluateAmount = () => {
   const str = form.value.amountStr.trim();
@@ -377,12 +537,12 @@ const isValidAmount = computed(() => {
 
 // Custom split computed helpers
 const isUnfilled = (id: string) => {
-  const val = String(form.value.splitCustomAmounts[id] ?? '').trim();
-  return val === '';
+  const val = String(form.value.splitCustomAmounts[id] ?? "").trim();
+  return val === "";
 };
 
 const hasAnyFilled = computed(() =>
-  props.members.some((m) => !isUnfilled(m.id))
+  props.members.some((m) => !isUnfilled(m.id)),
 );
 
 // Sum of manually-filled member amounts
@@ -395,8 +555,8 @@ const filledAllocated = computed(() => {
 });
 
 // Count of unfilled members
-const unfilledCount = computed(() =>
-  props.members.filter((m) => isUnfilled(m.id)).length
+const unfilledCount = computed(
+  () => props.members.filter((m) => isUnfilled(m.id)).length,
 );
 
 // Remaining total after filled members
@@ -413,8 +573,9 @@ const autoPerPerson = computed(() => {
 
 const isSplitValid = computed(() => {
   if (!isValidAmount.value) return false;
-  if (form.value.type !== 'expense') return true;
-  if (form.value.splitMode === 'equal') return form.value.splitAmongIds.length > 0;
+  if (form.value.type !== "expense") return true;
+  if (form.value.splitMode === "equal")
+    return form.value.splitAmongIds.length > 0;
   // custom mode: remaining must be >= 0 (whether there are unfilled or not)
   if (unfilledCount.value > 0) {
     return remainingAmount.value >= 0;
@@ -428,15 +589,18 @@ const isSplitValid = computed(() => {
 const saveButtonText = computed(() => {
   if (!isValidAmount.value) return t("recordSheet.validation.enterAmount");
   if (form.value.type !== "expense") return t("common.save");
-  
-  if (form.value.splitMode === 'equal') {
-    if (form.value.splitAmongIds.length === 0) return t("recordSheet.validation.selectMembers");
+
+  if (form.value.splitMode === "equal") {
+    if (form.value.splitAmongIds.length === 0)
+      return t("recordSheet.validation.selectMembers");
   } else {
     // custom mode
-    if (remainingAmount.value < 0) return t("recordSheet.validation.customOverflow");
+    if (remainingAmount.value < 0)
+      return t("recordSheet.validation.customOverflow");
     if (unfilledCount.value === 0) {
       const total = Number(form.value.amountStr) || 0;
-      if (Math.abs(filledAllocated.value - total) >= 0.01) return t("recordSheet.validation.customMismatch");
+      if (Math.abs(filledAllocated.value - total) >= 0.01)
+        return t("recordSheet.validation.customMismatch");
     }
   }
 
@@ -446,23 +610,26 @@ const saveButtonText = computed(() => {
 const applyTemplate = (templateId: string) => {
   const t = store.recordTemplates.find((x) => x.id === templateId);
   if (!t) return;
-  
+
   form.value.type = t.type;
   form.value.categoryId = t.category;
   form.value.amountStr = t.amount !== null ? String(t.amount) : "";
   form.value.note = t.note || "";
-  
+
   if (t.amount === null) {
     showKeyboard.value = true;
   }
 };
 
 const getTemplateIcon = (categoryId: string) => {
-  return store.allCategories.find((c) => c.id === categoryId)?.icon ?? "more_horiz";
+  return (
+    store.allCategories.find((c) => c.id === categoryId)?.icon ?? "more_horiz"
+  );
 };
 
 const getTemplateColorClass = (categoryId: string) => {
-  const color = store.allCategories.find((c) => c.id === categoryId)?.color ?? "gray";
+  const color =
+    store.allCategories.find((c) => c.id === categoryId)?.color ?? "gray";
   const styles = colorMap[color] ?? colorMap.gray;
   return `${styles.bg} ${styles.text}`;
 };
@@ -474,9 +641,11 @@ watch(
     if (open) {
       shouldSaveAsTemplate.value = false;
       if (props.editRecordId) {
-        const r = store.records.find(x => x.id === props.editRecordId);
+        const r = store.records.find((x) => x.id === props.editRecordId);
         if (r) {
-          const cat = store.allCategories.find(c => c.name === r.category && c.type === r.type);
+          const cat = store.allCategories.find(
+            (c) => c.name === r.category && c.type === r.type,
+          );
           // Restore custom amounts — pre-populate all members, then overlay saved values
           const customAmts: Record<string, string> = initCustomAmounts();
           if (r.splitCustomAmounts) {
@@ -490,7 +659,7 @@ watch(
             categoryId: cat?.id || r.category,
             paidById: r.paidById,
             splitAmongIds: [...r.splitAmongIds],
-            splitMode: r.splitCustomAmounts ? 'custom' : 'equal',
+            splitMode: r.splitCustomAmounts ? "custom" : "equal",
             splitCustomAmounts: customAmts,
             date: r.date,
             note: r.note,
@@ -512,10 +681,10 @@ watch(
 watch(
   () => form.value.splitMode,
   (mode) => {
-    if (mode === 'custom') {
+    if (mode === "custom") {
       for (const m of props.members) {
         if (!(m.id in form.value.splitCustomAmounts)) {
-          form.value.splitCustomAmounts[m.id] = '';
+          form.value.splitCustomAmounts[m.id] = "";
         }
       }
     }
@@ -554,18 +723,30 @@ const handleSubmit = async () => {
   const amt = Number(form.value.amountStr);
   if (!amt || isNaN(amt) || amt <= 0) return;
   const isExpense = form.value.type === "expense";
-  if (isExpense && form.value.splitMode === 'equal' && form.value.splitAmongIds.length === 0) return;
-  if (isExpense && form.value.splitMode === 'custom' && remainingAmount.value < 0) return;
+  if (
+    isExpense &&
+    form.value.splitMode === "equal" &&
+    form.value.splitAmongIds.length === 0
+  )
+    return;
+  if (
+    isExpense &&
+    form.value.splitMode === "custom" &&
+    remainingAmount.value < 0
+  )
+    return;
 
   // Build custom amounts map for storage
   let splitCustomAmountsOut: Record<string, number> | undefined;
-  if (isExpense && form.value.splitMode === 'custom') {
+  if (isExpense && form.value.splitMode === "custom") {
     splitCustomAmountsOut = {};
     for (const m of props.members) {
       if (isUnfilled(m.id)) {
         splitCustomAmountsOut[m.id] = autoPerPerson.value;
       } else {
-        splitCustomAmountsOut[m.id] = Number(form.value.splitCustomAmounts[m.id] || 0);
+        splitCustomAmountsOut[m.id] = Number(
+          form.value.splitCustomAmounts[m.id] || 0,
+        );
       }
     }
   }
@@ -577,7 +758,7 @@ const handleSubmit = async () => {
     date: form.value.date,
     note: form.value.note,
     paidById: isExpense ? form.value.paidById : "",
-    splitAmongIds: isExpense ? props.members.map(m => m.id) : [],
+    splitAmongIds: isExpense ? props.members.map((m) => m.id) : [],
     splitCustomAmounts: splitCustomAmountsOut,
   };
 
@@ -589,7 +770,10 @@ const handleSubmit = async () => {
     // Save as template if requested
     if (shouldSaveAsTemplate.value) {
       await store.addTemplate({
-        name: form.value.note || currentCategoryObj.value?.name || form.value.categoryId,
+        name:
+          form.value.note ||
+          currentCategoryObj.value?.name ||
+          form.value.categoryId,
         type: form.value.type,
         category: form.value.categoryId,
         amount: amt,
@@ -605,7 +789,7 @@ watch(
     if (val && store.currentBookId) {
       store.pullSharedBook(store.currentBookId);
     }
-  }
+  },
 );
 </script>
 
@@ -617,7 +801,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }

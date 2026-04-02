@@ -1,4 +1,5 @@
 import type { PersonalRecord } from "../stores/types";
+import { toLocalDateString } from "./date";
 
 interface PiggyCategory {
   id: number;
@@ -49,10 +50,7 @@ export function parsePiggyBackup(content: string): PersonalRecord[] {
   for (const data of rawRecords) {
     const category = categories[data.i];
     const type = data.j === "Expense" ? "expense" : "income";
-    const date = new Date(data.c);
-
-    // Format YYYY-MM-DD
-    const dateString = date.toISOString().split("T")[0];
+    const dateString = toLocalDateString(data.c);
 
     parsedRecords.push({
       id: crypto.randomUUID(),
