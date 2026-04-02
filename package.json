@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "lint": "prettier --check package.json vitest.config.ts src/utils/date.ts src/utils/category.ts src/components/DateFilterBar.vue src/components/home/AddPersonalRecordSheet.vue src/components/books/BookAddRecordSheet.vue src/stores/personal.ts src/utils/piggyImport.ts src/views/Home.vue src/views/Statistics.vue tests/*.ts",
+    "test": "vitest run",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },
@@ -24,7 +26,9 @@
   "devDependencies": {
     "@capacitor/cli": "^8.3.0",
     "@vitejs/plugin-vue": "^6.0.5",
+    "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.27",
+    "jsdom": "^29.0.1",
     "postcss": "^8.5.8",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
@@ -32,6 +36,7 @@
     "typescript": "~6.0.2",
     "vite": "^7",
     "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.2",
     "vue-tsc": "^3.2.6",
     "workbox-window": "^7.4.0"
   }
