@@ -6,22 +6,39 @@
   >
     <!-- Category Grid (backdrop area) -->
     <template #categories>
-      <div class="grid grid-cols-4 sm:grid-cols-5 gap-y-6 gap-x-2">
+      <div class="grid grid-cols-4 gap-x-2 gap-y-6 sm:grid-cols-5">
         <button
-          v-for="cat in activeCats" :key="cat.id"
+          v-for="cat in activeCats"
+          :key="cat.id"
           type="button"
           @click="form.categoryId = cat.id"
-          class="flex flex-col items-center gap-1.5 transition-all group"
-          :class="form.categoryId === cat.id ? 'scale-110 opacity-100' : 'opacity-80 hover:opacity-100'"
+          class="group flex flex-col items-center gap-1.5 transition-all"
+          :class="
+            form.categoryId === cat.id
+              ? 'scale-110 opacity-100'
+              : 'opacity-80 hover:opacity-100'
+          "
         >
           <div
             class="flex h-12 w-12 items-center justify-center rounded-2xl text-[24px] transition-all"
-            :class="form.categoryId === cat.id ? (form.type === 'expense' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30') : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'"
+            :class="
+              form.categoryId === cat.id
+                ? form.type === 'expense'
+                  ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                  : 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
+                : 'bg-white/80 text-gray-700 dark:bg-gray-800/80 dark:text-gray-300'
+            "
           >
             <CategoryIcon :name="cat.icon" />
           </div>
-          <span class="text-xs font-bold text-center leading-tight whitespace-nowrap text-white drop-shadow-md">
-            {{ $te(`categories.${cat.id}`) ? $t(`categories.${cat.id}`) : cat.name }}
+          <span
+            class="text-center text-xs leading-tight font-bold whitespace-nowrap text-white drop-shadow-md"
+          >
+            {{
+              $te(`categories.${cat.id}`)
+                ? $t(`categories.${cat.id}`)
+                : cat.name
+            }}
           </span>
         </button>
       </div>
@@ -33,33 +50,45 @@
         <button
           type="button"
           @click="form.type = form.type === 'expense' ? 'income' : 'expense'"
-          class="flex rounded-lg bg-gray-100 p-0.5 dark:bg-gray-800 active:scale-95 transition-transform"
+          class="flex rounded-lg bg-gray-100 p-0.5 transition-transform active:scale-95 dark:bg-gray-800"
         >
           <div
             :class="[
-              'px-2.5 py-1 text-xs font-bold rounded-md transition-all',
+              'rounded-md px-2.5 py-1 text-xs font-bold transition-all',
               form.type === 'expense'
                 ? 'bg-white text-red-700 shadow-sm dark:bg-gray-700 dark:text-red-400'
-                : 'text-gray-500 dark:text-gray-400'
+                : 'text-gray-500 dark:text-gray-400',
             ]"
-          >{{ $t("common.expense") }}</div>
+          >
+            {{ $t("common.expense") }}
+          </div>
           <div
             :class="[
-              'px-2.5 py-1 text-xs font-bold rounded-md transition-all',
+              'rounded-md px-2.5 py-1 text-xs font-bold transition-all',
               form.type === 'income'
                 ? 'bg-white text-emerald-700 shadow-sm dark:bg-gray-700 dark:text-emerald-400'
-                : 'text-gray-500 dark:text-gray-400'
+                : 'text-gray-500 dark:text-gray-400',
             ]"
-          >{{ $t("common.income") }}</div>
+          >
+            {{ $t("common.income") }}
+          </div>
         </button>
-        <CloseButton @click="$emit('update:modelValue', false)" class="!p-1.5 bg-gray-100 dark:bg-gray-800 rounded-full" />
+        <CloseButton
+          @click="$emit('update:modelValue', false)"
+          class="rounded-full bg-gray-100 !p-1.5 dark:bg-gray-800"
+        />
       </div>
     </template>
 
     <!-- Form Body -->
     <!-- Templates Quick Select -->
-    <div v-if="!editRecordId && store.recordTemplates.length > 0" class="-mx-1 mb-4">
-      <div class="flex items-center gap-2 overflow-x-auto px-1 pb-1 no-scrollbar">
+    <div
+      v-if="!editRecordId && store.recordTemplates.length > 0"
+      class="-mx-1 mb-4"
+    >
+      <div
+        class="no-scrollbar flex items-center gap-2 overflow-x-auto px-1 pb-1"
+      >
         <button
           v-for="tpl in store.recordTemplates"
           :key="tpl.id"
@@ -71,7 +100,10 @@
             class="flex h-5 w-5 items-center justify-center rounded-full"
             :class="[getTemplateColorClass(tpl.category)]"
           >
-            <CategoryIcon :name="getTemplateIcon(tpl.category)" style="transform: scale(0.6);" />
+            <CategoryIcon
+              :name="getTemplateIcon(tpl.category)"
+              style="transform: scale(0.6)"
+            />
           </div>
           {{ tpl.name }}
         </button>
@@ -81,31 +113,45 @@
     <!-- Fields: Date -> Amount -> Category -> Note -->
     <div class="space-y-4">
       <!-- 1. Date -->
-      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-        <span class="material-symbols-outlined text-gray-400 text-xl">calendar_today</span>
-        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.date") }}</label>
+      <div
+        class="flex items-center gap-3 border-b border-gray-100 pb-2 dark:border-gray-800"
+      >
+        <span class="material-symbols-outlined text-xl text-gray-400"
+          >calendar_today</span
+        >
+        <label
+          class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+          >{{ $t("common.date") }}</label
+        >
         <input
           v-model="form.date"
           type="date"
           @click="($event.target as HTMLInputElement).showPicker?.()"
           @focus="($event.target as HTMLInputElement).showPicker?.()"
-          class="flex-1 bg-transparent text-right font-bold text-gray-800 dark:text-gray-200 outline-none w-full cursor-pointer relative z-10"
+          class="relative z-10 w-full flex-1 cursor-pointer bg-transparent text-right font-bold text-gray-800 outline-none dark:text-gray-200"
         />
       </div>
 
       <!-- 2. Amount -->
-      <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-        <span class="material-symbols-outlined text-gray-400 text-xl">attach_money</span>
-        <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.amount") }}</label>
-        <div class="flex-1 flex items-center justify-end gap-1">
-          <span class="text-gray-400 font-semibold text-sm">NT$</span>
+      <div
+        class="flex items-center gap-3 border-b border-gray-100 pb-2 dark:border-gray-800"
+      >
+        <span class="material-symbols-outlined text-xl text-gray-400"
+          >attach_money</span
+        >
+        <label
+          class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+          >{{ $t("common.amount") }}</label
+        >
+        <div class="flex flex-1 items-center justify-end gap-1">
+          <span class="text-sm font-semibold text-gray-400">NT$</span>
           <input
             v-model="form.amountStr"
             type="text"
             inputmode="none"
             @focus="showKeyboard = true"
             placeholder="0"
-            class="w-full bg-transparent text-right text-xl font-bold text-gray-800 outline-none dark:text-gray-100 caret-violet-500"
+            class="w-full bg-transparent text-right text-xl font-bold text-gray-800 caret-violet-500 outline-none dark:text-gray-100"
           />
         </div>
       </div>
@@ -114,33 +160,62 @@
         v-if="showKeyboard"
         v-model="form.amountStr"
         @submit="showKeyboard = false"
-        class="mt-1 mb-2 bg-gray-50 dark:bg-gray-800/50 p-2 rounded-2xl"
+        class="mt-1 mb-2 rounded-2xl bg-gray-50 p-2 dark:bg-gray-800/50"
       />
 
-      <div v-show="!showKeyboard" class="space-y-4 animate-fade-in">
+      <div v-show="!showKeyboard" class="animate-fade-in space-y-4">
         <!-- 3. Category Display -->
-        <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-          <span class="material-symbols-outlined text-gray-400 text-xl">category</span>
-          <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.category") }}</label>
-          <div class="flex-1 flex items-center justify-end gap-2 text-right">
-            <span class="text-sm font-bold" :class="form.type === 'expense' ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'">
-              {{ $te(`categories.${currentCategoryId}`) ? $t(`categories.${currentCategoryId}`) : (currentCategoryObj?.name || $t('common.select')) }}
+        <div
+          class="flex items-center gap-3 border-b border-gray-100 pb-2 dark:border-gray-800"
+        >
+          <span class="material-symbols-outlined text-xl text-gray-400"
+            >category</span
+          >
+          <label
+            class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >{{ $t("common.category") }}</label
+          >
+          <div class="flex flex-1 items-center justify-end gap-2 text-right">
+            <span
+              class="text-sm font-bold"
+              :class="
+                form.type === 'expense'
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-emerald-600 dark:text-emerald-400'
+              "
+            >
+              {{
+                $te(`categories.${currentCategoryId}`)
+                  ? $t(`categories.${currentCategoryId}`)
+                  : currentCategoryObj?.name || $t("common.select")
+              }}
             </span>
-            <div v-if="currentCategoryId" class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm" :class="form.type === 'expense' ? 'bg-red-600' : 'bg-emerald-600'">
+            <div
+              v-if="currentCategoryId"
+              class="flex h-6 w-6 items-center justify-center rounded-[6px] text-white shadow-sm"
+              :class="form.type === 'expense' ? 'bg-red-600' : 'bg-emerald-600'"
+            >
               <CategoryIcon :name="currentCategoryIcon" class="text-[14px]" />
             </div>
           </div>
         </div>
 
         <!-- 4. Note -->
-        <div class="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3">
-          <span class="material-symbols-outlined text-gray-400 text-xl">edit_note</span>
-          <label class="text-sm font-semibold text-gray-600 dark:text-gray-400 w-16 shrink-0">{{ $t("common.note") }}</label>
+        <div
+          class="flex items-center gap-3 border-b border-gray-100 pb-3 dark:border-gray-800"
+        >
+          <span class="material-symbols-outlined text-xl text-gray-400"
+            >edit_note</span
+          >
+          <label
+            class="w-16 shrink-0 text-sm font-semibold text-gray-600 dark:text-gray-400"
+            >{{ $t("common.note") }}</label
+          >
           <input
             v-model="form.note"
             type="text"
             :placeholder="$t('common.note')"
-            class="flex-1 bg-transparent text-right font-medium text-gray-800 dark:text-gray-200 outline-none w-full"
+            class="w-full flex-1 bg-transparent text-right font-medium text-gray-800 outline-none dark:text-gray-200"
           />
         </div>
 
@@ -152,7 +227,10 @@
             type="checkbox"
             class="h-4 w-4 rounded-md border-2 border-gray-300 text-violet-600 focus:ring-violet-500/20 dark:border-gray-600 dark:bg-gray-800"
           />
-          <label for="saveAsTemplate" class="cursor-pointer text-xs font-bold text-gray-500 dark:text-gray-400">
+          <label
+            for="saveAsTemplate"
+            class="cursor-pointer text-xs font-bold text-gray-500 dark:text-gray-400"
+          >
             {{ $t("templates.saveAsTemplate") }}
           </label>
         </div>
@@ -189,8 +267,9 @@ import CategoryIcon from "../CategoryIcon.vue";
 import CalculatorKeyboard from "../CalculatorKeyboard.vue";
 import RecordSheetLayout from "../RecordSheetLayout.vue";
 import BaseButton from "../BaseButton.vue";
+import { getLocalDateString } from "../../utils/date";
 
-const props = defineProps<{ 
+const props = defineProps<{
   modelValue: boolean;
   editRecordId?: string;
   initialTemplateId?: string;
@@ -201,7 +280,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const store = useTrackerStore();
-const today = new Date().toISOString().split("T")[0];
+const today = getLocalDateString();
 
 const expenseCats = computed(() =>
   store.allCategories.filter((c) => c.type === "expense"),
@@ -215,10 +294,12 @@ const activeCats = computed(() =>
 );
 
 const currentCategoryObj = computed(() =>
-  activeCats.value.find((c) => c.id === form.value.categoryId)
+  activeCats.value.find((c) => c.id === form.value.categoryId),
 );
 const currentCategoryId = computed(() => form.value.categoryId);
-const currentCategoryIcon = computed(() => currentCategoryObj.value?.icon ?? "category");
+const currentCategoryIcon = computed(
+  () => currentCategoryObj.value?.icon ?? "category",
+);
 
 const defaultForm = () => ({
   type: "expense" as "expense" | "income",
@@ -261,23 +342,26 @@ const saveButtonText = computed(() => {
 const applyTemplate = (templateId: string) => {
   const t = store.recordTemplates.find((x) => x.id === templateId);
   if (!t) return;
-  
+
   form.value.type = t.type;
   form.value.categoryId = t.category;
   form.value.amountStr = t.amount !== null ? String(t.amount) : "";
   form.value.note = t.note || "";
-  
+
   if (t.amount === null) {
     showKeyboard.value = true;
   }
 };
 
 const getTemplateIcon = (categoryId: string) => {
-  return store.allCategories.find((c) => c.id === categoryId)?.icon ?? "more_horiz";
+  return (
+    store.allCategories.find((c) => c.id === categoryId)?.icon ?? "more_horiz"
+  );
 };
 
 const getTemplateColorClass = (categoryId: string) => {
-  const color = store.allCategories.find((c) => c.id === categoryId)?.color ?? "gray";
+  const color =
+    store.allCategories.find((c) => c.id === categoryId)?.color ?? "gray";
   const styles = colorMap[color] ?? colorMap.gray;
   return `${styles.bg} ${styles.text}`;
 };
@@ -299,10 +383,14 @@ watch(
     if (open) {
       shouldSaveAsTemplate.value = false;
       if (props.editRecordId) {
-        const r = store.personalRecords.find(x => x.id === props.editRecordId);
+        const r = store.personalRecords.find(
+          (x) => x.id === props.editRecordId,
+        );
         if (r) {
           // Backward compatibility: Find ID by name if it's an old record or just store name
-          const cat = store.allCategories.find(c => c.name === r.category && c.type === r.type);
+          const cat = store.allCategories.find(
+            (c) => c.name === r.category && c.type === r.type,
+          );
           form.value = {
             type: r.type,
             amountStr: String(r.amount),
@@ -313,7 +401,7 @@ watch(
           return;
         }
       }
-      
+
       if (props.initialTemplateId) {
         applyTemplate(props.initialTemplateId);
         return;
@@ -344,11 +432,14 @@ const submit = async () => {
     await store.updatePersonalRecord(props.editRecordId, data);
   } else {
     await store.addPersonalRecord(data);
-    
+
     // Save as template if requested
     if (shouldSaveAsTemplate.value) {
       await store.addTemplate({
-        name: form.value.note || currentCategoryObj.value?.name || form.value.categoryId,
+        name:
+          form.value.note ||
+          currentCategoryObj.value?.name ||
+          form.value.categoryId,
         type: form.value.type,
         category: form.value.categoryId,
         amount: amt,

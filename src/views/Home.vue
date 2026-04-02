@@ -1,6 +1,10 @@
 <template>
-  <main class="page-container min-h-screen bg-gray-50 transition-colors dark:bg-gray-900">
-    <header class="rounded-b-3xl bg-gradient-to-br from-indigo-500 to-purple-600 px-6 pb-8 pt-10 text-white shadow-lg">
+  <main
+    class="page-container min-h-screen bg-gray-50 transition-colors dark:bg-gray-900"
+  >
+    <header
+      class="rounded-b-3xl bg-gradient-to-br from-indigo-500 to-purple-600 px-6 pt-10 pb-8 text-white shadow-lg"
+    >
       <h1 class="sr-only">{{ $t("home.personalRecords") }}</h1>
       <SummaryBar
         :totalExpense="filteredExpense"
@@ -13,25 +17,40 @@
 
     <section class="mt-3 px-4" aria-labelledby="personal-records-title">
       <header class="mb-3 flex items-center justify-between">
-        <h2 id="personal-records-title" class="section-title">{{ $t("home.personalRecords") }}</h2>
-        <p class="section-count">{{ $t("home.totalRecords", { count: filteredPersonalRecords.length }) }}</p>
+        <h2 id="personal-records-title" class="section-title">
+          {{ $t("home.personalRecords") }}
+        </h2>
+        <p class="section-count">
+          {{
+            $t("home.totalRecords", { count: filteredPersonalRecords.length })
+          }}
+        </p>
       </header>
 
-      <div class="relative mb-3 mt-1 flex items-center gap-2">
+      <div class="relative mt-1 mb-3 flex items-center gap-2">
         <button
           v-if="showFilterMenu || showImportMenu"
           type="button"
           class="fixed inset-0 z-10"
           aria-label="Close open menus"
-          @click="showFilterMenu = false; showImportMenu = false"
+          @click="
+            showFilterMenu = false;
+            showImportMenu = false;
+          "
         ></button>
 
         <MonthSelector
+          v-if="showMonthSelector"
           v-model="selectedMonth"
           :mode="filterMode"
           class="flex-1"
-          :class="{ 'pointer-events-none opacity-50': filterMode === 'all' }"
         />
+        <div
+          v-else
+          class="flex h-10 flex-1 items-center justify-center rounded-2xl bg-white px-4 text-sm font-bold text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200"
+        >
+          {{ $t("filter.all") }}
+        </div>
 
         <div class="relative">
           <button
@@ -41,10 +60,24 @@
             :aria-expanded="showFilterMenu"
             aria-haspopup="menu"
             aria-label="Open record filters"
-            @click="showFilterMenu = !showFilterMenu; showImportMenu = false"
+            @click="
+              showFilterMenu = !showFilterMenu;
+              showImportMenu = false;
+            "
           >
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+              />
             </svg>
           </button>
 
@@ -52,7 +85,7 @@
             <ul
               v-if="showFilterMenu"
               :id="filterMenuId"
-              class="absolute right-0 top-12 z-20 w-36 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
+              class="absolute top-12 right-0 z-20 w-36 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
               role="menu"
             >
               <li>
@@ -60,7 +93,12 @@
                   type="button"
                   role="menuitemradio"
                   :aria-checked="filterMode === 'all'"
-                  :class="['w-full px-4 py-3 text-left text-sm font-bold transition-colors hover:bg-gray-50 dark:hover:bg-gray-700', filterMode === 'all' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-200']"
+                  :class="[
+                    'w-full px-4 py-3 text-left text-sm font-bold transition-colors hover:bg-gray-50 dark:hover:bg-gray-700',
+                    filterMode === 'all'
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-gray-700 dark:text-gray-200',
+                  ]"
                   @click="setFilterMode('all')"
                 >
                   {{ $t("filter.all") }}
@@ -72,7 +110,12 @@
                   type="button"
                   role="menuitemradio"
                   :aria-checked="filterMode === 'year'"
-                  :class="['w-full px-4 py-3 text-left text-sm font-bold transition-colors hover:bg-gray-50 dark:hover:bg-gray-700', filterMode === 'year' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-200']"
+                  :class="[
+                    'w-full px-4 py-3 text-left text-sm font-bold transition-colors hover:bg-gray-50 dark:hover:bg-gray-700',
+                    filterMode === 'year'
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-gray-700 dark:text-gray-200',
+                  ]"
                   @click="setFilterMode('year')"
                 >
                   {{ $t("filter.year") }}
@@ -84,7 +127,12 @@
                   type="button"
                   role="menuitemradio"
                   :aria-checked="filterMode === 'month'"
-                  :class="['w-full px-4 py-3 text-left text-sm font-bold transition-colors hover:bg-gray-50 dark:hover:bg-gray-700', filterMode === 'month' ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-200']"
+                  :class="[
+                    'w-full px-4 py-3 text-left text-sm font-bold transition-colors hover:bg-gray-50 dark:hover:bg-gray-700',
+                    filterMode === 'month'
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-gray-700 dark:text-gray-200',
+                  ]"
                   @click="setFilterMode('month')"
                 >
                   {{ $t("filter.month") }}
@@ -102,7 +150,10 @@
             :aria-expanded="showImportMenu"
             aria-haspopup="menu"
             aria-label="Open import and template actions"
-            @click="showImportMenu = !showImportMenu; showFilterMenu = false"
+            @click="
+              showImportMenu = !showImportMenu;
+              showFilterMenu = false;
+            "
           >
             <CategoryIcon name="system_update_alt" class="text-[22px]" />
           </button>
@@ -111,7 +162,7 @@
             <ul
               v-if="showImportMenu"
               :id="importMenuId"
-              class="absolute right-0 top-12 z-20 w-48 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
+              class="absolute top-12 right-0 z-20 w-48 overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10"
               role="menu"
             >
               <li>
@@ -119,9 +170,14 @@
                   type="button"
                   class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
                   role="menuitem"
-                  @click="showImportSheet = true; showImportMenu = false"
+                  @click="
+                    showImportSheet = true;
+                    showImportMenu = false;
+                  "
                 >
-                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+                  <span
+                    class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400"
+                  >
                     <CategoryIcon name="import_export" class="text-base" />
                   </span>
                   {{ $t("home.importFromBook") }}
@@ -133,7 +189,10 @@
                   type="button"
                   class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
                   role="menuitem"
-                  @click="openNewRecordFromTemplate(tpl.id); showImportMenu = false"
+                  @click="
+                    openNewRecordFromTemplate(tpl.id);
+                    showImportMenu = false;
+                  "
                 >
                   <span
                     :class="[
@@ -142,7 +201,10 @@
                       getTemplateCategoryStyle(tpl.category).text,
                     ]"
                   >
-                    <CategoryIcon :name="getTemplateCategoryStyle(tpl.category).icon" style="transform: scale(0.65);" />
+                    <CategoryIcon
+                      :name="getTemplateCategoryStyle(tpl.category).icon"
+                      style="transform: scale(0.65)"
+                    />
                   </span>
                   <span class="truncate">{{ tpl.name }}</span>
                 </button>
@@ -153,9 +215,14 @@
                   type="button"
                   class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700"
                   role="menuitem"
-                  @click="showTemplateManager = true; showImportMenu = false"
+                  @click="
+                    showTemplateManager = true;
+                    showImportMenu = false;
+                  "
                 >
-                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                  <span
+                    class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+                  >
                     <CategoryIcon name="settings" class="text-base" />
                   </span>
                   {{ $t("templates.manage") }}
@@ -166,7 +233,11 @@
         </div>
       </div>
 
-      <section v-if="filteredPersonalRecords.length === 0" class="empty-state py-10 text-sm" aria-live="polite">
+      <section
+        v-if="filteredPersonalRecords.length === 0"
+        class="empty-state py-10 text-sm"
+        aria-live="polite"
+      >
         <div class="mb-2 text-3xl" aria-hidden="true">📝</div>
         {{ $t("home.noRecords") }}
       </section>
@@ -185,7 +256,11 @@
 
     <DraggableFab aria-label="Add personal record" @click="openNewRecord" />
 
-    <AddPersonalRecordSheet v-model="showForm" :editRecordId="editRecordId" :initialTemplateId="useTemplateId" />
+    <AddPersonalRecordSheet
+      v-model="showForm"
+      :editRecordId="editRecordId"
+      :initialTemplateId="useTemplateId"
+    />
     <ImportFromBookSheet v-model="showImportSheet" />
     <TemplateSettingsModal v-model="showTemplateManager" />
   </main>
@@ -203,6 +278,7 @@ import DailyRecordGroup from "../components/home/DailyRecordGroup.vue";
 import ImportFromBookSheet from "../components/home/ImportFromBookSheet.vue";
 import { useTrackerStore } from "../stores/tracker";
 import { colorMap } from "../utils/category";
+import { getLocalDateString, getLocalYearMonthString } from "../utils/date";
 
 const store = useTrackerStore();
 const showForm = ref(false);
@@ -211,11 +287,12 @@ const showImportMenu = ref(false);
 const showTemplateManager = ref(false);
 const editRecordId = ref<string | undefined>(undefined);
 const useTemplateId = ref<string | undefined>(undefined);
-const selectedMonth = ref<string>(new Date().toISOString().slice(0, 7));
+const selectedMonth = ref<string>(getLocalYearMonthString());
 const filterMode = ref<"all" | "year" | "month">("month");
 const showFilterMenu = ref(false);
 const filterMenuId = "home-filter-menu";
 const importMenuId = "home-import-menu";
+const showMonthSelector = computed(() => filterMode.value !== "all");
 
 const setFilterMode = (mode: "all" | "year" | "month") => {
   filterMode.value = mode;
@@ -226,8 +303,10 @@ const filteredPersonalRecords = computed(() =>
   store.personalRecords
     .filter((r) => {
       if (filterMode.value === "all") return true;
-      if (filterMode.value === "year") return r.date.startsWith(selectedMonth.value.split("-")[0]);
-      if (filterMode.value === "month") return r.date.startsWith(selectedMonth.value);
+      if (filterMode.value === "year")
+        return r.date.startsWith(selectedMonth.value.split("-")[0]);
+      if (filterMode.value === "month")
+        return r.date.startsWith(selectedMonth.value);
       return true;
     })
     .sort((a, b) => b.date.localeCompare(a.date)),
@@ -243,12 +322,18 @@ const groupedRecords = computed(() => {
 });
 
 const filteredExpense = computed(() =>
-  filteredPersonalRecords.value.filter((r) => r.type === "expense").reduce((s, r) => s + r.amount, 0),
+  filteredPersonalRecords.value
+    .filter((r) => r.type === "expense")
+    .reduce((s, r) => s + r.amount, 0),
 );
 const filteredIncome = computed(() =>
-  filteredPersonalRecords.value.filter((r) => r.type === "income").reduce((s, r) => s + r.amount, 0),
+  filteredPersonalRecords.value
+    .filter((r) => r.type === "income")
+    .reduce((s, r) => s + r.amount, 0),
 );
-const filteredBalance = computed(() => filteredIncome.value - filteredExpense.value);
+const filteredBalance = computed(
+  () => filteredIncome.value - filteredExpense.value,
+);
 
 const openNewRecord = () => {
   editRecordId.value = undefined;
@@ -265,12 +350,14 @@ const openEditRecord = (id: string) => {
 const openNewRecordFromTemplate = async (templateId: string) => {
   const tpl = store.recordTemplates.find((t) => t.id === templateId);
   if (tpl && tpl.amount !== null) {
-    const catName = store.allCategories.find((c) => c.id === tpl.category)?.name ?? tpl.category;
+    const catName =
+      store.allCategories.find((c) => c.id === tpl.category)?.name ??
+      tpl.category;
     await store.addPersonalRecord({
       type: tpl.type,
       amount: tpl.amount,
       category: catName,
-      date: new Date().toISOString().split("T")[0],
+      date: getLocalDateString(),
       note: tpl.note,
     });
     return;

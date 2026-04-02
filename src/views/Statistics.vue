@@ -1,8 +1,14 @@
 <template>
-  <main class="page-container min-h-screen bg-gray-50 transition-colors dark:bg-gray-900">
-    <header class="rounded-b-3xl bg-gradient-to-br from-emerald-500 to-teal-600 px-6 pb-8 pt-10 text-white shadow-lg">
+  <main
+    class="page-container min-h-screen bg-gray-50 transition-colors dark:bg-gray-900"
+  >
+    <header
+      class="rounded-b-3xl bg-gradient-to-br from-emerald-500 to-teal-600 px-6 pt-10 pb-8 text-white shadow-lg"
+    >
       <div class="mb-4">
-        <p class="text-xs font-medium uppercase tracking-wider text-emerald-200">
+        <p
+          class="text-xs font-medium tracking-wider text-emerald-200 uppercase"
+        >
           {{ $t("statistics.subtitle") }}
         </p>
         <h1 class="mt-0.5 text-xl font-bold text-white">
@@ -20,7 +26,10 @@
     </header>
 
     <div class="mt-5 space-y-5 px-4 pb-24">
-      <section v-if="store.personalRecords.length > 0" aria-label="Date filters">
+      <section
+        v-if="store.personalRecords.length > 0"
+        aria-label="Date filters"
+      >
         <DateFilterBar
           :dates="recordDates"
           initialMode="year"
@@ -29,7 +38,11 @@
         />
       </section>
 
-      <section v-if="filteredRecords.length === 0" class="empty-state py-16" aria-live="polite">
+      <section
+        v-if="filteredRecords.length === 0"
+        class="empty-state py-16"
+        aria-live="polite"
+      >
         <div class="mb-3 text-5xl" aria-hidden="true">📊</div>
         <p class="font-bold">{{ $t("statistics.noData") }}</p>
       </section>
@@ -37,8 +50,14 @@
       <template v-else>
         <section aria-labelledby="statistics-type-heading">
           <div class="mb-4 flex justify-end">
-            <h2 id="statistics-type-heading" class="sr-only">{{ $t("statistics.categoryBreakdown") }}</h2>
-            <div class="flex gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800" role="tablist" aria-label="Record type">
+            <h2 id="statistics-type-heading" class="sr-only">
+              {{ $t("statistics.categoryBreakdown") }}
+            </h2>
+            <div
+              class="flex gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800"
+              role="tablist"
+              aria-label="Record type"
+            >
               <button
                 type="button"
                 role="tab"
@@ -73,8 +92,13 @@
           </div>
         </section>
 
-        <section v-if="dateFilter.mode !== 'date'" aria-labelledby="statistics-trend-heading">
-          <h2 id="statistics-trend-heading" class="sr-only">{{ trendTitle }}</h2>
+        <section
+          v-if="dateFilter.mode !== 'date'"
+          aria-labelledby="statistics-trend-heading"
+        >
+          <h2 id="statistics-trend-heading" class="sr-only">
+            {{ trendTitle }}
+          </h2>
           <TrendChart
             :title="trendTitle"
             :data="trendData"
@@ -84,7 +108,9 @@
         </section>
 
         <section aria-labelledby="statistics-breakdown-heading">
-          <h2 id="statistics-breakdown-heading" class="sr-only">{{ $t("statistics.categoryBreakdown") }}</h2>
+          <h2 id="statistics-breakdown-heading" class="sr-only">
+            {{ $t("statistics.categoryBreakdown") }}
+          </h2>
           <CategoryBreakdown
             :data="categoryBreakdown"
             :total="categoryTotal"
@@ -106,15 +132,21 @@ import SummaryBar from "../components/SummaryBar.vue";
 import type { DateFilter } from "../components/DateFilterBar.vue";
 import { useTrackerStore } from "../stores/tracker";
 import { colorMap } from "../utils/category";
+import { getDaysInMonth, getLocalDateString } from "../utils/date";
 
 const store = useTrackerStore();
 const { te, t } = useI18n();
 
-const today = new Date().toISOString().split("T")[0];
+const today = getLocalDateString();
 const currentYear = today.slice(0, 4);
 const currentMonth = today.slice(5, 7);
 
-const dateFilter = ref<DateFilter>({ mode: "year", year: currentYear, month: currentMonth, date: today });
+const dateFilter = ref<DateFilter>({
+  mode: "year",
+  year: currentYear,
+  month: currentMonth,
+  date: today,
+});
 const onFilterChange = (f: DateFilter) => {
   dateFilter.value = f;
 };
@@ -125,22 +157,32 @@ const filteredRecords = computed(() => {
   const { mode, year, month, date } = dateFilter.value;
   if (mode === "all") return records;
   if (mode === "year") return records.filter((r) => r.date.startsWith(year));
-  if (mode === "month") return records.filter((r) => r.date.startsWith(`${year}-${month}`));
+  if (mode === "month")
+    return records.filter((r) => r.date.startsWith(`${year}-${month}`));
   if (mode === "date") return records.filter((r) => r.date === date);
   return records;
 });
 
 const filteredExpense = computed(() =>
-  filteredRecords.value.filter((r) => r.type === "expense").reduce((sum, record) => sum + record.amount, 0),
+  filteredRecords.value
+    .filter((r) => r.type === "expense")
+    .reduce((sum, record) => sum + record.amount, 0),
 );
 const filteredIncome = computed(() =>
-  filteredRecords.value.filter((r) => r.type === "income").reduce((sum, record) => sum + record.amount, 0),
+  filteredRecords.value
+    .filter((r) => r.type === "income")
+    .reduce((sum, record) => sum + record.amount, 0),
 );
-const filteredBalance = computed(() => filteredIncome.value - filteredExpense.value);
+const filteredBalance = computed(
+  () => filteredIncome.value - filteredExpense.value,
+);
 
 const categoryTab = ref<"expense" | "income">("expense");
 
-const categoryMap = computed(() => new Map(store.allCategories.map((category) => [category.name, category])));
+const categoryMap = computed(
+  () =>
+    new Map(store.allCategories.map((category) => [category.name, category])),
+);
 
 const getCategoryStyle = (categoryName: string) => {
   const category = categoryMap.value.get(categoryName);
@@ -153,7 +195,8 @@ const getCategoryStyle = (categoryName: string) => {
 
 const getLocalizedCategoryName = (categoryName: string) => {
   const category = categoryMap.value.get(categoryName);
-  if (category && te(`categories.${category.id}`)) return t(`categories.${category.id}`);
+  if (category && te(`categories.${category.id}`))
+    return t(`categories.${category.id}`);
   return categoryName;
 };
 
@@ -164,7 +207,9 @@ const categoryTotal = computed(() =>
 );
 
 const categoryBreakdown = computed(() => {
-  const typeRecords = filteredRecords.value.filter((record) => record.type === categoryTab.value);
+  const typeRecords = filteredRecords.value.filter(
+    (record) => record.type === categoryTab.value,
+  );
   const total = typeRecords.reduce((sum, record) => sum + record.amount, 0);
   if (total === 0) return [];
 
@@ -225,7 +270,7 @@ const trendData = computed(() => {
   } else if (mode === "month") {
     const year = parseInt(dateFilter.value.year, 10);
     const month = parseInt(dateFilter.value.month, 10);
-    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInMonth = getDaysInMonth(year, month);
     const prefix = `${dateFilter.value.year}-${dateFilter.value.month}`;
     for (let day = 1; day <= daysInMonth; day += 1) {
       const paddedDay = day.toString().padStart(2, "0");
