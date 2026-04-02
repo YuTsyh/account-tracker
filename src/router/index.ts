@@ -39,6 +39,11 @@ router.beforeEach(async (to) => {
     return { name: "login" };
   }
 
+  // If returning user (profile set) hits landing page, send them to dashboard
+  if (store.isProfileSet && to.name === "landing") {
+    return { name: "home" };
+  }
+
   // If already FORMALLY logged in (Google), don't let them go back to login
   if (store.userProfile.isLoggedIn && to.name === "login") {
     return { name: "home" }; // home is now /dashboard
