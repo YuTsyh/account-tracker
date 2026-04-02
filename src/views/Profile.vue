@@ -235,7 +235,7 @@
             iconName="save"
             colorClasses="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30"
             :isFirst="true"
-            @click="store.backupByUUID"
+            @click="handleBackupByUUID"
           />
           <ProfileSettingItem
             :disabled="store.isSyncing"
@@ -373,9 +373,25 @@ const copyUUID = async () => {
     setTimeout(() => {
       copied.value = false;
     }, 2000);
+    return true;
   } catch (err) {
     console.error("Failed to copy:", err);
+    return false;
   }
+};
+
+const handleBackupByUUID = async () => {
+  if (store.isSyncing) return;
+  const backedUp = await store.backupByUUID();
+  if (!backedUp) return;
+
+  const copiedToClipboard = await copyUUID();
+  if (copiedToClipboard) {
+    toast.success(t("sync.backupCopied"));
+    return;
+  }
+
+  toast.info(t("sync.backupReady", { uuid: store.userProfile.id }));
 };
 
 const handleRestoreByUUID = async () => {

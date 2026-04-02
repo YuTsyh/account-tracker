@@ -253,6 +253,8 @@ export default {
     restoreSuccess: "Data restored from cloud successfully!",
     pullError: "Download failed, please try again later.",
     backupSuccess: "Backup successful! You can restore using this UUID anytime.",
+    backupCopied: "Backup successful. The UUID has been copied to your clipboard.",
+    backupReady: "Backup successful. Please keep this UUID: {uuid}",
     backupError: "Backup failed, please try again later.",
     restoreUUIDSuccess: "Data restored from UUID successfully!",
     restoreUUIDError: "Restore failed, please check if the UUID is correct.",
