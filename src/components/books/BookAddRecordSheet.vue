@@ -653,12 +653,24 @@ watch(
               customAmts[k] = String(v);
             }
           }
+          // Validate restored member IDs against current members
+          const currentMemberIds = new Set(props.members.map((m) => m.id));
+          const validSplitIds = r.splitAmongIds.filter((id) =>
+            currentMemberIds.has(id),
+          );
+          const validPaidById = currentMemberIds.has(r.paidById)
+            ? r.paidById
+            : (props.members[0]?.id ?? "");
+
           form.value = {
             type: r.type,
             amountStr: String(r.amount),
             categoryId: cat?.id || r.category,
-            paidById: r.paidById,
-            splitAmongIds: [...r.splitAmongIds],
+            paidById: validPaidById,
+            splitAmongIds:
+              validSplitIds.length > 0
+                ? validSplitIds
+                : props.members.map((m) => m.id),
             splitMode: r.splitCustomAmounts ? "custom" : "equal",
             splitCustomAmounts: customAmts,
             date: r.date,
@@ -758,7 +770,7 @@ const handleSubmit = async () => {
     date: form.value.date,
     note: form.value.note,
     paidById: isExpense ? form.value.paidById : "",
-    splitAmongIds: isExpense ? props.members.map((m) => m.id) : [],
+    splitAmongIds: isExpense ? form.value.splitAmongIds : [],
     splitCustomAmounts: splitCustomAmountsOut,
   };
 
