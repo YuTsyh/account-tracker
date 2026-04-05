@@ -80,7 +80,6 @@ export const useTrackerStore = defineStore("tracker", () => {
       // Ensure user has a UUID
       if (!userProfile.value.id) {
         userProfile.value.id = crypto.randomUUID();
-        console.log(`[tracker] Generated new UUID for user: ${userProfile.value.id}`);
         // Proactively register the new user on the backend
         setTimeout(() => {
           cloudSyncActions.backupByUUID();
@@ -106,7 +105,6 @@ export const useTrackerStore = defineStore("tracker", () => {
         await saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value);
       }
 
-      console.log("[tracker] Store initialized from IndexedDB.");
     })();
 
     return initPromise;
