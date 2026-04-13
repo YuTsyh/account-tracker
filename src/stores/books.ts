@@ -20,6 +20,8 @@ export function setupBookActions(
   records: Ref<RecordItem[]>,
   currentBookId: Ref<string | null>,
   userProfile: Ref<UserProfile>,
+  pendingDeleteBookIds: Ref<string[]>,
+  pendingDeleteRecordIds: Ref<string[]>,
   save: () => Promise<void>
 ) {
   // ---- Computed ----
@@ -49,6 +51,11 @@ export function setupBookActions(
 
     try {
       await updateSharedBook(book.shareCode, payload);
+      // Mark records for this shared book as synced
+      records.value.filter((r) => r.bookId === bookId).forEach((r) => {
+        r.isSynced = true;
+      });
+      await save();
     } catch (e) {
       console.error("[sync] Failed to sync shared book:", e);
     }
@@ -67,9 +74,28 @@ export function setupBookActions(
       book.name = data.book.name;
       book.members = data.book.members;
 
+      // Smart merge for shared book records
+      const cloudRecords: RecordItem[] = data.records.map((r) => ({ ...r, isSynced: true }));
+      const localPendingForBook = records.value.filter(
+        (r) => r.bookId === bookId && !r.isSynced
+      );
+      const pendingDeleteSet = new Set(pendingDeleteRecordIds.value);
+
+      // Filter tombstoned records from cloud
+      const cloudFiltered = cloudRecords.filter((r) => !pendingDeleteSet.has(r.id));
+
+      // Local pending overrides cloud version of same ID
+      const localPendingById = new Map(localPendingForBook.map((r) => [r.id, r]));
+      const cloudMerged = cloudFiltered.map((r) => localPendingById.get(r.id) ?? r);
+
+      // Keep local pending records not present in cloud
+      const cloudIds = new Set(cloudFiltered.map((r) => r.id));
+      const extraLocal = localPendingForBook.filter((r) => !cloudIds.has(r.id));
+
       records.value = [
         ...records.value.filter((r) => r.bookId !== bookId),
-        ...data.records,
+        ...cloudMerged,
+        ...extraLocal,
       ];
       await save();
     } catch (e) {
@@ -113,15 +139,15 @@ export function setupBookActions(
         books.value = books.value.filter((b) => b.id !== existing.id);
       }
 
-      const newBook: Book = { ...data.book, shareCode: code };
+      const newBook: Book = { ...data.book, shareCode: code, isSynced: true };
 
       // Auto-enroll the joining user as a member
       const myId = userProfile.value.id;
       const myName = userProfile.value.name || "我";
-      
+
       // Check if I am already in the member list by userId
       const existingMemberByUserId = newBook.members.find((m: Member) => m.userId === myId);
-      
+
       let shouldSyncBack = false;
       if (!existingMemberByUserId) {
         // If not found by userId, try to match by name (case-insensitive)
@@ -134,17 +160,17 @@ export function setupBookActions(
           existingMemberByName.userId = myId;
         } else {
           // If no matching name found, add me as a NEW member
-          newBook.members.push({ 
-            id: crypto.randomUUID(), 
+          newBook.members.push({
+            id: crypto.randomUUID(),
             name: myName,
-            userId: myId 
+            userId: myId
           });
         }
         shouldSyncBack = true;
       }
 
       books.value.push(newBook);
-      records.value.push(...data.records);
+      records.value.push(...data.records.map((r) => ({ ...r, isSynced: true })));
       currentBookId.value = newBook.id;
       await save();
 
@@ -183,6 +209,7 @@ export function setupBookActions(
       name,
       members,
       createdAt: new Date().toISOString(),
+      isSynced: false,
     };
     books.value.push(book);
     currentBookId.value = book.id;
@@ -228,12 +255,18 @@ export function setupBookActions(
 
     book.name = name.trim();
     book.members = newMembers;
+    book.isSynced = false;
     await save();
     syncSharedBook(bookId);
     return book;
   };
 
   const deleteBook = async (bookId: string) => {
+    // Add book and its records to tombstones
+    pendingDeleteBookIds.value.push(bookId);
+    const bookRecordIds = records.value.filter((r) => r.bookId === bookId).map((r) => r.id);
+    pendingDeleteRecordIds.value.push(...bookRecordIds);
+
     books.value = books.value.filter((b) => b.id !== bookId);
     records.value = records.value.filter((r) => r.bookId !== bookId);
     if (currentBookId.value === bookId) {
@@ -246,6 +279,7 @@ export function setupBookActions(
     const book = books.value.find((b) => b.id === bookId);
     if (!book || !memberName.trim()) return;
     book.members.push({ id: crypto.randomUUID(), name: memberName.trim() });
+    book.isSynced = false;
     await save();
     syncSharedBook(bookId);
   };
@@ -260,6 +294,7 @@ export function setupBookActions(
       ...record,
       id: crypto.randomUUID(),
       bookId: currentBookId.value,
+      isSynced: false,
     });
     await save();
     syncSharedBook(currentBookId.value);
@@ -269,7 +304,7 @@ export function setupBookActions(
     const idx = records.value.findIndex((r) => r.id === id);
     if (idx !== -1) {
       const bookId = records.value[idx].bookId;
-      records.value[idx] = { ...records.value[idx], ...record };
+      records.value[idx] = { ...records.value[idx], ...record, isSynced: false };
       await save();
       syncSharedBook(bookId);
     }
@@ -278,6 +313,7 @@ export function setupBookActions(
   const deleteRecord = async (id: string) => {
     const record = records.value.find((r) => r.id === id);
     if (record) {
+      pendingDeleteRecordIds.value.push(id);
       records.value = records.value.filter((r) => r.id !== id);
       await save();
       syncSharedBook(record.bookId);
@@ -298,10 +334,10 @@ export function setupBookActions(
 
   const memberStats = computed(() => {
     if (!currentBook.value) return [];
-    
+
     const members = currentBook.value.members;
     const allMemberIds = members.map((m) => m.id);
-    
+
     // Initialize maps for faster accumulation
     const paidMap: Record<string, number> = {};
     const owedMap: Record<string, number> = {};
