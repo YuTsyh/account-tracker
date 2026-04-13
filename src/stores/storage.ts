@@ -73,4 +73,10 @@ export const STORAGE_KEYS = {
   CUSTOM_CATEGORIES: "tracker_custom_categories",
   DELETED_CATEGORIES: "tracker_deleted_categories",
   TEMPLATES: "tracker_templates",
+  // Tombstone keys: IDs of locally-deleted items not yet pushed to cloud
+  PENDING_DELETE_RECORDS: "tracker_pending_delete_records",
+  PENDING_DELETE_PERSONAL_RECORDS: "tracker_pending_delete_personal_records",
+  PENDING_DELETE_BOOKS: "tracker_pending_delete_books",
+  PENDING_DELETE_CUSTOM_CATEGORIES: "tracker_pending_delete_custom_categories",
+  PENDING_DELETE_TEMPLATES: "tracker_pending_delete_templates",
 } as const;

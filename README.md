@@ -1,126 +1,92 @@
 # Account Tracker
 
-A modern, comprehensive, and collaborative financial tracking application built with Vue 3 and Go. It is designed to work seamlessly across web and mobile devices as a Progressive Web App (PWA) with native mobile capabilities via Capacitor.
+A personal finance and group expense tracking app built with Vue 3 + Go. Works offline-first as a PWA, with optional cloud sync and native mobile support via Capacitor.
 
-## ✨ Key Features
+## Features
 
-*   **Personal & Shared Books**: Manage your personal finances or collaborate with others (family, friends, roommates) using shared account books.
-*   **Easy Collaboration**: Share books easily via secure, 6-digit alphanumeric codes.
-*   **Multi-Currency Support**: Track expenses in various currencies seamlessly.
-*   **Interactive Visualizations**: Gain insights into your spending habits with clear, interactive charts (powered by Chart.js & vue-chartjs).
-*   **Robust Cloud Sync**: Auto-syncing with a backend server ensures your data is always up-to-date across all your devices, featuring intelligent debouncing to optimize performance.
-*   **Internationalization (i18n)**: Full support for multiple languages (currently English and Traditional Chinese).
-*   **Modern UI/UX**: Clean, responsive, and accessible interface built with Tailwind CSS v4, featuring a unified, animated toast notification system.
-*   **Cross-Platform**: Run as a standard web app, or build as native iOS and Android applications using Capacitor.
+- **Personal records**: Track your own income and expenses with categories and templates
+- **Shared books**: Collaborate with others via 6-digit share codes; split expenses with customizable member splits
+- **Offline-first**: All data stored locally in IndexedDB; works without internet
+- **Cloud sync**: Optional Google login to sync data across devices
+- **Pending sync protection**: Locally-created records are never overwritten by cloud pulls until explicitly pushed
+- **Data import**: Import from 小豬記帳本 (.txt) and 天天記帳 (.csv)
+- **i18n**: Traditional Chinese and English
+- **Mobile**: Build as native iOS/Android app via Capacitor
 
-## 🛠 Technology Stack
+## Tech Stack
 
-### Frontend
-*   **Framework**: [Vue 3](https://vuejs.org/) (Composition API, `<script setup>`)
-*   **State Management**: [Pinia](https://pinia.vuejs.org/) (Modularized for maintainability)
-*   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-*   **Routing**: [Vue Router](https://router.vuejs.org/)
-*   **Build Tool**: [Vite](https://vitejs.dev/)
-*   **Mobile Container**: [Capacitor](https://capacitorjs.com/) (iOS/Android)
-*   **Icons**: [Google Material Symbols](https://fonts.google.com/icons)
-*   **Icons (Legacy)**: FontAwesome
-*   **Utility**: date-fns (Date manipulation), uuid (Unique IDs)
+- **Vue 3** (Composition API, `<script setup>`) + TypeScript
+- **Pinia** (modular stores) + **Vue Router v5**
+- **Tailwind CSS v4**
+- **IndexedDB** via `idb` library (offline storage)
+- **Capacitor 8** (iOS/Android)
+- **Vite** + `vue-tsc`
+- Backend: Go + Gin + PostgreSQL — see [`../account-tracker-backend`](../account-tracker-backend)
 
-### Backend
-*   **Language**: Go
-*   **Database**: (Implementation dependent, handles shared spaces and syncing)
-
-## 📂 Project Structure (Frontend)
-
-The frontend codebase is organized to separate concerns and maintain readability:
-
-```text
-account-tracker/
-├── android/                # Capacitor Android project files
-├── ios/                    # Capacitor iOS project files
-├── src/
-│   ├── assets/             # Static assets (images, global CSS)
-│   ├── components/         # Reusable Vue components (UI elements, modals, charts)
-│   ├── composables/        # Shared Vue composition logic (e.g., useToast)
-│   ├── locales/            # i18n translation files (en.ts, zh-TW.ts)
-│   ├── router/             # Vue Router configuration
-│   ├── stores/             # Pinia state management modules
-│   │   ├── books.ts        # Book management, sharing logic
-│   │   ├── categories.ts   # Category CRUD
-│   │   ├── cloud-sync.ts   # Backend synchronization
-│   │   ├── personal.ts     # Personal expense records
-│   │   ├── tracker.ts      # Main compositional store linking modules
-│   │   └── ...             # Other modularized state files
-│   ├── views/              # Page-level Vue components
-│   ├── App.vue             # Root component
-│   └── main.ts             # Application entry point
-├── package.json            # Node dependencies and scripts
-├── tailwind.config.ts      # Tailwind CSS configuration
-├── tsconfig.json           # TypeScript configuration
-└── vite.config.ts          # Vite build configuration
-```
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-*   **Node.js**: (Version 20.19.0+ recommended)
-*   **npm** or **yarn** or **pnpm**: Node package manager.
+- Node.js 20+
 
-### Installation & Setup
+### Setup
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd account-tracker
-    ```
+```bash
+npm install
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
+# Create .env
+echo "VITE_API_URL=http://localhost:8080/api" > .env
 
-3.  **Environment Configuration:**
-    Create a `.env` file in the root directory and configure the API endpoint for cloud syncing and collaborative features:
-    ```env
-    VITE_API_URL=http://localhost:8080 # Replace with your Go backend URL
-    ```
+npm run dev       # http://localhost:5173
+```
 
-4.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
-    The app will be available at usually `http://localhost:5173`.
+### Build
 
-### Building for Production
+```bash
+npm run build     # outputs to dist/
+npm run preview   # preview production build
+```
 
-To create a production-ready web build:
+### Mobile (Capacitor)
 
 ```bash
 npm run build
+npx cap sync
+npx cap open ios      # requires Xcode
+npx cap open android  # requires Android Studio
 ```
-The output will be in the `dist/` directory.
 
-### Mobile Development (Capacitor)
+## Project Structure
 
-If you plan to deploy to iOS or Android, ensure you have the respective native environments set up (Xcode / Android Studio).
+```
+src/
+├── stores/           # All state (Pinia)
+│   ├── tracker.ts    # Root store — composes all submodules
+│   ├── books.ts      # Book & RecordItem CRUD + shared book sync
+│   ├── personal.ts   # PersonalRecord CRUD
+│   ├── categories.ts # Custom category CRUD
+│   ├── templates.ts  # RecordTemplate CRUD
+│   ├── cloud-sync.ts # Cloud push/pull/merge logic
+│   ├── user.ts       # User profile & auth actions
+│   ├── storage.ts    # IndexedDB helpers + STORAGE_KEYS
+│   └── types.ts      # All TypeScript interfaces
+├── utils/
+│   ├── api.ts        # Axios instance + API functions
+│   ├── piggyImport.ts
+│   └── everydayImport.ts
+├── views/            # Login, Home, Books, Statistics, Profile
+├── components/       # Modals, sheets, calculator keyboard, etc.
+└── locales/          # en.ts, zh-TW.ts
+```
 
-1. Build the web project: `npm run build`
-2. Sync with Capacitor: `npx cap sync`
-3. Open native IDE: `npx cap open ios` or `npx cap open android`
+See [`CLAUDE.md`](CLAUDE.md) for full architectural details.
 
-## 🏗 Recent Architectural Highlights
+## Environment
 
-*   **Store Modularization**: The monolithic state management has been split into dedicated, focused Pinia modules (`src/stores/*`), improving maintainability and reducing module complexity.
-*   **Global Notification System**: A centralized Toast Notification system (`useToast` composable) replaces standard browser alerts, providing a modern, consistent, and localized user feedback mechanism across the application.
-*   **Optimized Cloud Sync**: Aggressive debouncing is implemented on synchronization tasks to prevent race conditions and minimize unnecessary backend requests during rapid data entry.
+```env
+VITE_API_URL=http://localhost:8080/api
+```
 
-## 🤝 Contributing
+## License
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
+MIT

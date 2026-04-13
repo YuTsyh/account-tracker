@@ -18,11 +18,12 @@ export function setupPersonalActions(
     }[]
   >,
   currentBook: ComputedRef<{ id: string; name: string } | null>,
-  save: () => Promise<void>,
+  pendingDeletePersonalRecordIds: Ref<string[]>,
+  save: () => Promise<void>
 ) {
   // ---- CRUD ----
   const addPersonalRecord = async (record: Omit<PersonalRecord, "id">) => {
-    personalRecords.value.unshift({ ...record, id: crypto.randomUUID() });
+    personalRecords.value.unshift({ ...record, id: crypto.randomUUID(), isSynced: false });
     await save();
   };
 
@@ -32,12 +33,13 @@ export function setupPersonalActions(
   ) => {
     const idx = personalRecords.value.findIndex((r) => r.id === id);
     if (idx !== -1) {
-      personalRecords.value[idx] = { ...personalRecords.value[idx], ...record };
+      personalRecords.value[idx] = { ...personalRecords.value[idx], ...record, isSynced: false };
       await save();
     }
   };
 
   const deletePersonalRecord = async (id: string) => {
+    pendingDeletePersonalRecordIds.value.push(id);
     personalRecords.value = personalRecords.value.filter((r) => r.id !== id);
     await save();
   };
@@ -94,7 +96,7 @@ export function setupPersonalActions(
     personalBalance,
     importMyShareFromBook,
     importPersonalRecords: async (recordsToImport: PersonalRecord[]) => {
-      personalRecords.value.push(...recordsToImport);
+      personalRecords.value.push(...recordsToImport.map((r) => ({ ...r, isSynced: false })));
       await save();
     },
   };

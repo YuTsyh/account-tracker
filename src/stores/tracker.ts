@@ -33,6 +33,15 @@ export const useTrackerStore = defineStore("tracker", () => {
   const recordTemplates = ref<RecordTemplate[]>([]);
 
   // =====================
+  //  Tombstone State (pending deletes not yet pushed to cloud)
+  // =====================
+  const pendingDeleteRecordIds = ref<string[]>([]);
+  const pendingDeletePersonalRecordIds = ref<string[]>([]);
+  const pendingDeleteBookIds = ref<string[]>([]);
+  const pendingDeleteCustomCategoryIds = ref<string[]>([]);
+  const pendingDeleteTemplateIds = ref<string[]>([]);
+
+  // =====================
   //  Persistence
   // =====================
 
@@ -59,6 +68,11 @@ export const useTrackerStore = defineStore("tracker", () => {
         loadedCustomCategories,
         loadedDeletedCategories,
         loadedTemplates,
+        loadedPendingDeleteRecords,
+        loadedPendingDeletePersonalRecords,
+        loadedPendingDeleteBooks,
+        loadedPendingDeleteCustomCategories,
+        loadedPendingDeleteTemplates,
       ] = await Promise.all([
         loadFromStorage(STORAGE_KEYS.BOOKS, []),
         loadFromStorage(STORAGE_KEYS.RECORDS, []),
@@ -68,15 +82,20 @@ export const useTrackerStore = defineStore("tracker", () => {
         loadFromStorage(STORAGE_KEYS.CUSTOM_CATEGORIES, []),
         loadFromStorage(STORAGE_KEYS.DELETED_CATEGORIES, []),
         loadFromStorage(STORAGE_KEYS.TEMPLATES, []),
+        loadFromStorage(STORAGE_KEYS.PENDING_DELETE_RECORDS, []),
+        loadFromStorage(STORAGE_KEYS.PENDING_DELETE_PERSONAL_RECORDS, []),
+        loadFromStorage(STORAGE_KEYS.PENDING_DELETE_BOOKS, []),
+        loadFromStorage(STORAGE_KEYS.PENDING_DELETE_CUSTOM_CATEGORIES, []),
+        loadFromStorage(STORAGE_KEYS.PENDING_DELETE_TEMPLATES, []),
       ]);
 
       books.value = loadedBooks;
       records.value = loadedRecords;
       currentBookId.value = loadedCurrentBookId;
       personalRecords.value = loadedPersonalRecords;
-      
+
       userProfile.value = { ...userProfileDefaults, ...loadedUserProfile };
-      
+
       // Ensure user has a UUID
       if (!userProfile.value.id) {
         userProfile.value.id = crypto.randomUUID();
@@ -96,8 +115,14 @@ export const useTrackerStore = defineStore("tracker", () => {
       deletedCategoryIds.value = loadedDeletedCategories || [];
       recordTemplates.value = loadedTemplates || [];
 
+      pendingDeleteRecordIds.value = loadedPendingDeleteRecords || [];
+      pendingDeletePersonalRecordIds.value = loadedPendingDeletePersonalRecords || [];
+      pendingDeleteBookIds.value = loadedPendingDeleteBooks || [];
+      pendingDeleteCustomCategoryIds.value = loadedPendingDeleteCustomCategories || [];
+      pendingDeleteTemplateIds.value = loadedPendingDeleteTemplates || [];
+
       isInitialized.value = true;
-      
+
       // Save the migrated profile if needed (theme change or new UUID)
       if (
         (userProfile.value.theme === "sheep" && loadedUserProfile?.theme !== "sheep") ||
@@ -121,6 +146,11 @@ export const useTrackerStore = defineStore("tracker", () => {
       saveToStorage(STORAGE_KEYS.USER_PROFILE, userProfile.value),
       saveToStorage(STORAGE_KEYS.CUSTOM_CATEGORIES, customCategories.value),
       saveToStorage(STORAGE_KEYS.TEMPLATES, recordTemplates.value),
+      saveToStorage(STORAGE_KEYS.PENDING_DELETE_RECORDS, pendingDeleteRecordIds.value),
+      saveToStorage(STORAGE_KEYS.PENDING_DELETE_PERSONAL_RECORDS, pendingDeletePersonalRecordIds.value),
+      saveToStorage(STORAGE_KEYS.PENDING_DELETE_BOOKS, pendingDeleteBookIds.value),
+      saveToStorage(STORAGE_KEYS.PENDING_DELETE_CUSTOM_CATEGORIES, pendingDeleteCustomCategoryIds.value),
+      saveToStorage(STORAGE_KEYS.PENDING_DELETE_TEMPLATES, pendingDeleteTemplateIds.value),
     ]);
   };
 
@@ -128,11 +158,24 @@ export const useTrackerStore = defineStore("tracker", () => {
   //  Compose Sub-modules
   // =====================
   const userActions = setupUserActions(userProfile, save);
-  const categoryActions = setupCategoryActions(customCategories, deletedCategoryIds);
-  const bookActions = setupBookActions(books, records, currentBookId, userProfile, save);
-  const personalActions = setupPersonalActions(personalRecords, bookActions.memberStats, bookActions.currentBook, save);
-  const templateActions = setupTemplateActions(recordTemplates, save);
-  const cloudSyncActions = setupCloudSyncActions(userProfile, books, records, personalRecords, customCategories, recordTemplates, save);
+  const categoryActions = setupCategoryActions(customCategories, deletedCategoryIds, pendingDeleteCustomCategoryIds);
+  const bookActions = setupBookActions(books, records, currentBookId, userProfile, pendingDeleteBookIds, pendingDeleteRecordIds, save);
+  const personalActions = setupPersonalActions(personalRecords, bookActions.memberStats, bookActions.currentBook, pendingDeletePersonalRecordIds, save);
+  const templateActions = setupTemplateActions(recordTemplates, pendingDeleteTemplateIds, save);
+  const cloudSyncActions = setupCloudSyncActions(
+    userProfile,
+    books,
+    records,
+    personalRecords,
+    customCategories,
+    recordTemplates,
+    pendingDeleteRecordIds,
+    pendingDeletePersonalRecordIds,
+    pendingDeleteBookIds,
+    pendingDeleteCustomCategoryIds,
+    pendingDeleteTemplateIds,
+    save,
+  );
 
   // =====================
   //  Return All

@@ -259,6 +259,7 @@ export default {
     restoreUUIDSuccess: "資料已成功從 UUID 回復！",
     restoreUUIDError: "恢復失敗，請確認 UUID 是否正確。",
     confirmOverwrite: "這將會覆蓋此裝置上的所有本地資料，確定要繼續嗎？",
+    confirmOverwriteWithPending: "您有 {count} 筆尚未同步至雲端的資料（包含新增、修改或刪除），還原後這些變更將會遺失。確定要覆蓋嗎？",
   },
   statistics: {
     title: "統計分析",

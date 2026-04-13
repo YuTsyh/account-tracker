@@ -259,6 +259,7 @@ export default {
     restoreUUIDSuccess: "Data restored from UUID successfully!",
     restoreUUIDError: "Restore failed, please check if the UUID is correct.",
     confirmOverwrite: "This will overwrite all local data on this device. Are you sure you want to continue?",
+    confirmOverwriteWithPending: "You have {count} unsynced changes (added, modified, or deleted records). These will be lost after restoring. Are you sure you want to overwrite?",
   },
   statistics: {
     title: "Statistics",

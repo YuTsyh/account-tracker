@@ -14,6 +14,7 @@ export interface Book {
   members: Member[];
   createdAt: string;
   shareCode?: string;
+  isSynced?: boolean;
 }
 
 export interface RecordItem {
@@ -27,6 +28,7 @@ export interface RecordItem {
   paidById: string;
   splitAmongIds: string[];
   splitCustomAmounts?: Record<string, number>; // memberId -> amount, if custom split
+  isSynced?: boolean;
 }
 
 export interface PersonalRecord {
@@ -37,6 +39,7 @@ export interface PersonalRecord {
   date: string;
   note: string;
   sourceBookId?: string;
+  isSynced?: boolean;
 }
 
 export interface RecordTemplate {
@@ -46,6 +49,7 @@ export interface RecordTemplate {
   amount: number | null;
   category: string;
   note: string;
+  isSynced?: boolean;
 }
 
 export interface UserProfile {
@@ -66,6 +70,7 @@ export interface Category {
   icon: string;
   color: string;
   isDefault: boolean;
+  isSynced?: boolean;
 }
 
 export interface Settlement {
